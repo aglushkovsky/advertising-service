@@ -1,0 +1,81 @@
+INSERT INTO "user" (login, password_hash, email, phone_number, role, total_rating)
+VALUES ('test_user',
+        '$2a$12$sGu145CigoPn4HWjLOndX.QenSaUBRZreuex2fdo3wtUriQ9dBwie', -- qwerty12345
+        NULL,
+        NULL,
+        'USER',
+        0.0),
+       ('test_admin',
+        '$2a$12$pAMuVi4R48STh59Sh6OXP.d95htFMnq6XH.f5zDyepepB/REO.MsC', -- password
+        NULL,
+        NULL,
+        'ADMIN',
+        0.0);
+
+INSERT INTO locality (locality_name, parent_locality, type)
+VALUES ('Орёл', NULL, 'CITY'),
+       ('Тула', NULL, 'CITY'),
+       ('Брянск', NULL, 'CITY'),
+       ('Курск', NULL, 'CITY');
+
+INSERT INTO locality (locality_name, parent_locality, type)
+VALUES ('Центральный р-н',
+        (SELECT id FROM locality WHERE locality_name = 'Курск'),
+        'DISTRICT'),
+       ('Железнодорожный р-н',
+        (SELECT id FROM locality WHERE locality_name = 'Курск'),
+        'DISTRICT'),
+       ('Сеймский р-н',
+        (SELECT id FROM locality WHERE locality_name = 'Курск'),
+        'DISTRICT'),
+       ('Бежицкий р-н',
+        (SELECT id FROM locality WHERE locality_name = 'Брянск'),
+        'DISTRICT'),
+       ('Володарский р-н',
+        (SELECT id FROM locality WHERE locality_name = 'Брянск'),
+        'DISTRICT'),
+       ('Советский р-н',
+        (SELECT id FROM locality WHERE locality_name = 'Брянск'),
+        'DISTRICT'),
+       ('Фокинский р-н',
+        (SELECT id FROM locality WHERE locality_name = 'Брянск'),
+        'DISTRICT'),
+       ('Советский р-н',
+        (SELECT id FROM locality WHERE locality_name = 'Тула'),
+        'DISTRICT'),
+       ('Центральный р-н',
+        (SELECT id FROM locality WHERE locality_name = 'Тула'),
+        'DISTRICT'),
+       ('Пролетарский р-н',
+        (SELECT id FROM locality WHERE locality_name = 'Тула'),
+        'DISTRICT'),
+       ('Привокзальный р-н',
+        (SELECT id FROM locality WHERE locality_name = 'Тула'),
+        'DISTRICT'),
+       ('Зареченский р-н',
+        (SELECT id FROM locality WHERE locality_name = 'Тула'),
+        'DISTRICT'),
+       ('Заводской р-н',
+        (SELECT id FROM locality WHERE locality_name = 'Орёл'),
+        'DISTRICT'),
+       ('Железнодорожный р-н',
+        (SELECT id FROM locality WHERE locality_name = 'Орёл'),
+        'DISTRICT'),
+       ('Северный р-н',
+        (SELECT id FROM locality WHERE locality_name = 'Орёл'),
+        'DISTRICT'),
+       ('Советский р-н',
+        (SELECT id FROM locality WHERE locality_name = 'Орёл'),
+        'DISTRICT');
+
+INSERT INTO ad (title, price, description, locality_id, publisher_id, published_at, status, is_promoted)
+VALUES ('Macbook Pro M4 16/512 новый запечатанный из ОАЭ',
+        15000000,
+        'Зaпaкованныe и пoлнocтью нoвыe.' ||
+        'Очень мощныe и подxoдят под любые зaдачи.' ||
+        'Пoдберeм Baм нужную кoмплeктaцию. На мecтe можeм егo прoверить.',
+        (SELECT id FROM locality WHERE locality_name = 'Орёл'),
+        (SELECT id FROM "user" WHERE login = 'test_user'),
+        NOW(),
+        'ACTIVE',
+        FALSE);
