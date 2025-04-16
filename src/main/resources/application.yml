@@ -1,1 +1,21 @@
-spring.application.name: advertising-service
+spring:
+  application.name: advertising-service
+  jpa:
+    open-in-view: false
+
+logging.level:
+    org.hibernate:
+      SQL: DEBUG
+      type.descriptor.sql.BasicBinder: TRACE
+
+hibernate:
+  username: postgres
+  password: postgres
+  url: jdbc:postgresql://localhost:5433/advertising_service
+  driver: org.postgresql.Driver
+  entity-package: io.github.aglushkovsky.advertisingservice.entity
+  naming-physical-strategy: org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy
+  dialect: org.hibernate.dialect.PostgreSQLDialect
+  sql:
+    show: true
+    format: true
