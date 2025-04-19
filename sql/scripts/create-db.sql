@@ -1,5 +1,3 @@
-CREATE DATABASE advertising_service;
-
 CREATE TABLE IF NOT EXISTS "user" (
     id bigserial PRIMARY KEY ,
     login varchar(50) NOT NULL UNIQUE ,
@@ -43,7 +41,6 @@ CREATE TABLE IF NOT EXISTS ad (
     locality_id bigint NOT NULL REFERENCES locality ,
     publisher_id bigint NOT NULL REFERENCES "user" ON DELETE CASCADE ,
     published_at timestamp with time zone ,
-    status varchar(20) NOT NULL ,
     is_promoted boolean NOT NULL
 );
 
