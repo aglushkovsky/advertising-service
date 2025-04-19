@@ -1,25 +1,24 @@
 package io.github.aglushkovsky.advertisingservice.entity;
 
 import jakarta.persistence.*;
-import lombok.Data;
 
 import java.time.LocalDateTime;
 
-@Data
 @Entity
-public class UserRate {
+public class Message {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Double value;
+    @ManyToOne(optional = false)
+    private User sender;
 
     @ManyToOne(optional = false)
-    private User author;
+    private User receiver;
 
-    @ManyToOne(optional = false)
-    private User recipient;
+    private LocalDateTime sentAt;
 
-    private LocalDateTime createdAt;
+    @Column(name = "message_text")
+    private String text;
 }

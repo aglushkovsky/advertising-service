@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Optional;
 
 public abstract class AbstractDao<E, I> implements Dao<E, I> {
+
     @PersistenceContext
     protected EntityManager entityManager;
 
@@ -39,10 +40,13 @@ public abstract class AbstractDao<E, I> implements Dao<E, I> {
     }
 
     private CriteriaQuery<E> createFindAllQuery(Class<E> aClass, EntityManager entityManager) {
-        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
-        CriteriaQuery<E> query = criteriaBuilder.createQuery(aClass);
+        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+
+        CriteriaQuery<E> query = cb.createQuery(aClass);
         Root<E> entity = query.from(aClass);
+
         query.select(entity);
+
         return query;
     }
 }

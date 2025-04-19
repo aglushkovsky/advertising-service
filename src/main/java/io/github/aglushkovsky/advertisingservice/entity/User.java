@@ -1,5 +1,6 @@
 package io.github.aglushkovsky.advertisingservice.entity;
 
+import io.github.aglushkovsky.advertisingservice.entity.enumeration.Role;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -9,13 +10,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Data
-@ToString(exclude = {"outgoingRates", "incomingRates"})
-@EqualsAndHashCode(exclude = {"outgoingRates", "incomingRates"})
+@ToString(exclude = {"outgoingRates", "incomingRates", "createdAds"})
+@EqualsAndHashCode(exclude = {"outgoingRates", "incomingRates", "createdAds"})
 @Entity
-@Table(schema = "public") // FIXME из-за того, что слово user - зарезервировано в postgres, нужно указывать схему
+@Table(schema = "public")
 public class User {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String login;
@@ -36,4 +38,7 @@ public class User {
 
     @OneToMany(mappedBy = "recipient")
     private List<UserRate> incomingRates = new ArrayList<>();
+
+    @OneToMany(mappedBy = "publisher")
+    private List<Ad> createdAds = new ArrayList<>();
 }

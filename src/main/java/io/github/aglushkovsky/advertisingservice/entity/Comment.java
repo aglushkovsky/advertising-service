@@ -1,25 +1,24 @@
 package io.github.aglushkovsky.advertisingservice.entity;
 
 import jakarta.persistence.*;
-import lombok.Data;
 
 import java.time.LocalDateTime;
 
-@Data
 @Entity
-public class UserRate {
+public class Comment {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Double value;
-
     @ManyToOne(optional = false)
     private User author;
 
     @ManyToOne(optional = false)
-    private User recipient;
+    private Ad ad;
 
     private LocalDateTime createdAt;
+
+    @Column(name = "comment_text")
+    private String text;
 }

@@ -3,23 +3,30 @@ package io.github.aglushkovsky.advertisingservice.entity;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Data
 @Entity
-public class UserRate {
+public class Ad {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Double value;
+    private String title;
+
+    private BigDecimal price;
+
+    private String description;
 
     @ManyToOne(optional = false)
-    private User author;
+    private Locality locality;
 
     @ManyToOne(optional = false)
-    private User recipient;
+    private User publisher;
 
-    private LocalDateTime createdAt;
+    private LocalDateTime publishedAt;
+
+    private boolean isPromoted;
 }
