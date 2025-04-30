@@ -6,6 +6,8 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.Optional;
 
+import static io.github.aglushkovsky.advertisingservice.entity.QMessage.*;
+
 @Repository
 public class MessageDao extends AbstractDao<Message, Long> {
     @Override
@@ -15,7 +17,7 @@ public class MessageDao extends AbstractDao<Message, Long> {
 
     @Override
     public List<Message> findAll() {
-        return findAll(Message.class);
+        return findAll(message);
     }
 
     @Override

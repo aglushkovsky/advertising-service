@@ -14,7 +14,6 @@ public class HibernateProperties {
     private String driver;
     private String entityPackage;
     private String namingPhysicalStrategy;
-    private String dialect;
     private Sql sql;
 
     @Data

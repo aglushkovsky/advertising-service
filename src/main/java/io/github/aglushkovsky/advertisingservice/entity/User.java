@@ -2,14 +2,14 @@ package io.github.aglushkovsky.advertisingservice.entity;
 
 import io.github.aglushkovsky.advertisingservice.entity.enumeration.Role;
 import jakarta.persistence.*;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
+import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 @ToString(exclude = {"outgoingRates", "incomingRates", "createdAds"})
 @EqualsAndHashCode(exclude = {"outgoingRates", "incomingRates", "createdAds"})
 @Entity

@@ -6,6 +6,8 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.Optional;
 
+import static io.github.aglushkovsky.advertisingservice.entity.QLocality.*;
+
 @Repository
 public class LocalityDao extends AbstractDao<Locality, Long> {
 
@@ -16,7 +18,7 @@ public class LocalityDao extends AbstractDao<Locality, Long> {
 
     @Override
     public List<Locality> findAll() {
-        return findAll(Locality.class);
+        return findAll(locality);
     }
 
     @Override

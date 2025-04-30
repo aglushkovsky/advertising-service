@@ -45,7 +45,6 @@ public class JpaConfig {
     private Properties getHibernateProperties() {
         Properties properties = new Properties();
         properties.setProperty("hibernate.physical_naming_strategy", hibernateProperties.getNamingPhysicalStrategy());
-        properties.setProperty("hibernate.dialect", hibernateProperties.getDialect());
         properties.setProperty("show_sql", hibernateProperties.getSql().getShow().toString());
         properties.setProperty("format_sql", hibernateProperties.getSql().getFormat().toString());
         return properties;

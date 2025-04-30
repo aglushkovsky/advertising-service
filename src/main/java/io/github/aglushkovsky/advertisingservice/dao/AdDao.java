@@ -1,13 +1,25 @@
 package io.github.aglushkovsky.advertisingservice.dao;
 
-import io.github.aglushkovsky.advertisingservice.entity.Ad;
+import com.querydsl.core.types.OrderSpecifier;
+import com.querydsl.core.types.Predicate;
+import io.github.aglushkovsky.advertisingservice.entity.*;
+import jakarta.persistence.EntityGraph;
+import jakarta.persistence.Subgraph;
+import org.hibernate.graph.GraphSemantic;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
 
+import static com.querydsl.jpa.JPAExpressions.*;
+import static io.github.aglushkovsky.advertisingservice.entity.QAd.*;
+import static io.github.aglushkovsky.advertisingservice.entity.QLocality.*;
+import static io.github.aglushkovsky.advertisingservice.entity.QLocalityPart.*;
+import static io.github.aglushkovsky.advertisingservice.util.QueryDslUtils.*;
+
 @Repository
 public class AdDao extends AbstractDao<Ad, Long> {
+
     @Override
     public void delete(Long id) {
         delete(Ad.class, id);
@@ -15,7 +27,44 @@ public class AdDao extends AbstractDao<Ad, Long> {
 
     @Override
     public List<Ad> findAll() {
-        return findAll(Ad.class);
+        return findAll(ad);
+    }
+
+    public List<Ad> findAll(Long limit, Long offset, Predicate predicate, OrderSpecifier<?>... orders) {
+        return createFindAllQuery(ad)
+                .where(predicate)
+                .orderBy(orders)
+                .limit(limit)
+                .offset(offset)
+                .setHint(GraphSemantic.LOAD.getJakartaHintName(), getEntityGraph())
+                .fetch();
+    }
+
+    public List<Ad> findAll(Long limit, Long offset, Long localityId, Predicate predicate, OrderSpecifier<?>... orders) {
+        return createFindAllQuery(ad)
+                .where(selectFrom(localityPart)
+                        .where(localityPart.descendantLocality.eq(ad.locality)
+                                .and(localityPart.ancestorLocality.id.eq(localityId)))
+                        .exists()
+                        .and(predicate))
+                .orderBy(orders)
+                .limit(limit)
+                .offset(offset)
+                .setHint(GraphSemantic.LOAD.getJakartaHintName(), getEntityGraph())
+                .fetch();
+    }
+
+    private EntityGraph<Ad> getEntityGraph() {
+        EntityGraph<Ad> entityGraph = entityManager.createEntityGraph(Ad.class);
+        entityGraph.addAttributeNodes(getName(ad.locality), getName(ad.publisher));
+
+        Subgraph<Locality> localitySubgraph = entityGraph.addSubgraph(getName(ad.locality));
+        localitySubgraph.addAttributeNodes(getName(locality.ancestors));
+
+        Subgraph<Object> localityInLocalityParentsSubgraph = localitySubgraph.addSubgraph(getName(locality.ancestors));
+        localityInLocalityParentsSubgraph.addAttributeNodes(getName(localityPart.ancestorLocality));
+
+        return entityGraph;
     }
 
     @Override

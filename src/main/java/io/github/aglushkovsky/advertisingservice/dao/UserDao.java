@@ -6,6 +6,8 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.Optional;
 
+import static io.github.aglushkovsky.advertisingservice.entity.QUser.*;
+
 @Repository
 public class UserDao extends AbstractDao<User, Long> {
     @Override
@@ -15,7 +17,7 @@ public class UserDao extends AbstractDao<User, Long> {
 
     @Override
     public List<User> findAll() {
-        return findAll(User.class);
+        return findAll(user);
     }
 
     @Override

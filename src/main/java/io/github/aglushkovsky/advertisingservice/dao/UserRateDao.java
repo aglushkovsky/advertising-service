@@ -6,6 +6,8 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.Optional;
 
+import static io.github.aglushkovsky.advertisingservice.entity.QUserRate.*;
+
 @Repository
 public class UserRateDao extends AbstractDao<UserRate, Long> {
     @Override
@@ -15,7 +17,7 @@ public class UserRateDao extends AbstractDao<UserRate, Long> {
 
     @Override
     public List<UserRate> findAll() {
-        return findAll(UserRate.class);
+        return findAll(userRate);
     }
 
     @Override
