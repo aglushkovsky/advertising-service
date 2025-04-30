@@ -27,10 +27,18 @@ CREATE TABLE IF NOT EXISTS message (
 
 CREATE TABLE IF NOT EXISTS locality (
     id bigserial PRIMARY KEY ,
-    locality_name varchar(255) NOT NULL ,
-    parent_locality bigint REFERENCES locality ON DELETE CASCADE ,
+    name varchar(255) NOT NULL ,
+    parent_locality_id bigint REFERENCES locality ON DELETE CASCADE ,
     type varchar(20) NOT NULL ,
-    UNIQUE (parent_locality, locality_name)
+    UNIQUE (name, parent_locality_id, type)
+);
+
+CREATE TABLE IF NOT EXISTS locality_parts_relation (
+    id bigserial PRIMARY KEY ,
+    ancestor_locality_id bigint NOT NULL REFERENCES locality ON DELETE CASCADE ,
+    descendant_locality_id bigint NOT NULL REFERENCES locality ON DELETE CASCADE ,
+    depth integer NOT NULL ,
+    UNIQUE (ancestor_locality_id, descendant_locality_id)
 );
 
 CREATE TABLE IF NOT EXISTS ad (

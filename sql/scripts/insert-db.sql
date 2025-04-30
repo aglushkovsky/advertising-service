@@ -12,70 +12,242 @@ VALUES ('test_user',
         'ADMIN',
         0.0);
 
-INSERT INTO locality (locality_name, parent_locality, type)
-VALUES ('Орёл', NULL, 'CITY'),
-       ('Тула', NULL, 'CITY'),
-       ('Брянск', NULL, 'CITY'),
-       ('Курск', NULL, 'CITY');
+-- TODO Подумать о создании VIEW для больших сложных запросов поиска локаций и вставки.
+--  Но нужно подумать над тем, как Criteria API и QueryDSL работают с вьюшками.
 
-INSERT INTO locality (locality_name, parent_locality, type)
-VALUES ('Центральный р-н',
-        (SELECT id FROM locality WHERE locality_name = 'Курск'),
-        'DISTRICT'),
-       ('Железнодорожный р-н',
-        (SELECT id FROM locality WHERE locality_name = 'Курск'),
-        'DISTRICT'),
-       ('Сеймский р-н',
-        (SELECT id FROM locality WHERE locality_name = 'Курск'),
-        'DISTRICT'),
-       ('Бежицкий р-н',
-        (SELECT id FROM locality WHERE locality_name = 'Брянск'),
-        'DISTRICT'),
-       ('Володарский р-н',
-        (SELECT id FROM locality WHERE locality_name = 'Брянск'),
-        'DISTRICT'),
-       ('Советский р-н',
-        (SELECT id FROM locality WHERE locality_name = 'Брянск'),
-        'DISTRICT'),
-       ('Фокинский р-н',
-        (SELECT id FROM locality WHERE locality_name = 'Брянск'),
-        'DISTRICT'),
-       ('Советский р-н',
-        (SELECT id FROM locality WHERE locality_name = 'Тула'),
-        'DISTRICT'),
-       ('Центральный р-н',
-        (SELECT id FROM locality WHERE locality_name = 'Тула'),
-        'DISTRICT'),
-       ('Пролетарский р-н',
-        (SELECT id FROM locality WHERE locality_name = 'Тула'),
-        'DISTRICT'),
-       ('Привокзальный р-н',
-        (SELECT id FROM locality WHERE locality_name = 'Тула'),
-        'DISTRICT'),
-       ('Зареченский р-н',
-        (SELECT id FROM locality WHERE locality_name = 'Тула'),
-        'DISTRICT'),
-       ('Заводской р-н',
-        (SELECT id FROM locality WHERE locality_name = 'Орёл'),
-        'DISTRICT'),
-       ('Железнодорожный р-н',
-        (SELECT id FROM locality WHERE locality_name = 'Орёл'),
-        'DISTRICT'),
-       ('Северный р-н',
-        (SELECT id FROM locality WHERE locality_name = 'Орёл'),
-        'DISTRICT'),
-       ('Советский р-н',
-        (SELECT id FROM locality WHERE locality_name = 'Орёл'),
-        'DISTRICT');
+WITH root_locality AS (
+    INSERT INTO locality (name, type) VALUES ('Орёл', 'CITY') RETURNING id)
+INSERT
+INTO locality_parts_relation(ancestor_locality_id, descendant_locality_id, depth)
+SELECT root_locality.id, root_locality.id, 0
+FROM root_locality;
 
-INSERT INTO ad (title, price, description, locality_id, publisher_id, published_at, status, is_promoted)
+WITH ancestors AS (SELECT ancestor_locality_id, depth
+                   FROM locality_parts_relation lpr
+                            JOIN locality l ON l.id = lpr.descendant_locality_id
+                   WHERE name = 'Орёл'
+                     AND type = 'CITY'),
+     new_descendant_locality AS (
+         INSERT INTO locality (name, type) VALUES ('Советский', 'DISTRICT'),
+                                                  ('Железнодорожный', 'DISTRICT'),
+                                                  ('Заводской', 'DISTRICT'),
+                                                  ('Северный', 'DISTRICT')
+             RETURNING id)
+INSERT
+INTO locality_parts_relation (ancestor_locality_id, descendant_locality_id, depth)
+SELECT a.ancestor_locality_id, ndl.id, a.depth + 1
+FROM ancestors a
+         CROSS JOIN new_descendant_locality ndl
+UNION ALL
+SELECT new_descendant_locality.id, new_descendant_locality.id, 0
+FROM new_descendant_locality;
+
+WITH ancestors AS (SELECT lpr.ancestor_locality_id, lpr.depth
+                   FROM locality_parts_relation lpr
+                            JOIN locality descendant
+                                 ON descendant.id = lpr.descendant_locality_id
+                            JOIN locality_parts_relation city_relation
+                                 ON city_relation.descendant_locality_id = descendant.id
+                            JOIN locality city
+                                 ON city.id = city_relation.ancestor_locality_id
+                   WHERE descendant.name = 'Советский'
+                     AND descendant.type = 'DISTRICT'
+                     AND city.name = 'Орёл'
+                     AND city.type = 'CITY'),
+     new_descendant_locality AS (
+         INSERT INTO locality (name, type) VALUES ('Полесская', 'STREET')
+             RETURNING id)
+INSERT
+INTO locality_parts_relation (ancestor_locality_id, descendant_locality_id, depth)
+SELECT a.ancestor_locality_id, ndl.id, a.depth + 1
+FROM ancestors a
+         CROSS JOIN new_descendant_locality ndl
+UNION ALL
+SELECT new_descendant_locality.id, new_descendant_locality.id, 0
+FROM new_descendant_locality;
+
+WITH ancestors AS (SELECT lpr.ancestor_locality_id, lpr.depth, city.name
+                   FROM locality_parts_relation lpr
+                            JOIN locality descendant
+                                 ON descendant.id = lpr.descendant_locality_id
+                            JOIN locality_parts_relation city_relation
+                                 ON city_relation.descendant_locality_id = descendant.id
+                            JOIN locality city
+                                 ON city.id = city_relation.ancestor_locality_id
+                   WHERE descendant.name = 'Полесская'
+                     AND descendant.type = 'STREET'
+                     AND city.name = 'Орёл'
+                     AND city.type = 'CITY'),
+     new_descendant_locality AS (
+         INSERT INTO locality (name, type) VALUES ('6', 'HOUSE_NUMBER')
+             RETURNING id)
+INSERT
+INTO locality_parts_relation (ancestor_locality_id, descendant_locality_id, depth)
+SELECT a.ancestor_locality_id, ndl.id, a.depth + 1
+FROM ancestors a
+         CROSS JOIN new_descendant_locality ndl
+UNION ALL
+SELECT new_descendant_locality.id, new_descendant_locality.id, 0
+FROM new_descendant_locality;
+
+WITH root_locality AS (
+    INSERT INTO locality (name, type) VALUES ('Мценск', 'CITY') RETURNING id)
+INSERT
+INTO locality_parts_relation(ancestor_locality_id, descendant_locality_id, depth)
+SELECT root_locality.id, root_locality.id, 0
+FROM root_locality;
+
+WITH ancestors AS (SELECT ancestor_locality_id, depth
+                   FROM locality_parts_relation lpr
+                            JOIN locality l ON l.id = lpr.descendant_locality_id
+                   WHERE name = 'Мценск'
+                     AND type = 'CITY'),
+     new_descendant_locality AS (
+         INSERT INTO locality (name, type) VALUES ('Мира', 'STREET'),
+                                                  ('Тургенева', 'STREET'),
+                                                  ('Ленина', 'STREET'),
+                                                  ('Гагарина', 'STREET')
+             RETURNING id)
+INSERT
+INTO locality_parts_relation (ancestor_locality_id, descendant_locality_id, depth)
+SELECT a.ancestor_locality_id, ndl.id, a.depth + 1
+FROM ancestors a
+         CROSS JOIN new_descendant_locality ndl
+UNION ALL
+SELECT new_descendant_locality.id, new_descendant_locality.id, 0
+FROM new_descendant_locality;
+
+WITH ancestors AS (SELECT lpr.ancestor_locality_id, lpr.depth, city.name
+                   FROM locality_parts_relation lpr
+                            JOIN locality descendant
+                                 ON descendant.id = lpr.descendant_locality_id
+                            JOIN locality_parts_relation city_relation
+                                 ON city_relation.descendant_locality_id = descendant.id
+                            JOIN locality city
+                                 ON city.id = city_relation.ancestor_locality_id
+                   WHERE descendant.name = 'Мира'
+                     AND descendant.type = 'STREET'
+                     AND city.name = 'Мценск'
+                     AND city.type = 'CITY'),
+     new_descendant_locality AS (
+         INSERT INTO locality (name, type) VALUES ('1', 'HOUSE_NUMBER'),
+                                                  ('2', 'HOUSE_NUMBER'),
+                                                  ('3', 'HOUSE_NUMBER'),
+                                                  ('4', 'HOUSE_NUMBER'),
+                                                  ('5', 'HOUSE_NUMBER')
+             RETURNING id)
+INSERT
+INTO locality_parts_relation (ancestor_locality_id, descendant_locality_id, depth)
+SELECT a.ancestor_locality_id, ndl.id, a.depth + 1
+FROM ancestors a
+         CROSS JOIN new_descendant_locality ndl
+UNION ALL
+SELECT new_descendant_locality.id, new_descendant_locality.id, 0
+FROM new_descendant_locality;
+
+WITH root_locality AS (
+    INSERT INTO locality (name, type) VALUES ('Брянск', 'CITY') RETURNING id)
+INSERT
+INTO locality_parts_relation(ancestor_locality_id, descendant_locality_id, depth)
+SELECT root_locality.id, root_locality.id, 0
+FROM root_locality;
+
+WITH ancestors AS (SELECT ancestor_locality_id, depth
+                   FROM locality_parts_relation lpr
+                            JOIN locality l ON l.id = lpr.descendant_locality_id
+                   WHERE name = 'Брянск'
+                     AND type = 'CITY'),
+     new_descendant_locality AS (
+         INSERT INTO locality (name, type) VALUES ('Бежицкий', 'DISTRICT'),
+                                                  ('Володарский', 'DISTRICT'),
+                                                  ('Советский', 'DISTRICT'),
+                                                  ('Фокинский', 'DISTRICT')
+             RETURNING id)
+INSERT
+INTO locality_parts_relation (ancestor_locality_id, descendant_locality_id, depth)
+SELECT a.ancestor_locality_id, ndl.id, a.depth + 1
+FROM ancestors a
+         CROSS JOIN new_descendant_locality ndl
+UNION ALL
+SELECT new_descendant_locality.id, new_descendant_locality.id, 0
+FROM new_descendant_locality;
+
+INSERT
+INTO ad (title, price, description, locality_id, publisher_id, published_at, is_promoted)
 VALUES ('Macbook Pro M4 16/512 новый запечатанный из ОАЭ',
         15000000,
         'Зaпaкованныe и пoлнocтью нoвыe.' ||
         'Очень мощныe и подxoдят под любые зaдачи.' ||
         'Пoдберeм Baм нужную кoмплeктaцию. На мecтe можeм егo прoверить.',
-        (SELECT id FROM locality WHERE locality_name = 'Орёл'),
+        (SELECT lpr.ancestor_locality_id
+         FROM locality_parts_relation lpr
+                  JOIN locality descendant
+                       ON descendant.id = lpr.descendant_locality_id
+                  JOIN locality_parts_relation street_relation
+                       ON street_relation.descendant_locality_id = descendant.id
+                  JOIN locality street
+                       ON street.id = street_relation.ancestor_locality_id
+                  JOIN locality_parts_relation city_relation
+                       ON city_relation.descendant_locality_id = descendant.id
+                  JOIN locality city
+                       ON city.id = city_relation.ancestor_locality_id
+         WHERE descendant.name = '6'
+           AND descendant.type = 'HOUSE_NUMBER'
+           AND street.name = 'Полесская'
+           AND street.type = 'STREET'
+           AND city.name = 'Орёл'
+           AND city.type = 'CITY'
+           AND lpr.depth = 0),
         (SELECT id FROM "user" WHERE login = 'test_user'),
         NOW(),
-        'ACTIVE',
+        TRUE);
+
+INSERT
+INTO ad (title, price, description, locality_id, publisher_id, published_at, is_promoted)
+VALUES ('Xiaomi Redmi Note 13 256 ГБ',
+        1000000,
+        'В хорошем состоянии',
+        (SELECT lpr.ancestor_locality_id
+         FROM locality_parts_relation lpr
+                  JOIN locality descendant
+                       ON descendant.id = lpr.descendant_locality_id
+                  JOIN locality_parts_relation street_relation
+                       ON street_relation.descendant_locality_id = descendant.id
+                  JOIN locality street
+                       ON street.id = street_relation.ancestor_locality_id
+                  JOIN locality_parts_relation city_relation
+                       ON city_relation.descendant_locality_id = descendant.id
+                  JOIN locality city
+                       ON city.id = city_relation.ancestor_locality_id
+         WHERE descendant.name = '1'
+           AND descendant.type = 'HOUSE_NUMBER'
+           AND street.name = 'Мира'
+           AND street.type = 'STREET'
+           AND city.name = 'Мценск'
+           AND city.type = 'CITY'
+           AND lpr.depth = 0),
+        (SELECT id FROM "user" WHERE login = 'test_user'),
+        NOW(),
+        FALSE);
+
+INSERT
+INTO ad (title, price, description, locality_id, publisher_id, published_at, is_promoted)
+VALUES ('телефон xiaomi A3x',
+        250000,
+        'пользовались мало. коробку потеряли',
+        (SELECT lpr.ancestor_locality_id
+         FROM locality_parts_relation lpr
+                  JOIN locality descendant
+                       ON descendant.id = lpr.descendant_locality_id
+                  JOIN locality_parts_relation city_relation
+                       ON city_relation.descendant_locality_id = descendant.id
+                  JOIN locality city
+                       ON city.id = city_relation.ancestor_locality_id
+         WHERE descendant.name = 'Тургенева'
+           AND descendant.type = 'STREET'
+           AND city.name = 'Мценск'
+           AND city.type = 'CITY'
+           AND lpr.depth = 0),
+        (SELECT id FROM "user" WHERE login = 'test_user'),
+        NOW(),
         FALSE);
