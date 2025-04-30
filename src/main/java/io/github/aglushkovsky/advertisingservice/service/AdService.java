@@ -25,7 +25,6 @@ public class AdService {
 
     private final AdMapper adMapper;
 
-    // TODO Придумать, как сюда можно прикрутить сортировку в order by.
     public List<AdResponseDto> findAll(FindAllAdsFilterRequestDto filterRequestDto) {
         Predicate predicate = buildPredicate(filterRequestDto);
         OrderSpecifier<Boolean> order = getDefaultPromotedAdsPrecedenceOrder();
@@ -42,7 +41,7 @@ public class AdService {
 
     private Predicate buildPredicate(FindAllAdsFilterRequestDto filterRequestDto) {
         return PredicateChainBuilder.builder()
-                .and(filterRequestDto.term() != null ? "%" + filterRequestDto.term() + "%" : null,
+                .and(getTermParameter(filterRequestDto.term()),
                         getSearchByTermPredicateFunction(filterRequestDto.onlyInTitle()))
                 .and(filterRequestDto.minPrice(), ad.price::gt)
                 .and(filterRequestDto.maxPrice(), ad.price::lt)
@@ -58,6 +57,10 @@ public class AdService {
         return param -> isOnlyInTitle
                 ? ad.title.lower().like(param.toLowerCase())
                 : ad.title.lower().like(param.toLowerCase()).or(ad.description.lower().like(param.toLowerCase()));
+    }
+
+    private String getTermParameter(String term) {
+        return term != null ? "%" + term + "%" : null;
     }
 
     private Long calculateOffset(Long limit, Long page) {
