@@ -25,10 +25,4 @@ public class LocalityDao extends AbstractDao<Locality, Long> {
     public Optional<Locality> findById(Long id) {
         return findById(Locality.class, id);
     }
-
-    public List<Locality> findAllParentLocalities(Locality leafLocality) {
-        return entityManager.createNamedQuery("getFullLocalityHierarchyQuery", Locality.class)
-                .setParameter("leafLocalityId", leafLocality.getId())
-                .getResultList();
-    }
 }
