@@ -28,6 +28,6 @@ public class LocalityPart implements Comparable<LocalityPart> {
 
     @Override
     public int compareTo(LocalityPart o) {
-        return depth.compareTo(o.getDepth());
+        return o.getDepth() == null ? -1 : o.getDepth().compareTo(depth);
     }
 }
