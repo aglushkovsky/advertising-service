@@ -3,6 +3,7 @@ spring:
   jpa:
     open-in-view: false
 
+# TODO Узнать, можно ли через профайлы отключать и включать некоторые проперти
 logging.level:
     org.hibernate:
       SQL: DEBUG
@@ -15,6 +16,9 @@ hibernate:
   driver: org.postgresql.Driver
   entity-package: io.github.aglushkovsky.advertisingservice.entity
   naming-physical-strategy: org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy
+  dialect: org.hibernate.dialect.PostgreSQLDialect
   sql:
     show: true
     format: true
+
+root.locality.type: CITY

@@ -8,6 +8,7 @@ import io.github.aglushkovsky.advertisingservice.entity.Locality;
 import io.github.aglushkovsky.advertisingservice.entity.User;
 import io.github.aglushkovsky.advertisingservice.entity.enumeration.LocalityType;
 import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,19 +22,53 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+// TODO Есть ли смысл в этих тестах?
 @SpringBootTest
-class AdServiceTest {
+class AdSearchServiceTest {
 
     @Autowired
-    private AdService adService;
+    private AdSearchService adSearchService;
 
     @MockitoBean
     private AdDao adDao;
 
     @Nested
-    class FindAllByFilter {
+    class FilterByPriceRange {
 
-        // FIXME Надо запретить создавать объявления с пустым адресом.
+        @Test
+        void findAllShouldNotThrowExceptionWhenPriceRangeIsValidAndMinPriceStrictlyGreaterThanMaxPrice() {
+            var findAllAdsFilterRequestDto = new FindAllAdsFilterRequestDto(
+                    null,
+                    false,
+                    new BigDecimal("0"),
+                    new BigDecimal("500"),
+                    null,
+                    null,
+                    50L,
+                    1L);
+
+            assertThatNoException().isThrownBy(() -> adSearchService.findAll(findAllAdsFilterRequestDto));
+        }
+
+        @Test
+        void findAllShouldNotThrowExceptionWhenPriceRangeIsValidAndMinPriceEqualsMaxPrice() {
+            var findAllAdsFilterRequestDto = new FindAllAdsFilterRequestDto(
+                    null,
+                    false,
+                    new BigDecimal("100"),
+                    new BigDecimal("100"),
+                    null,
+                    null,
+                    50L,
+                    1L);
+
+            assertThatNoException().isThrownBy(() -> adSearchService.findAll(findAllAdsFilterRequestDto));
+        }
+    }
+
+    @Nested
+    class SearchByTerm {
+
         @ParameterizedTest
         @ValueSource(strings = {"macbook", "Macbook", "macbook pro", "Macbook pro", "Macbook Pro", "macbook Pro", "mAcbook"})
         void findAllShouldReturnAdsListWhenTermMatchWasFoundInTitleWithIgnoringCase(String term) {
@@ -56,7 +91,7 @@ class AdServiceTest {
                     1L);
             doReturn(List.of(ad)).when(adDao).findAll(anyLong(), anyLong(), any(), any());
 
-            List<AdResponseDto> ads = adService.findAll(findAllAdsFilterRequestDto);
+            List<AdResponseDto> ads = adSearchService.findAll(findAllAdsFilterRequestDto);
 
             assertThat(ads).hasSize(1);
             assertThat(ads.stream().findFirst().map(AdResponseDto::title).orElseThrow()).containsIgnoringCase(term);
@@ -76,7 +111,7 @@ class AdServiceTest {
                     50L,
                     1L);
 
-            List<AdResponseDto> ads = adService.findAll(filter);
+            List<AdResponseDto> ads = adSearchService.findAll(filter);
 
             assertThat(ads).isEmpty();
         }

@@ -15,6 +15,8 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 import javax.sql.DataSource;
 import java.util.Properties;
 
+import static io.github.aglushkovsky.advertisingservice.config.property.HibernateProperties.*;
+
 @Configuration
 @AllArgsConstructor
 @EnableTransactionManagement
@@ -44,9 +46,10 @@ public class JpaConfig {
 
     private Properties getHibernateProperties() {
         Properties properties = new Properties();
-        properties.setProperty("hibernate.physical_naming_strategy", hibernateProperties.getNamingPhysicalStrategy());
-        properties.setProperty("show_sql", hibernateProperties.getSql().getShow().toString());
-        properties.setProperty("format_sql", hibernateProperties.getSql().getFormat().toString());
+        properties.setProperty(PHYSICAL_NAMING_STRATEGY_KEY, hibernateProperties.getNamingPhysicalStrategy());
+        properties.setProperty(DIALECT_KEY, hibernateProperties.getDialect());
+        properties.setProperty(SHOW_SQL_KEY, hibernateProperties.getSql().getShow().toString());
+        properties.setProperty(FORMAT_SQL_KEY, hibernateProperties.getSql().getFormat().toString());
         return properties;
     }
 
