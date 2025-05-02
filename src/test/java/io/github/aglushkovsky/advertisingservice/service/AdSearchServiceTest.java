@@ -7,13 +7,15 @@ import io.github.aglushkovsky.advertisingservice.entity.Ad;
 import io.github.aglushkovsky.advertisingservice.entity.Locality;
 import io.github.aglushkovsky.advertisingservice.entity.User;
 import io.github.aglushkovsky.advertisingservice.entity.enumeration.LocalityType;
+import io.github.aglushkovsky.advertisingservice.mapper.AdMapper;
+import io.github.aglushkovsky.advertisingservice.mapper.AdMapperImpl;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -22,12 +24,14 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-// TODO Есть ли смысл в этих тестах?
-@SpringBootTest
+@SpringJUnitConfig(classes = {AdSearchService.class, AdMapperImpl.class})
 class AdSearchServiceTest {
 
     @Autowired
     private AdSearchService adSearchService;
+
+    @Autowired
+    private AdMapper adMapper;
 
     @MockitoBean
     private AdDao adDao;
