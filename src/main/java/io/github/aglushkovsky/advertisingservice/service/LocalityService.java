@@ -11,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Arrays;
 import java.util.List;
 
 @Service
@@ -55,5 +56,10 @@ public class LocalityService {
                 .toList();
     }
 
-    // TODO реализовать метод для получения доступных типов локалей.
+    public List<String> findAllAvailableLocalityTypes() {
+        log.info("Start findAllAvailableLocalityTypes");
+        List<String> result = Arrays.stream(LocalityType.values()).map(LocalityType::name).toList();
+        log.info("Finished findAllAvailableLocalityTypes");
+        return result;
+    }
 }

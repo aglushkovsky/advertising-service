@@ -34,4 +34,12 @@ public class LocalityController {
         log.info("Finished GET /locality/{}/descendants; found items: {}", localityId, result.size());
         return result;
     }
+
+    @GetMapping("/types")
+    public List<String> findAllAvailableLocalityTypes() {
+        log.info("Start GET /locality/types");
+        List<String> result = localityService.findAllAvailableLocalityTypes();
+        log.info("Finished GET /locality/types");
+        return result;
+    }
 }

@@ -22,31 +22,37 @@ public class CommonExceptionHandler {
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorResponseDto<String> handleNotFoundException() {
         log.info("Start handling NotFoundException");
-        return new ErrorResponseDto<>(
+        ErrorResponseDto<String> response = new ErrorResponseDto<>(
                 HttpStatus.NOT_FOUND.value(),
                 "Элемент не найден");
+        log.info("Finished handling NotFoundException");
+        return response;
     }
 
     @ExceptionHandler(ConstraintViolationException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponseDto<List<String>> handleConstraintViolationException(ConstraintViolationException e) {
         log.info("Start handling ConstraintViolationException");
-        return new ErrorResponseDto<>(
+        ErrorResponseDto<List<String>> response = new ErrorResponseDto<>(
                 HttpStatus.BAD_REQUEST.value(),
                 e.getConstraintViolations().stream().map(ConstraintViolation::getMessage).toList()
         );
+        log.info("Finished handling ConstraintViolationException");
+        return response;
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponseDto<List<String>> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
         log.info("Start handling MethodArgumentNotValidException");
-        return new ErrorResponseDto<>(
+        ErrorResponseDto<List<String>> response = new ErrorResponseDto<>(
                 HttpStatus.BAD_REQUEST.value(),
                 e.getBindingResult().getAllErrors()
                         .stream()
                         .map(DefaultMessageSourceResolvable::getDefaultMessage)
                         .toList()
         );
+        log.info("Finished handling MethodArgumentNotValidException");
+        return response;
     }
 }
