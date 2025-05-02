@@ -4,14 +4,15 @@ import io.github.aglushkovsky.advertisingservice.dao.LocalityDao;
 import io.github.aglushkovsky.advertisingservice.dto.LocalityDto;
 import io.github.aglushkovsky.advertisingservice.entity.Locality;
 import io.github.aglushkovsky.advertisingservice.entity.enumeration.LocalityType;
+import io.github.aglushkovsky.advertisingservice.exception.NotFoundException;
 import io.github.aglushkovsky.advertisingservice.mapper.LocalityMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-// TODO Как это покрыть тестами?
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -35,9 +36,14 @@ public class LocalityService {
                 .toList();
     }
 
-    // TODO То же самое. Нужно ли валидировать переданный id и кидать исключение, если такого localityId не существует?
+    @Transactional(readOnly = true)
     public List<LocalityDto> findDirectDescendantsByLocalityId(Long localityId) {
         log.info("Start findDirectDescendantsByLocalityId; localityId={}", localityId);
+
+        if (!localityDao.isExists(localityId)) {
+            log.error("Could not find locality with id={}", localityId);
+            throw new NotFoundException(localityId);
+        }
 
         List<Locality> result = localityDao.findDirectDescendantsByLocalityId(localityId);
 
@@ -48,4 +54,6 @@ public class LocalityService {
                 .map(localityMapper::toDto)
                 .toList();
     }
+
+    // TODO реализовать метод для получения доступных типов локалей.
 }

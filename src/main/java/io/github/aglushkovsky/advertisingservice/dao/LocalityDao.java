@@ -48,4 +48,8 @@ public class LocalityDao extends AbstractDao<Locality, Long> {
                 .where(locality.type.eq(localityType))
                 .fetch();
     }
+
+    public boolean isExists(Long localityId) {
+        return isExists(locality, locality.id.eq(localityId));
+    }
 }

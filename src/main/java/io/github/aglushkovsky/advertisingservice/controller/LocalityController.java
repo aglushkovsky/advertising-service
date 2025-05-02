@@ -3,7 +3,7 @@ package io.github.aglushkovsky.advertisingservice.controller;
 import io.github.aglushkovsky.advertisingservice.dto.LocalityDto;
 import io.github.aglushkovsky.advertisingservice.service.LocalityService;
 import io.github.aglushkovsky.advertisingservice.validator.annotation.ValidLocalityType;
-import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
@@ -28,7 +28,7 @@ public class LocalityController {
     }
 
     @GetMapping("/{localityId}/descendants")
-    public List<LocalityDto> findDirectDescendantsByLocalityId(@PathVariable @Min(1) Long localityId) {
+    public List<LocalityDto> findDirectDescendantsByLocalityId(@PathVariable @Positive Long localityId) {
         log.info("Start GET /locality/{}/descendants; localityId={}", localityId, localityId);
         List<LocalityDto> result = localityService.findDirectDescendantsByLocalityId(localityId);
         log.info("Finished GET /locality/{}/descendants; found items: {}", localityId, result.size());

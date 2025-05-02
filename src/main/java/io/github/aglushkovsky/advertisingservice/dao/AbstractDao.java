@@ -1,8 +1,9 @@
 package io.github.aglushkovsky.advertisingservice.dao;
 
-import com.querydsl.core.types.EntityPath;
+import com.querydsl.core.types.Predicate;
 import com.querydsl.core.types.dsl.EntityPathBase;
 import com.querydsl.jpa.impl.JPAQuery;
+import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import org.springframework.transaction.annotation.Transactional;
@@ -41,9 +42,17 @@ public abstract class AbstractDao<E, I> implements Dao<E, I> {
         return Optional.ofNullable(entityManager.find(aClass, id));
     }
 
-    protected JPAQuery<E> createFindAllQuery(EntityPath<E> fromEntityPath) {
+    protected JPAQuery<E> createFindAllQuery(EntityPathBase<E> fromEntityPath) {
         return new JPAQuery<>(entityManager)
                 .select(fromEntityPath)
                 .from(fromEntityPath);
+    }
+
+    protected boolean isExists(EntityPathBase<E> fromEntityPath, Predicate wherePredicate) {
+        return new JPAQueryFactory(entityManager)
+                .selectOne()
+                .from(fromEntityPath)
+                .where(wherePredicate)
+                .fetchOne() != null;
     }
 }
