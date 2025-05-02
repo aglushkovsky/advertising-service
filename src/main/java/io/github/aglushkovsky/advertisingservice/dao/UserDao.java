@@ -24,4 +24,8 @@ public class UserDao extends AbstractDao<User, Long> {
     public Optional<User> findById(Long id) {
         return findById(User.class, id);
     }
+
+    public boolean isExists(Long id) {
+        return isExists(user, user.id.eq(id));
+    }
 }

@@ -1,12 +1,15 @@
 package io.github.aglushkovsky.advertisingservice.service;
 
 import io.github.aglushkovsky.advertisingservice.dao.AdDao;
+import io.github.aglushkovsky.advertisingservice.dao.LocalityDao;
+import io.github.aglushkovsky.advertisingservice.dao.UserDao;
 import io.github.aglushkovsky.advertisingservice.dto.response.AdResponseDto;
 import io.github.aglushkovsky.advertisingservice.dto.request.FindAllAdsFilterRequestDto;
 import io.github.aglushkovsky.advertisingservice.entity.Ad;
 import io.github.aglushkovsky.advertisingservice.entity.Locality;
 import io.github.aglushkovsky.advertisingservice.entity.User;
 import io.github.aglushkovsky.advertisingservice.entity.enumeration.LocalityType;
+import io.github.aglushkovsky.advertisingservice.exception.NotFoundException;
 import io.github.aglushkovsky.advertisingservice.mapper.AdMapper;
 import io.github.aglushkovsky.advertisingservice.mapper.AdMapperImpl;
 import org.junit.jupiter.api.Nested;
@@ -35,6 +38,12 @@ class AdSearchServiceTest {
 
     @MockitoBean
     private AdDao adDao;
+
+    @MockitoBean
+    private LocalityDao localityDao;
+
+    @MockitoBean
+    private UserDao userDao;
 
     @Nested
     class FilterByPriceRange {
@@ -67,6 +76,99 @@ class AdSearchServiceTest {
                     1L);
 
             assertThatNoException().isThrownBy(() -> adSearchService.findAll(findAllAdsFilterRequestDto));
+        }
+    }
+
+    @Nested
+    class ParameterDbValidation {
+
+        @Test
+        void findAllShouldReturnResultWhenLocalityIdNotNullAndItExists() {
+            Long localityId = 1L;
+            doReturn(true).when(localityDao).isExists(localityId);
+            var findAllAdsFilterRequestDto = new FindAllAdsFilterRequestDto(
+                    null,
+                    false,
+                    null,
+                    null,
+                    null,
+                    localityId,
+                    50L,
+                    1L);
+
+            assertThatCode(() -> adSearchService.findAll(findAllAdsFilterRequestDto)).doesNotThrowAnyException();
+        }
+
+        @Test
+        void findAllShouldThrowExceptionWhenLocalityIdNotNullAndItDoesNotExists() {
+            Long localityId = 1L;
+            doReturn(false).when(localityDao).isExists(localityId);
+            var findAllAdsFilterRequestDto = new FindAllAdsFilterRequestDto(
+                    null,
+                    false,
+                    null,
+                    null,
+                    null,
+                    localityId,
+                    50L,
+                    1L);
+
+            assertThatThrownBy(() -> adSearchService.findAll(findAllAdsFilterRequestDto))
+                    .isInstanceOf(NotFoundException.class);
+        }
+
+        @Test
+        void findAllShouldReturnResultWhenPublisherIdNotNullAndItExists() {
+            Long publisherId = 1L;
+            doReturn(true).when(userDao).isExists(publisherId);
+            var findAllAdsFilterRequestDto = new FindAllAdsFilterRequestDto(
+                    null,
+                    false,
+                    null,
+                    null,
+                    publisherId,
+                    null,
+                    50L,
+                    1L);
+
+            assertThatCode(() -> adSearchService.findAll(findAllAdsFilterRequestDto)).doesNotThrowAnyException();
+        }
+
+        @Test
+        void findAllShouldThrowExceptionWhenPublisherIdNotNullAndItDoesNotExists() {
+            Long publisherId = 1L;
+            doReturn(false).when(userDao).isExists(publisherId);
+            var findAllAdsFilterRequestDto = new FindAllAdsFilterRequestDto(
+                    null,
+                    false,
+                    null,
+                    null,
+                    publisherId,
+                    null,
+                    50L,
+                    1L);
+
+            assertThatThrownBy(() -> adSearchService.findAll(findAllAdsFilterRequestDto))
+                    .isInstanceOf(NotFoundException.class);
+        }
+
+        @Test
+        void findAllShouldReturnResultWhenPublisherIdNotNullAndPublisherIdNotNullAndTheyExist() {
+            Long publisherId = 1L;
+            Long localityId = 1L;
+            doReturn(true).when(localityDao).isExists(localityId);
+            doReturn(true).when(userDao).isExists(publisherId);
+            var findAllAdsFilterRequestDto = new FindAllAdsFilterRequestDto(
+                    null,
+                    false,
+                    null,
+                    null,
+                    publisherId,
+                    localityId,
+                    50L,
+                    1L);
+
+            assertThatCode(() -> adSearchService.findAll(findAllAdsFilterRequestDto)).doesNotThrowAnyException();
         }
     }
 

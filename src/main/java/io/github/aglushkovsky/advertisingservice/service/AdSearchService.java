@@ -2,6 +2,8 @@ package io.github.aglushkovsky.advertisingservice.service;
 
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.Predicate;
+import io.github.aglushkovsky.advertisingservice.dao.LocalityDao;
+import io.github.aglushkovsky.advertisingservice.dao.UserDao;
 import io.github.aglushkovsky.advertisingservice.dto.response.AdResponseDto;
 import io.github.aglushkovsky.advertisingservice.entity.Ad;
 import io.github.aglushkovsky.advertisingservice.exception.NotFoundException;
@@ -9,10 +11,10 @@ import io.github.aglushkovsky.advertisingservice.util.PredicateChainBuilder;
 import io.github.aglushkovsky.advertisingservice.dao.AdDao;
 import io.github.aglushkovsky.advertisingservice.dto.request.FindAllAdsFilterRequestDto;
 import io.github.aglushkovsky.advertisingservice.mapper.AdMapper;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
 import java.util.List;
@@ -29,12 +31,22 @@ import static io.github.aglushkovsky.advertisingservice.entity.QLocalityPart.loc
 public class AdSearchService {
 
     private final AdDao adDao;
-
+    private final LocalityDao localityDao;
+    private final UserDao userDao;
     private final AdMapper adMapper;
 
-    // TODO Нет проверки на существование localityId и publisherId в соответствующих таблицах. Подумать, надо ли это.
-    public List<AdResponseDto> findAll(@Valid FindAllAdsFilterRequestDto filterRequestDto) {
+    @Transactional(readOnly = true)
+    public List<AdResponseDto> findAll(FindAllAdsFilterRequestDto filterRequestDto) {
         log.info("Start findAll; filterRequestDto: {}", filterRequestDto);
+
+        if (isNotExists(filterRequestDto.localityId(), localityDao::isExists)) {
+            log.error("Not found locality with id {}", filterRequestDto.localityId());
+            throw new NotFoundException(filterRequestDto.localityId());
+        }
+        if (isNotExists(filterRequestDto.publisherId(), userDao::isExists)) {
+            log.error("Not found publisher with id {}", filterRequestDto.publisherId());
+            throw new NotFoundException(filterRequestDto.publisherId());
+        }
 
         Predicate predicate = buildPredicate(filterRequestDto);
         OrderSpecifier<Boolean> order = getDefaultPromotedAdsPrecedenceOrder();
@@ -45,6 +57,10 @@ public class AdSearchService {
         log.info("End findAll; found items: {} filterRequestDto: {}", result.size(), filterRequestDto);
 
         return result.stream().map(adMapper::toDto).toList();
+    }
+
+    private boolean isNotExists(Long id, Function<Long, Boolean> isExistsFunction) {
+        return id != null && !isExistsFunction.apply(id);
     }
 
     private Predicate buildPredicate(FindAllAdsFilterRequestDto filterRequestDto) {
