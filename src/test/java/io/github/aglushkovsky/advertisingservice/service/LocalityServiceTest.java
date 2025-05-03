@@ -5,7 +5,6 @@ import io.github.aglushkovsky.advertisingservice.dto.LocalityDto;
 import io.github.aglushkovsky.advertisingservice.entity.Locality;
 import io.github.aglushkovsky.advertisingservice.entity.enumeration.LocalityType;
 import io.github.aglushkovsky.advertisingservice.exception.NotFoundException;
-import io.github.aglushkovsky.advertisingservice.mapper.LocalityMapper;
 import io.github.aglushkovsky.advertisingservice.mapper.LocalityMapperImpl;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -23,9 +22,6 @@ class LocalityServiceTest {
 
     @MockitoBean
     private LocalityDao localityDao;
-
-    @Autowired
-    private LocalityMapper localityMapper;
 
     @Autowired
     private LocalityService localityService;

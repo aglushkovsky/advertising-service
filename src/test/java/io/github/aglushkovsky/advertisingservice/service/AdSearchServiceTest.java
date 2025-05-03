@@ -10,8 +10,8 @@ import io.github.aglushkovsky.advertisingservice.entity.Locality;
 import io.github.aglushkovsky.advertisingservice.entity.User;
 import io.github.aglushkovsky.advertisingservice.entity.enumeration.LocalityType;
 import io.github.aglushkovsky.advertisingservice.exception.NotFoundException;
-import io.github.aglushkovsky.advertisingservice.mapper.AdMapper;
 import io.github.aglushkovsky.advertisingservice.mapper.AdMapperImpl;
+import io.github.aglushkovsky.advertisingservice.mapper.LocalityMapperImpl;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -27,14 +27,11 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-@SpringJUnitConfig(classes = {AdSearchService.class, AdMapperImpl.class})
+@SpringJUnitConfig(classes = {AdSearchService.class, AdMapperImpl.class, LocalityMapperImpl.class})
 class AdSearchServiceTest {
 
     @Autowired
     private AdSearchService adSearchService;
-
-    @Autowired
-    private AdMapper adMapper;
 
     @MockitoBean
     private AdDao adDao;
