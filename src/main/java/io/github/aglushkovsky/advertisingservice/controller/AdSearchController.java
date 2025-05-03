@@ -1,7 +1,6 @@
 package io.github.aglushkovsky.advertisingservice.controller;
 
 import io.github.aglushkovsky.advertisingservice.dto.request.FindAllAdsFilterRequestDto;
-import io.github.aglushkovsky.advertisingservice.dto.request.SearchAdsFilterRequestDto;
 import io.github.aglushkovsky.advertisingservice.dto.response.AdResponseDto;
 import io.github.aglushkovsky.advertisingservice.service.AdSearchService;
 import jakarta.validation.Valid;
@@ -22,26 +21,11 @@ public class AdSearchController {
 
     private final AdSearchService adSearchService;
 
-    // FIXME Подумать, как сделать передачу большого количества параметров фильтрации красивее.
     @GetMapping
-    public List<AdResponseDto> searchAds(
-            @Valid SearchAdsFilterRequestDto filter,
-            @RequestParam(defaultValue = "false") Boolean onlyInTerm,
-            @RequestParam(defaultValue = "50") @Positive Long limit,
-            @RequestParam(defaultValue = "1") @Positive Long page
-    ) {
-        log.info("Start GET /ads; params={}, {}, {}, {}", filter, onlyInTerm, limit, page);
-        FindAllAdsFilterRequestDto findAllAdsFilterRequestDto = new FindAllAdsFilterRequestDto(
-                filter.term(),
-                onlyInTerm,
-                filter.minPrice(),
-                filter.maxPrice(),
-                filter.publisherId(),
-                filter.localityId(),
-                limit,
-                page);
-        List<AdResponseDto> result = adSearchService.findAll(findAllAdsFilterRequestDto);
-        log.info("Finished GET /ads; found items on page {}: {}", page, result.size());
+    public List<AdResponseDto> searchAds(@ModelAttribute("searchFilter") @Valid FindAllAdsFilterRequestDto filter) {
+        log.info("Start GET /ads; params={}", filter);
+        List<AdResponseDto> result = adSearchService.findAll(filter);
+        log.info("Finished GET /ads; found items on page {}: {}", filter.page(), result.size());
         return result;
     }
 
@@ -51,5 +35,22 @@ public class AdSearchController {
         AdResponseDto result = adSearchService.findById(id);
         log.info("Finished GET /ads/{}; id={}", id, id);
         return result;
+    }
+
+    @ModelAttribute("searchFilter")
+    public FindAllAdsFilterRequestDto createFilterAttributes(FindAllAdsFilterRequestDto filterRequestDto,
+                                                             @RequestParam(defaultValue = "false") Boolean onlyInTerm,
+                                                             @RequestParam(defaultValue = "50") Long limit,
+                                                             @RequestParam(defaultValue = "1") Long page) {
+        return new FindAllAdsFilterRequestDto(
+                filterRequestDto.term(),
+                onlyInTerm,
+                filterRequestDto.minPrice(),
+                filterRequestDto.maxPrice(),
+                filterRequestDto.publisherId(),
+                filterRequestDto.localityId(),
+                limit,
+                page
+        );
     }
 }
