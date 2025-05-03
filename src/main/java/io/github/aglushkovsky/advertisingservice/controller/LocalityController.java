@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/locality")
+@RequestMapping("/localities")
 @RequiredArgsConstructor
 @Slf4j
 public class LocalityController {
@@ -21,25 +21,25 @@ public class LocalityController {
     @GetMapping
     public List<LocalityDto> findAllByLocalityType(@RequestParam(required = false, defaultValue = "${root.locality.type}")
                                                    @ValidLocalityType String type) {
-        log.info("Start GET /locality; type={}", type);
+        log.info("Start GET /localities; type={}", type);
         List<LocalityDto> result = localityService.findAllByLocalityType(type);
-        log.info("Finished GET /locality; type={}; found items: {}", type, result.size());
+        log.info("Finished GET /localities; type={}; found items: {}", type, result.size());
         return result;
     }
 
     @GetMapping("/{localityId}/descendants")
     public List<LocalityDto> findDirectDescendantsByLocalityId(@PathVariable @Positive Long localityId) {
-        log.info("Start GET /locality/{}/descendants; localityId={}", localityId, localityId);
+        log.info("Start GET /localities/{}/descendants; localityId={}", localityId, localityId);
         List<LocalityDto> result = localityService.findDirectDescendantsByLocalityId(localityId);
-        log.info("Finished GET /locality/{}/descendants; found items: {}", localityId, result.size());
+        log.info("Finished GET /localities/{}/descendants; found items: {}", localityId, result.size());
         return result;
     }
 
     @GetMapping("/types")
     public List<String> findAllAvailableLocalityTypes() {
-        log.info("Start GET /locality/types");
+        log.info("Start GET /localities/types");
         List<String> result = localityService.findAllAvailableLocalityTypes();
-        log.info("Finished GET /locality/types");
+        log.info("Finished GET /localities/types");
         return result;
     }
 }
