@@ -66,8 +66,7 @@ public class AdSearchService {
     private Predicate buildPredicate(FindAllAdsFilterRequestDto filterRequestDto) {
         return PredicateChainBuilder.builder()
                 .and(filterRequestDto.localityId(), getLocalityIdExistsInLocalityAncestorsPredicate())
-                .and(getTermParameter(filterRequestDto.term()),
-                        getSearchByTermPredicateFunction(filterRequestDto.onlyInTitle()))
+                .and(filterRequestDto.term(), getSearchByTermPredicateFunction(filterRequestDto.onlyInTitle()))
                 .and(filterRequestDto.minPrice(), ad.price::gt)
                 .and(filterRequestDto.maxPrice(), ad.price::lt)
                 .and(filterRequestDto.publisherId(), ad.publisher.id::eq)
@@ -88,12 +87,8 @@ public class AdSearchService {
 
     private Function<String, Predicate> getSearchByTermPredicateFunction(boolean isOnlyInTitle) {
         return param -> isOnlyInTitle
-                ? ad.title.lower().like(param.toLowerCase())
-                : ad.title.lower().like(param.toLowerCase()).or(ad.description.lower().like(param.toLowerCase()));
-    }
-
-    private String getTermParameter(String term) {
-        return term != null ? "%" + term + "%" : null;
+                ? ad.title.containsIgnoreCase(param)
+                : ad.title.containsIgnoreCase(param).or(ad.description.containsIgnoreCase(param));
     }
 
     public AdResponseDto findById(Long id) {
