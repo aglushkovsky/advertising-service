@@ -1,11 +1,12 @@
 package io.github.aglushkovsky.advertisingservice.config;
 
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
 import io.github.aglushkovsky.advertisingservice.config.property.HibernateProperties;
 import jakarta.persistence.EntityManagerFactory;
 import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
@@ -26,13 +27,12 @@ public class JpaConfig {
 
     @Bean
     public DataSource dataSource() {
-        // TODO попробовать создать HikariCP DataSource
-        DriverManagerDataSource driverManagerDataSource = new DriverManagerDataSource();
-        driverManagerDataSource.setDriverClassName(hibernateProperties.getDriver());
-        driverManagerDataSource.setUrl(hibernateProperties.getUrl());
-        driverManagerDataSource.setUsername(hibernateProperties.getUsername());
-        driverManagerDataSource.setPassword(hibernateProperties.getPassword());
-        return driverManagerDataSource;
+        HikariConfig hikariConfig = new HikariConfig();
+        hikariConfig.setDriverClassName(hibernateProperties.getDriver());
+        hikariConfig.setJdbcUrl(hibernateProperties.getUrl());
+        hikariConfig.setUsername(hibernateProperties.getUsername());
+        hikariConfig.setPassword(hibernateProperties.getPassword());
+        return new HikariDataSource(hikariConfig);
     }
 
     @Bean
