@@ -26,6 +26,7 @@ public class JpaConfig {
 
     @Bean
     public DataSource dataSource() {
+        // TODO попробовать создать HikariCP DataSource
         DriverManagerDataSource driverManagerDataSource = new DriverManagerDataSource();
         driverManagerDataSource.setDriverClassName(hibernateProperties.getDriver());
         driverManagerDataSource.setUrl(hibernateProperties.getUrl());

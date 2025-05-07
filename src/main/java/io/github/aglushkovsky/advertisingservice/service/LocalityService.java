@@ -1,7 +1,7 @@
 package io.github.aglushkovsky.advertisingservice.service;
 
-import io.github.aglushkovsky.advertisingservice.dao.LocalityDao;
-import io.github.aglushkovsky.advertisingservice.dto.LocalityDto;
+import io.github.aglushkovsky.advertisingservice.dao.impl.LocalityDao;
+import io.github.aglushkovsky.advertisingservice.dto.response.LocalityResponseDto;
 import io.github.aglushkovsky.advertisingservice.entity.Locality;
 import io.github.aglushkovsky.advertisingservice.entity.enumeration.LocalityType;
 import io.github.aglushkovsky.advertisingservice.exception.NotFoundException;
@@ -9,7 +9,6 @@ import io.github.aglushkovsky.advertisingservice.mapper.LocalityMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
 import java.util.List;
@@ -23,22 +22,17 @@ public class LocalityService {
 
     private final LocalityMapper localityMapper;
 
-    public List<LocalityDto> findAllByLocalityType(String type) {
+    public List<LocalityResponseDto> findAllByLocalityType(LocalityType type) {
         log.info("Start findAllByLocalityType; type={}", type);
 
-        LocalityType localityType = LocalityType.valueOf(type);
-        List<Locality> result = localityDao.findAllByLocalityType(localityType);
+        List<Locality> result = localityDao.findAllByLocalityType(type);
 
         log.info("Finished findAllByLocalityType; type={}, found items: {}", type, result.size());
 
-        return result
-                .stream()
-                .map(localityMapper::toDto)
-                .toList();
+        return result.stream().map(localityMapper::toDto).toList();
     }
 
-    @Transactional(readOnly = true)
-    public List<LocalityDto> findDirectDescendantsByLocalityId(Long localityId) {
+    public List<LocalityResponseDto> findDirectDescendantsByLocalityId(Long localityId) {
         log.info("Start findDirectDescendantsByLocalityId; localityId={}", localityId);
 
         if (!localityDao.isExists(localityId)) {
@@ -50,10 +44,7 @@ public class LocalityService {
 
         log.info("Finished findDirectDescendantsByLocalityId; localityId={}, found items: {}", localityId, result.size());
 
-        return result
-                .stream()
-                .map(localityMapper::toDto)
-                .toList();
+        return result.stream().map(localityMapper::toDto).toList();
     }
 
     public List<String> findAllAvailableLocalityTypes() {

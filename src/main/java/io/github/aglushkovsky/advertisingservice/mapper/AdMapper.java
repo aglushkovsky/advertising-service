@@ -2,17 +2,17 @@ package io.github.aglushkovsky.advertisingservice.mapper;
 
 import io.github.aglushkovsky.advertisingservice.dto.response.AdResponseDto;
 import io.github.aglushkovsky.advertisingservice.entity.Ad;
-import org.mapstruct.InjectionStrategy;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
 import java.math.BigDecimal;
 
+import static org.mapstruct.InjectionStrategy.*;
 import static org.mapstruct.MappingConstants.ComponentModel.*;
 
 @Mapper(componentModel = SPRING,
         uses = LocalityMapper.class,
-        injectionStrategy = InjectionStrategy.CONSTRUCTOR)
+        injectionStrategy = CONSTRUCTOR)
 public interface AdMapper {
 
     int DIGITS_AFTER_POINT = 2;

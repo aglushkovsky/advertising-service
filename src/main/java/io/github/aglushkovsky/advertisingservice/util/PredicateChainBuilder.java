@@ -2,9 +2,11 @@ package io.github.aglushkovsky.advertisingservice.util;
 
 import com.querydsl.core.types.ExpressionUtils;
 import com.querydsl.core.types.Predicate;
+import com.querydsl.core.types.dsl.Expressions;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Function;
 
 public class PredicateChainBuilder {
@@ -23,6 +25,7 @@ public class PredicateChainBuilder {
     }
 
     public Predicate build() {
-        return ExpressionUtils.allOf(predicates);
+        return Optional.ofNullable(ExpressionUtils.allOf(predicates))
+                .orElseGet(() -> Expressions.asBoolean(true).isTrue());
     }
 }

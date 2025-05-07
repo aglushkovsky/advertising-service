@@ -1,12 +1,13 @@
 package io.github.aglushkovsky.advertisingservice.controller.advice;
 
+import io.github.aglushkovsky.advertisingservice.dto.response.ErrorObjectDto;
 import io.github.aglushkovsky.advertisingservice.dto.response.ErrorResponseDto;
 import io.github.aglushkovsky.advertisingservice.exception.NotFoundException;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -24,7 +25,8 @@ public class CommonExceptionHandler {
         log.info("Start handling NotFoundException", e);
         ErrorResponseDto<String> response = new ErrorResponseDto<>(
                 HttpStatus.NOT_FOUND.value(),
-                "Элемент не найден");
+                "Элемент не найден"
+        );
         log.info("Finished handling NotFoundException");
         return response;
     }
@@ -43,13 +45,20 @@ public class CommonExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponseDto<List<String>> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
+    public ErrorResponseDto<List<ErrorObjectDto<Object>>> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
         log.info("Start handling MethodArgumentNotValidException", e);
-        ErrorResponseDto<List<String>> response = new ErrorResponseDto<>(
+        ErrorResponseDto<List<ErrorObjectDto<Object>>> response = new ErrorResponseDto<>(
                 HttpStatus.BAD_REQUEST.value(),
                 e.getBindingResult().getAllErrors()
                         .stream()
-                        .map(DefaultMessageSourceResolvable::getDefaultMessage)
+                        .map(objectError -> {
+                            FieldError fieldError = (FieldError) objectError;
+                            return new ErrorObjectDto<>(
+                                    fieldError.getField(),
+                                    fieldError.getRejectedValue(),
+                                    fieldError.getDefaultMessage()
+                            );
+                        })
                         .toList()
         );
         log.info("Finished handling MethodArgumentNotValidException");
@@ -59,7 +68,7 @@ public class CommonExceptionHandler {
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorResponseDto<String> handleException(Exception e) {
-        log.info("Start handling Exception; was thrown {}", e, e);
+        log.info("Start handling Exception", e);
         ErrorResponseDto<String> response = new ErrorResponseDto<>(
                 HttpStatus.BAD_REQUEST.value(),
                 "Что-то пошло не так"

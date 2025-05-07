@@ -1,11 +1,12 @@
 package io.github.aglushkovsky.advertisingservice.service;
 
-import io.github.aglushkovsky.advertisingservice.dao.LocalityDao;
-import io.github.aglushkovsky.advertisingservice.dto.LocalityDto;
+import io.github.aglushkovsky.advertisingservice.dao.impl.LocalityDao;
+import io.github.aglushkovsky.advertisingservice.dto.response.LocalityResponseDto;
 import io.github.aglushkovsky.advertisingservice.entity.Locality;
 import io.github.aglushkovsky.advertisingservice.entity.enumeration.LocalityType;
 import io.github.aglushkovsky.advertisingservice.exception.NotFoundException;
 import io.github.aglushkovsky.advertisingservice.mapper.LocalityMapperImpl;
+import io.github.aglushkovsky.advertisingservice.test.config.MapperConfig;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +18,7 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-@SpringJUnitConfig(classes = {LocalityMapperImpl.class, LocalityService.class})
+@SpringJUnitConfig(classes = {LocalityService.class, MapperConfig.class})
 class LocalityServiceTest {
 
     @MockitoBean
@@ -29,17 +30,16 @@ class LocalityServiceTest {
     @Test
     void findAllByLocalityTypeShouldReturnMappedDtoListWhenTypeIsValid() {
         LocalityType cityType = LocalityType.CITY;
-        String cityTypeParameter = cityType.name();
         List<Locality> mockLocalities = List.of(
                 new Locality(null, null, List.of(), List.of(), cityType),
                 new Locality(null, null, List.of(), List.of(), cityType));
         doReturn(mockLocalities).when(localityDao).findAllByLocalityType(cityType);
 
-        List<LocalityDto> result = localityService.findAllByLocalityType(cityTypeParameter);
+        List<LocalityResponseDto> result = localityService.findAllByLocalityType(cityType);
 
         assertThat(result)
                 .hasSize(mockLocalities.size())
-                .allMatch(localityDto -> localityDto.type().equals(cityType.name()));
+                .allSatisfy(localityDto -> assertThat(localityDto.type()).isEqualTo(cityType.name()));
     }
 
     @Nested
@@ -52,7 +52,7 @@ class LocalityServiceTest {
             List<Locality> mockLocalities = List.of(mock(Locality.class), mock(Locality.class));
             doReturn(mockLocalities).when(localityDao).findDirectDescendantsByLocalityId(localityId);
 
-            List<LocalityDto> result = localityService.findDirectDescendantsByLocalityId(localityId);
+            List<LocalityResponseDto> result = localityService.findDirectDescendantsByLocalityId(localityId);
 
             assertThat(result).hasSize(mockLocalities.size());
         }

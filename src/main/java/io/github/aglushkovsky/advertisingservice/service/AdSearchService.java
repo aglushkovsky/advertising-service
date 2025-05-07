@@ -2,22 +2,21 @@ package io.github.aglushkovsky.advertisingservice.service;
 
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.Predicate;
-import io.github.aglushkovsky.advertisingservice.dao.LocalityDao;
-import io.github.aglushkovsky.advertisingservice.dao.UserDao;
+import io.github.aglushkovsky.advertisingservice.dao.PageEntity;
+import io.github.aglushkovsky.advertisingservice.dto.request.PageableRequestDto;
 import io.github.aglushkovsky.advertisingservice.dto.response.AdResponseDto;
 import io.github.aglushkovsky.advertisingservice.entity.Ad;
 import io.github.aglushkovsky.advertisingservice.exception.NotFoundException;
-import io.github.aglushkovsky.advertisingservice.util.PredicateChainBuilder;
-import io.github.aglushkovsky.advertisingservice.dao.AdDao;
-import io.github.aglushkovsky.advertisingservice.dto.request.FindAllAdsFilterRequestDto;
 import io.github.aglushkovsky.advertisingservice.mapper.AdMapper;
+import io.github.aglushkovsky.advertisingservice.mapper.AdPageMapper;
+import io.github.aglushkovsky.advertisingservice.util.PredicateChainBuilder;
+import io.github.aglushkovsky.advertisingservice.dao.impl.AdDao;
+import io.github.aglushkovsky.advertisingservice.dto.request.FindAllAdsFilterRequestDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
-import java.util.List;
 import java.util.function.Function;
 
 import static com.querydsl.jpa.JPAExpressions.selectFrom;
@@ -31,36 +30,18 @@ import static io.github.aglushkovsky.advertisingservice.entity.QLocalityPart.loc
 public class AdSearchService {
 
     private final AdDao adDao;
-    private final LocalityDao localityDao;
-    private final UserDao userDao;
     private final AdMapper adMapper;
+    private final AdPageMapper adPageMapper;
 
-    @Transactional(readOnly = true)
-    public List<AdResponseDto> findAll(FindAllAdsFilterRequestDto filterRequestDto) {
-        log.info("Start findAll; filterRequestDto: {}", filterRequestDto);
+    public PageEntity<AdResponseDto> findAll(FindAllAdsFilterRequestDto filter, PageableRequestDto pageable) {
+        log.info("Start findAll; filter: {}", filter);
 
-        if (isNotExists(filterRequestDto.localityId(), localityDao::isExists)) {
-            log.error("Not found locality with id {}", filterRequestDto.localityId());
-            throw new NotFoundException(filterRequestDto.localityId());
-        }
-        if (isNotExists(filterRequestDto.publisherId(), userDao::isExists)) {
-            log.error("Not found publisher with id {}", filterRequestDto.publisherId());
-            throw new NotFoundException(filterRequestDto.publisherId());
-        }
-
-        Predicate predicate = buildPredicate(filterRequestDto);
+        Predicate predicate = buildPredicate(filter);
         OrderSpecifier<Boolean> order = getDefaultPromotedAdsPrecedenceOrder();
-        Long limit = filterRequestDto.limit();
-        Long page = filterRequestDto.page();
 
-        List<Ad> result = adDao.findAll(limit, page, predicate, order);
-        log.info("End findAll; found items: {} filterRequestDto: {}", result.size(), filterRequestDto);
-
-        return result.stream().map(adMapper::toDto).toList();
-    }
-
-    private boolean isNotExists(Long id, Function<Long, Boolean> isExistsFunction) {
-        return id != null && !isExistsFunction.apply(id);
+        PageEntity<Ad> resultPage = adDao.findAll(pageable.limit(), pageable.page(), predicate, order);
+        log.info("Finished findAll; found items: {}, filter: {}", resultPage.body().size(), filter);
+        return adPageMapper.toDtoPage(resultPage);
     }
 
     private Predicate buildPredicate(FindAllAdsFilterRequestDto filterRequestDto) {
@@ -73,7 +54,6 @@ public class AdSearchService {
                 .build();
     }
 
-    // TODO Логику создания предикатов лучше вынести в отдельный класс?
     private Function<Long, Predicate> getLocalityIdExistsInLocalityAncestorsPredicate() {
         return localityId -> selectFrom(localityPart)
                 .where(localityPart.descendantLocality.eq(ad.locality)

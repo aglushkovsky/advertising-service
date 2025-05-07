@@ -1,13 +1,15 @@
-package io.github.aglushkovsky.advertisingservice.dao;
+package io.github.aglushkovsky.advertisingservice.dao.impl;
 
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.Predicate;
-import com.querydsl.jpa.impl.JPAQuery;
+import io.github.aglushkovsky.advertisingservice.dao.PageEntity;
+import io.github.aglushkovsky.advertisingservice.dao.PageableAbstractDao;
 import io.github.aglushkovsky.advertisingservice.entity.*;
 import jakarta.persistence.EntityGraph;
 import jakarta.persistence.Subgraph;
 import org.hibernate.graph.GraphSemantic;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -18,7 +20,8 @@ import static io.github.aglushkovsky.advertisingservice.entity.QLocalityPart.*;
 import static io.github.aglushkovsky.advertisingservice.util.QueryDslUtils.*;
 
 @Repository
-public class AdDao extends AbstractDao<Ad, Long> {
+@Transactional
+public class AdDao extends PageableAbstractDao<Ad, Long> {
 
     @Override
     public void delete(Long id) {
@@ -26,22 +29,14 @@ public class AdDao extends AbstractDao<Ad, Long> {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<Ad> findAll() {
         return findAll(ad);
     }
 
-    public List<Ad> findAll(Long limit, Long page, Predicate predicate, OrderSpecifier<?>... orders) {
-        return createFindAllQuery(ad)
-                .where(predicate)
-                .orderBy(orders)
-                .limit(limit)
-                .offset(calculateOffset(limit, page))
-                .setHint(GraphSemantic.LOAD.getJakartaHintName(), getEntityGraph())
-                .fetch();
-    }
-
-    private Long calculateOffset(Long limit, Long page) {
-        return (page - 1) * limit;
+    @Transactional(readOnly = true)
+    public PageEntity<Ad> findAll(Long limit, Long page, Predicate predicate, OrderSpecifier<?>... orders) {
+        return findAll(limit, page, ad, getEntityGraph(), predicate, orders);
     }
 
     private EntityGraph<Ad> getEntityGraph() {
@@ -57,15 +52,8 @@ public class AdDao extends AbstractDao<Ad, Long> {
         return entityGraph;
     }
 
-    public Long getTotalPageCount(Predicate predicate) {
-        return new JPAQuery<>(entityManager)
-                .select(ad.id.count())
-                .from(ad)
-                .where(predicate)
-                .fetchOne();
-    }
-
     @Override
+    @Transactional(readOnly = true)
     public Optional<Ad> findById(Long id) {
         Ad result = createFindAllQuery(ad)
                 .where(ad.id.eq(id))

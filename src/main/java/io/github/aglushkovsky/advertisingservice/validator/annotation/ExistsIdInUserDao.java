@@ -1,6 +1,6 @@
 package io.github.aglushkovsky.advertisingservice.validator.annotation;
 
-import io.github.aglushkovsky.advertisingservice.validator.PriceRangeValidator;
+import io.github.aglushkovsky.advertisingservice.validator.ExistsIdInUserDaoValidator;
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
 
@@ -9,18 +9,14 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-@Target(ElementType.TYPE)
+@Target({ElementType.FIELD, ElementType.METHOD, ElementType.PARAMETER, ElementType.RECORD_COMPONENT})
 @Retention(RetentionPolicy.RUNTIME)
-@Constraint(validatedBy = PriceRangeValidator.class)
-public @interface ValidPriceRange {
+@Constraint(validatedBy = {ExistsIdInUserDaoValidator.class})
+public @interface ExistsIdInUserDao {
 
-    String message() default "{minPriceParam} и {maxPriceParam} задают некорректный диапазон";
+    String message() default "Должно существовать в БД";
 
     Class<?>[] groups() default {};
 
     Class<? extends Payload>[] payload() default {};
-
-    String minPriceParam();
-
-    String maxPriceParam();
 }

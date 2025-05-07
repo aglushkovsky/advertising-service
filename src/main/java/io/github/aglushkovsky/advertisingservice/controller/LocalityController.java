@@ -1,8 +1,9 @@
 package io.github.aglushkovsky.advertisingservice.controller;
 
-import io.github.aglushkovsky.advertisingservice.dto.LocalityDto;
+import io.github.aglushkovsky.advertisingservice.dto.response.LocalityResponseDto;
+import io.github.aglushkovsky.advertisingservice.entity.enumeration.LocalityType;
 import io.github.aglushkovsky.advertisingservice.service.LocalityService;
-import io.github.aglushkovsky.advertisingservice.validator.annotation.ValidLocalityType;
+import io.github.aglushkovsky.advertisingservice.validator.annotation.ExistsIdInLocalityDao;
 import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -11,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/localities")
+@RequestMapping("/api/v1/localities")
 @RequiredArgsConstructor
 @Slf4j
 public class LocalityController {
@@ -19,27 +20,28 @@ public class LocalityController {
     private final LocalityService localityService;
 
     @GetMapping
-    public List<LocalityDto> findAllByLocalityType(@RequestParam(required = false, defaultValue = "${root.locality.type}")
-                                                   @ValidLocalityType String type) {
-        log.info("Start GET /localities; type={}", type);
-        List<LocalityDto> result = localityService.findAllByLocalityType(type);
-        log.info("Finished GET /localities; type={}; found items: {}", type, result.size());
+    public List<LocalityResponseDto> findAllByLocalityType(@RequestParam(defaultValue = "${root.locality.type}")
+                                                           LocalityType type) {
+        log.info("Start GET /api/v1/localities; type={}", type);
+        List<LocalityResponseDto> result = localityService.findAllByLocalityType(type);
+        log.info("Finished GET /api/v1/localities; type={}; found items: {}", type, result.size());
         return result;
     }
 
-    @GetMapping("/{localityId}/descendants")
-    public List<LocalityDto> findDirectDescendantsByLocalityId(@PathVariable @Positive Long localityId) {
-        log.info("Start GET /localities/{}/descendants; localityId={}", localityId, localityId);
-        List<LocalityDto> result = localityService.findDirectDescendantsByLocalityId(localityId);
-        log.info("Finished GET /localities/{}/descendants; found items: {}", localityId, result.size());
+    @GetMapping("/{id}/descendants")
+    public List<LocalityResponseDto> findDirectDescendantsByLocalityId(@PathVariable
+                                                                       @Positive @ExistsIdInLocalityDao Long id) {
+        log.info("Start GET /api/v1/localities/{}/descendants; localityId={}", id, id);
+        List<LocalityResponseDto> result = localityService.findDirectDescendantsByLocalityId(id);
+        log.info("Finished GET /api/v1/localities/{}/descendants; found items: {}", id, result.size());
         return result;
     }
 
     @GetMapping("/types")
     public List<String> findAllAvailableLocalityTypes() {
-        log.info("Start GET /localities/types");
+        log.info("Start GET /api/v1/localities/types");
         List<String> result = localityService.findAllAvailableLocalityTypes();
-        log.info("Finished GET /localities/types");
+        log.info("Finished GET /api/v1/localities/types");
         return result;
     }
 }

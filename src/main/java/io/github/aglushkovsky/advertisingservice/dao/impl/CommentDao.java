@@ -1,8 +1,9 @@
-package io.github.aglushkovsky.advertisingservice.dao;
+package io.github.aglushkovsky.advertisingservice.dao.impl;
 
+import io.github.aglushkovsky.advertisingservice.dao.AbstractDao;
 import io.github.aglushkovsky.advertisingservice.entity.Comment;
-import io.github.aglushkovsky.advertisingservice.entity.QComment;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -10,6 +11,7 @@ import java.util.Optional;
 import static io.github.aglushkovsky.advertisingservice.entity.QComment.*;
 
 @Repository
+@Transactional
 public class CommentDao extends AbstractDao<Comment, Long> {
     @Override
     public void delete(Long id) {
@@ -17,11 +19,13 @@ public class CommentDao extends AbstractDao<Comment, Long> {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<Comment> findAll() {
         return findAll(comment);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Optional<Comment> findById(Long id) {
         return findById(Comment.class, id);
     }

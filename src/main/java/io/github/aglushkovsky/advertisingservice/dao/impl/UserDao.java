@@ -1,7 +1,9 @@
-package io.github.aglushkovsky.advertisingservice.dao;
+package io.github.aglushkovsky.advertisingservice.dao.impl;
 
+import io.github.aglushkovsky.advertisingservice.dao.AbstractDao;
 import io.github.aglushkovsky.advertisingservice.entity.User;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -9,6 +11,7 @@ import java.util.Optional;
 import static io.github.aglushkovsky.advertisingservice.entity.QUser.*;
 
 @Repository
+@Transactional
 public class UserDao extends AbstractDao<User, Long> {
     @Override
     public void delete(Long id) {
@@ -16,15 +19,18 @@ public class UserDao extends AbstractDao<User, Long> {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<User> findAll() {
         return findAll(user);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Optional<User> findById(Long id) {
         return findById(User.class, id);
     }
 
+    @Transactional(readOnly = true)
     public boolean isExists(Long id) {
         return isExists(user, user.id.eq(id));
     }
