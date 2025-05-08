@@ -6,13 +6,14 @@ import io.github.aglushkovsky.advertisingservice.exception.NotFoundException;
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
-import org.springframework.validation.FieldError;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.util.List;
+import java.util.stream.Stream;
 
 import static io.github.aglushkovsky.advertisingservice.util.ExceptionHandlerUtils.*;
 
@@ -37,20 +38,19 @@ public class CommonExceptionHandler {
 
     @ExceptionHandler(ConstraintViolationException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponseDto<List<ErrorObjectDto<Object>>> handleConstraintViolationException(ConstraintViolationException e) {
+    public ErrorResponseDto<List<ErrorObjectDto>> handleConstraintViolationException(ConstraintViolationException e) {
         log.info("Start handling ConstraintViolationException", e);
 
-        List<ErrorObjectDto<Object>> errorObjectDtos = e.getConstraintViolations().stream()
-                .map(constraintViolation -> new ErrorObjectDto<>(
+        List<ErrorObjectDto> responseErrors = e.getConstraintViolations().stream()
+                .map(constraintViolation -> new ErrorObjectDto(
                         getLastItemFromPath(constraintViolation.getPropertyPath()),
-                        constraintViolation.getInvalidValue(),
                         constraintViolation.getMessage()
                 ))
                 .toList();
 
-        ErrorResponseDto<List<ErrorObjectDto<Object>>> response = new ErrorResponseDto<>(
+        ErrorResponseDto<List<ErrorObjectDto>> response = new ErrorResponseDto<>(
                 HttpStatus.BAD_REQUEST.value(),
-                errorObjectDtos
+                responseErrors
         );
 
         log.info("Finished handling ConstraintViolationException");
@@ -60,22 +60,30 @@ public class CommonExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponseDto<List<ErrorObjectDto<Object>>> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
+    public ErrorResponseDto<List<ErrorObjectDto>> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
         log.info("Start handling MethodArgumentNotValidException", e);
 
-        ErrorResponseDto<List<ErrorObjectDto<Object>>> response = new ErrorResponseDto<>(
+        BindingResult bindingResult = e.getBindingResult();
+
+        List<ErrorObjectDto> responseErrors = Stream.concat(
+                        bindingResult.getFieldErrors()
+                                .stream()
+                                .map(fieldError -> new ErrorObjectDto(
+                                        fieldError.getField(),
+                                        fieldError.getDefaultMessage()
+                                )),
+                        bindingResult.getGlobalErrors()
+                                .stream()
+                                .map(objectError -> new ErrorObjectDto(
+                                        null,
+                                        objectError.getDefaultMessage()
+                                ))
+                )
+                .toList();
+
+        ErrorResponseDto<List<ErrorObjectDto>> response = new ErrorResponseDto<>(
                 HttpStatus.BAD_REQUEST.value(),
-                e.getBindingResult().getAllErrors()
-                        .stream()
-                        .map(objectError -> {
-                            FieldError fieldError = (FieldError) objectError;
-                            return new ErrorObjectDto<>(
-                                    fieldError.getField(),
-                                    fieldError.getRejectedValue(),
-                                    fieldError.getDefaultMessage()
-                            );
-                        })
-                        .toList()
+                responseErrors
         );
 
         log.info("Finished handling MethodArgumentNotValidException");
