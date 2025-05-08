@@ -12,6 +12,8 @@ import io.github.aglushkovsky.advertisingservice.mapper.AdPageMapper;
 import io.github.aglushkovsky.advertisingservice.util.PredicateChainBuilder;
 import io.github.aglushkovsky.advertisingservice.dao.impl.AdDao;
 import io.github.aglushkovsky.advertisingservice.dto.request.FindAllAdsFilterRequestDto;
+import io.github.aglushkovsky.advertisingservice.validator.group.DaoValidationGroup;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -26,14 +28,15 @@ import static io.github.aglushkovsky.advertisingservice.entity.QLocalityPart.loc
 @Service
 @RequiredArgsConstructor
 @Slf4j
-@Validated
+@Validated(DaoValidationGroup.class)
 public class AdSearchService {
 
     private final AdDao adDao;
     private final AdMapper adMapper;
     private final AdPageMapper adPageMapper;
 
-    public PageEntity<AdResponseDto> findAll(FindAllAdsFilterRequestDto filter, PageableRequestDto pageable) {
+    public PageEntity<AdResponseDto> findAll(@Valid FindAllAdsFilterRequestDto filter,
+                                             PageableRequestDto pageable) {
         log.info("Start findAll; filter: {}", filter);
 
         Predicate predicate = buildPredicate(filter);

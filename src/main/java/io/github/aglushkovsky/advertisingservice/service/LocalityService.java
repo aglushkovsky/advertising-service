@@ -4,7 +4,6 @@ import io.github.aglushkovsky.advertisingservice.dao.impl.LocalityDao;
 import io.github.aglushkovsky.advertisingservice.dto.response.LocalityResponseDto;
 import io.github.aglushkovsky.advertisingservice.entity.Locality;
 import io.github.aglushkovsky.advertisingservice.entity.enumeration.LocalityType;
-import io.github.aglushkovsky.advertisingservice.exception.NotFoundException;
 import io.github.aglushkovsky.advertisingservice.mapper.LocalityMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -34,11 +33,6 @@ public class LocalityService {
 
     public List<LocalityResponseDto> findDirectDescendantsByLocalityId(Long localityId) {
         log.info("Start findDirectDescendantsByLocalityId; localityId={}", localityId);
-
-        if (!localityDao.isExists(localityId)) {
-            log.error("Could not find locality with id={}", localityId);
-            throw new NotFoundException(localityId);
-        }
 
         List<Locality> result = localityDao.findDirectDescendantsByLocalityId(localityId);
 

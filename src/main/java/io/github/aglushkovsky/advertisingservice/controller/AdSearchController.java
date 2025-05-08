@@ -5,27 +5,22 @@ import io.github.aglushkovsky.advertisingservice.dto.request.FindAllAdsFilterReq
 import io.github.aglushkovsky.advertisingservice.dto.request.PageableRequestDto;
 import io.github.aglushkovsky.advertisingservice.dto.response.AdResponseDto;
 import io.github.aglushkovsky.advertisingservice.service.AdSearchService;
-import io.github.aglushkovsky.advertisingservice.validator.group.DaoValidationAfterDefaultGroupSequence;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1/ads")
 @RequiredArgsConstructor
-@Validated
 @Slf4j
 public class AdSearchController {
 
     private final AdSearchService adSearchService;
 
     @GetMapping
-    public PageEntity<AdResponseDto> searchAds(@ModelAttribute("filter")
-                                               @Validated(DaoValidationAfterDefaultGroupSequence.class)
-                                               FindAllAdsFilterRequestDto filter,
+    public PageEntity<AdResponseDto> searchAds(@ModelAttribute("filter") @Valid FindAllAdsFilterRequestDto filter,
                                                @ModelAttribute("pageable") @Valid PageableRequestDto pageable) {
         log.info("Start GET /api/v1/ads; params={}", filter);
         PageEntity<AdResponseDto> result = adSearchService.findAll(filter, pageable);

@@ -5,7 +5,6 @@ import io.github.aglushkovsky.advertisingservice.dto.response.LocalityResponseDt
 import io.github.aglushkovsky.advertisingservice.entity.Locality;
 import io.github.aglushkovsky.advertisingservice.entity.enumeration.LocalityType;
 import io.github.aglushkovsky.advertisingservice.exception.NotFoundException;
-import io.github.aglushkovsky.advertisingservice.mapper.LocalityMapperImpl;
 import io.github.aglushkovsky.advertisingservice.test.config.MapperConfig;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;

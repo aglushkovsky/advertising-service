@@ -13,6 +13,7 @@ public class HibernateProperties {
     public static final String DIALECT_KEY = "hibernate.dialect";
     public static final String SHOW_SQL_KEY = "show_sql";
     public static final String FORMAT_SQL_KEY = "format_sql";
+    public static final String URL_KEY = "hibernate.url";
 
     private String username;
     private String password;
