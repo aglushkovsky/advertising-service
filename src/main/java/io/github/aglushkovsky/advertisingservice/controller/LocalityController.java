@@ -29,8 +29,7 @@ public class LocalityController {
     }
 
     @GetMapping("/{id}/descendants")
-    public List<LocalityResponseDto> findDirectDescendantsByLocalityId(@PathVariable
-                                                                       @Positive @ExistsIdInLocalityDao Long id) {
+    public List<LocalityResponseDto> findDirectDescendantsByLocalityId(@PathVariable @Positive Long id) {
         log.info("Start GET /api/v1/localities/{}/descendants; localityId={}", id, id);
         List<LocalityResponseDto> result = localityService.findDirectDescendantsByLocalityId(id);
         log.info("Finished GET /api/v1/localities/{}/descendants; found items: {}", id, result.size());
