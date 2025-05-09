@@ -3,7 +3,6 @@ package io.github.aglushkovsky.advertisingservice.controller;
 import io.github.aglushkovsky.advertisingservice.dto.response.LocalityResponseDto;
 import io.github.aglushkovsky.advertisingservice.entity.enumeration.LocalityType;
 import io.github.aglushkovsky.advertisingservice.service.LocalityService;
-import io.github.aglushkovsky.advertisingservice.validator.annotation.ExistsIdInLocalityDao;
 import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

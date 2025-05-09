@@ -38,9 +38,7 @@ CREATE TABLE IF NOT EXISTS locality
 (
     id                 bigserial PRIMARY KEY,
     name               varchar(255) NOT NULL,
-    parent_locality_id bigint REFERENCES locality ON DELETE CASCADE,
-    type               varchar(20)  NOT NULL,
-    UNIQUE (name, parent_locality_id, type)
+    type               varchar(20)  NOT NULL
 );
 
 --changeset aglushkovsky:5
