@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.HandlerMethodValidationException;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import java.util.List;
 import java.util.Optional;
@@ -108,5 +109,23 @@ public class ValidationExceptionHandler {
                 HttpStatus.BAD_REQUEST.value(),
                 responseErrors
         );
+    }
+
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponseDto<ErrorObjectDto> handleMethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException e) {
+        log.info("Start handling MethodArgumentTypeMismatchException", e);
+
+        ErrorResponseDto<ErrorObjectDto> response = new ErrorResponseDto<>(
+                HttpStatus.BAD_REQUEST.value(),
+                new ErrorObjectDto(
+                        e.getPropertyName(),
+                        List.of("Некорректный формат параметра")
+                )
+        );
+
+        log.info("Finished handling MethodArgumentTypeMismatchException");
+
+        return response;
     }
 }
