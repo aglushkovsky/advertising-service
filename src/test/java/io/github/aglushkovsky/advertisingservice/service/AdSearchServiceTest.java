@@ -1,5 +1,6 @@
 package io.github.aglushkovsky.advertisingservice.service;
 
+import io.github.aglushkovsky.advertisingservice.annotation.ServiceUnitTest;
 import io.github.aglushkovsky.advertisingservice.dao.PageEntity;
 import io.github.aglushkovsky.advertisingservice.dao.impl.AdDao;
 import io.github.aglushkovsky.advertisingservice.dao.impl.LocalityDao;
@@ -11,16 +12,13 @@ import io.github.aglushkovsky.advertisingservice.entity.Ad;
 import io.github.aglushkovsky.advertisingservice.entity.Locality;
 import io.github.aglushkovsky.advertisingservice.entity.User;
 import io.github.aglushkovsky.advertisingservice.entity.enumeration.LocalityType;
-import io.github.aglushkovsky.advertisingservice.test.config.MapperConfig;
 import jakarta.validation.ConstraintViolationException;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.validation.ValidationAutoConfiguration;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
-import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -30,7 +28,7 @@ import static java.util.Collections.*;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-@SpringJUnitConfig(classes = {AdSearchService.class, MapperConfig.class, ValidationAutoConfiguration.class})
+@ServiceUnitTest(AdSearchService.class)
 class AdSearchServiceTest {
 
     private static final Long DEFAULT_LIMIT = 50L;

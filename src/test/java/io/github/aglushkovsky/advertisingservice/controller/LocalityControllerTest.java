@@ -1,11 +1,9 @@
 package io.github.aglushkovsky.advertisingservice.controller;
 
-import io.github.aglushkovsky.advertisingservice.config.SecurityConfig;
+import io.github.aglushkovsky.advertisingservice.annotation.WebMvcUnitTest;
 import io.github.aglushkovsky.advertisingservice.service.LocalityService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.context.annotation.Import;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -15,8 +13,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest(LocalityController.class)
-@Import(SecurityConfig.class) // TODO Когда будет полноценно настроен Security, надо здесь что-то поменять.
+@WebMvcUnitTest(LocalityController.class)
 class LocalityControllerTest {
 
     @MockitoBean

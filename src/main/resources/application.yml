@@ -5,9 +5,9 @@ spring:
 
 # TODO Узнать, можно ли через профайлы отключать и включать некоторые проперти
 logging.level:
-    org.hibernate:
-      SQL: DEBUG
-      type.descriptor.sql.BasicBinder: TRACE
+  org.hibernate:
+    SQL: DEBUG
+    type.descriptor.sql.BasicBinder: TRACE
 
 hibernate:
   username: postgres
@@ -20,5 +20,9 @@ hibernate:
   sql:
     show: true
     format: true
+
+jwt:
+  secret: bW3JzRFeKqdEOcGlZxaCwAn3m6EB1qUZxtIAOd1O2za4kYwFesJA6YEio5upaaTmEM1LtTltKvuqcvIiHohzmQ==
+  expiration: 604800000
 
 root.locality.type: CITY

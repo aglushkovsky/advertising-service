@@ -1,7 +1,7 @@
 package io.github.aglushkovsky.advertisingservice.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.github.aglushkovsky.advertisingservice.config.SecurityConfig;
+import io.github.aglushkovsky.advertisingservice.annotation.WebMvcUnitTest;
 import io.github.aglushkovsky.advertisingservice.dao.PageEntity;
 import io.github.aglushkovsky.advertisingservice.dto.response.AdResponseDto;
 import io.github.aglushkovsky.advertisingservice.dto.response.LocalityResponseDto;
@@ -11,8 +11,6 @@ import io.github.aglushkovsky.advertisingservice.service.AdSearchService;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.context.annotation.Import;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -25,8 +23,7 @@ import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@WebMvcTest(AdSearchController.class)
-@Import(SecurityConfig.class) // TODO Когда будет полноценно настроен Security, надо здесь что-то поменять.
+@WebMvcUnitTest(AdSearchController.class)
 class AdSearchControllerTest {
 
     @MockitoBean

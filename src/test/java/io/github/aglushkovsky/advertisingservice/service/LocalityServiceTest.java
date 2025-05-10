@@ -1,24 +1,22 @@
 package io.github.aglushkovsky.advertisingservice.service;
 
+import io.github.aglushkovsky.advertisingservice.annotation.ServiceUnitTest;
 import io.github.aglushkovsky.advertisingservice.dao.impl.LocalityDao;
 import io.github.aglushkovsky.advertisingservice.dto.response.LocalityResponseDto;
 import io.github.aglushkovsky.advertisingservice.entity.Locality;
 import io.github.aglushkovsky.advertisingservice.entity.enumeration.LocalityType;
-import io.github.aglushkovsky.advertisingservice.test.config.MapperConfig;
 import jakarta.validation.ConstraintViolationException;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.validation.ValidationAutoConfiguration;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
-import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-@SpringJUnitConfig(classes = {LocalityService.class, MapperConfig.class, ValidationAutoConfiguration.class})
+@ServiceUnitTest(LocalityService.class)
 class LocalityServiceTest {
 
     @MockitoBean

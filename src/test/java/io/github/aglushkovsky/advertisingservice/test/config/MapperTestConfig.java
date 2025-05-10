@@ -5,5 +5,5 @@ import org.springframework.context.annotation.ComponentScan;
 
 @TestConfiguration
 @ComponentScan(basePackages = "io.github.aglushkovsky.advertisingservice.mapper")
-public class MapperConfig {
+public class MapperTestConfig {
 }
