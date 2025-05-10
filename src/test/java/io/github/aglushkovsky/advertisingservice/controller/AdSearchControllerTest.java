@@ -25,6 +25,7 @@ import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+// TODO Нужно ли здесь трогать json-представления или лучше использовать assertions для возвращаемых объектов?
 @WebMvcTest(AdSearchController.class)
 @Import(SecurityConfig.class) // TODO Когда будет полноценно настроен Security, надо здесь что-то поменять.
 class AdSearchControllerTest {
