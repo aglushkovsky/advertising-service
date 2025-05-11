@@ -74,6 +74,16 @@ public abstract class PageableAbstractDao<E, I> extends AbstractDao<E, I> {
         return findAllJpaQuery;
     }
 
+    private Long getTotalRecordsCount(EntityPathBase<E> fromEntityPath, Predicate predicate) {
+        return new JPAQuery<>(entityManager)
+                .select(fromEntityPath.count())
+                .from(fromEntityPath)
+                .where(predicate)
+                .fetchOne();
+    }
+
+    // TODO Похоже на нарушение SRP. Подумать, куда эти методы вынести.
+
     private Long calculateOffset(Long limit, Long page) {
         return (page - 1) * limit;
     }
@@ -84,13 +94,5 @@ public abstract class PageableAbstractDao<E, I> extends AbstractDao<E, I> {
 
     private boolean isLastPage(Long totalPages, Long currentPage) {
         return Objects.equals(totalPages, currentPage);
-    }
-
-    private Long getTotalRecordsCount(EntityPathBase<E> fromEntityPath, Predicate predicate) {
-        return new JPAQuery<>(entityManager)
-                .select(fromEntityPath.count())
-                .from(fromEntityPath)
-                .where(predicate)
-                .fetchOne();
     }
 }
