@@ -15,6 +15,14 @@ import static java.util.Collections.*;
 public abstract class PageableAbstractDao<E, I> extends AbstractDao<E, I> {
 
     public PageEntity<E> findAll(Long limit,
+                                 Long page,
+                                 EntityPathBase<E> fromEntityPath,
+                                 Predicate predicate,
+                                 OrderSpecifier<?>... orders) {
+        return findAll(limit, page, fromEntityPath, null, predicate, orders);
+    }
+
+    public PageEntity<E> findAll(Long limit,
                            Long page,
                            EntityPathBase<E> fromEntityPath,
                            EntityGraph<E> entityGraph,

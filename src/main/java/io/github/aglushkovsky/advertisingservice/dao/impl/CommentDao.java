@@ -35,7 +35,7 @@ public class CommentDao extends PageableAbstractDao<Comment, Long> {
     }
 
     public PageEntity<Comment> findAllByAdId(Long adId, Long limit, Long page) {
-        return findAll(limit, page, comment, null, comment.ad.id.eq(adId), comment.createdAt.desc());
+        return findAll(limit, page, comment, comment.ad.id.eq(adId), comment.createdAt.desc());
     }
 
     @Override

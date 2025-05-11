@@ -22,6 +22,7 @@ public class AdCrudController {
     @ResponseStatus(HttpStatus.CREATED)
     public AdResponseDto createAd(@RequestBody @Valid AdCreateResponseDto adCreateResponseDto) {
         log.info("Start POST /api/v1/ads; {}", adCreateResponseDto);
+        // TODO impl me
         log.info("Finished POST /api/v1/ads; created ad: {}", (Object) null);
         return null;
     }
