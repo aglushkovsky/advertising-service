@@ -3,6 +3,7 @@ package io.github.aglushkovsky.advertisingservice.controller;
 import io.github.aglushkovsky.advertisingservice.dto.response.LocalityResponseDto;
 import io.github.aglushkovsky.advertisingservice.entity.enumeration.LocalityType;
 import io.github.aglushkovsky.advertisingservice.service.LocalityService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirements;
 import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -13,6 +14,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1/localities")
 @RequiredArgsConstructor
+@SecurityRequirements
 @Slf4j
 public class LocalityController {
 

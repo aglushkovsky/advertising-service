@@ -3,7 +3,7 @@ package io.github.aglushkovsky.advertisingservice.dto.request;
 import io.github.aglushkovsky.advertisingservice.validator.annotation.ExistsIdInLocalityDao;
 import io.github.aglushkovsky.advertisingservice.validator.annotation.ExistsIdInUserDao;
 import io.github.aglushkovsky.advertisingservice.validator.annotation.ValidPriceRange;
-import io.github.aglushkovsky.advertisingservice.validator.group.DaoValidationGroup;
+import io.github.aglushkovsky.advertisingservice.validator.group.dao.DaoValidationGroup;
 import jakarta.validation.constraints.*;
 
 import java.math.BigDecimal;

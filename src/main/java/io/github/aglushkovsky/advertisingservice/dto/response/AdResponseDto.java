@@ -8,7 +8,7 @@ public record AdResponseDto(Long id,
                             BigDecimal price,
                             String description,
                             List<LocalityResponseDto> localityParts,
-                            PublisherResponseDto publisher,
+                            UserResponseDto publisher,
                             String publishedAt,
                             Boolean isPromoted) {
 }

@@ -2,7 +2,6 @@ package io.github.aglushkovsky.advertisingservice.dao.impl;
 
 import com.querydsl.jpa.impl.JPAQuery;
 import io.github.aglushkovsky.advertisingservice.dao.AbstractDao;
-import io.github.aglushkovsky.advertisingservice.entity.QUser;
 import io.github.aglushkovsky.advertisingservice.entity.User;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;

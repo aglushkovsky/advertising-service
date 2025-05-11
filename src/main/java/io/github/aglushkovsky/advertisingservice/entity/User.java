@@ -29,9 +29,9 @@ public class User {
     private String phoneNumber;
 
     @Enumerated(EnumType.STRING)
-    private Role role;
+    private Role role = Role.USER;
 
-    private Double totalRating;
+    private Double totalRating = 0.0;
 
     @OneToMany(mappedBy = "author")
     private List<UserRate> outgoingRates = new ArrayList<>();

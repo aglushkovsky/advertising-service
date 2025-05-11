@@ -12,7 +12,7 @@ import io.github.aglushkovsky.advertisingservice.mapper.AdPageMapper;
 import io.github.aglushkovsky.advertisingservice.util.PredicateChainBuilder;
 import io.github.aglushkovsky.advertisingservice.dao.impl.AdDao;
 import io.github.aglushkovsky.advertisingservice.dto.request.FindAllAdsFilterRequestDto;
-import io.github.aglushkovsky.advertisingservice.validator.group.DaoValidationGroup;
+import io.github.aglushkovsky.advertisingservice.validator.group.dao.DaoValidationGroup;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

@@ -16,5 +16,5 @@ import java.lang.annotation.*;
 public @interface ServiceUnitTest {
 
     @AliasFor(annotation = SpringJUnitConfig.class, attribute = "classes")
-    Class<?>[] value() default {};;
+    Class<?>[] value() default {};
 }

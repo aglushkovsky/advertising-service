@@ -3,11 +3,11 @@ spring:
   jpa:
     open-in-view: false
 
-# TODO Узнать, можно ли через профайлы отключать и включать некоторые проперти
-logging.level:
-  org.hibernate:
-    SQL: DEBUG
-    type.descriptor.sql.BasicBinder: TRACE
+logging:
+  level:
+    org.hibernate:
+      SQL: DEBUG
+      type.descriptor.sql.BasicBinder: TRACE
 
 hibernate:
   username: postgres

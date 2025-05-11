@@ -5,7 +5,7 @@ import io.github.aglushkovsky.advertisingservice.annotation.WebMvcUnitTest;
 import io.github.aglushkovsky.advertisingservice.dao.PageEntity;
 import io.github.aglushkovsky.advertisingservice.dto.response.AdResponseDto;
 import io.github.aglushkovsky.advertisingservice.dto.response.LocalityResponseDto;
-import io.github.aglushkovsky.advertisingservice.dto.response.PublisherResponseDto;
+import io.github.aglushkovsky.advertisingservice.dto.response.UserResponseDto;
 import io.github.aglushkovsky.advertisingservice.exception.NotFoundException;
 import io.github.aglushkovsky.advertisingservice.service.AdSearchService;
 import org.junit.jupiter.api.Nested;
@@ -48,7 +48,7 @@ class AdSearchControllerTest {
                                     new BigDecimal("12345"),
                                     null,
                                     List.of(new LocalityResponseDto(1L, "Test City", "CITY")),
-                                    new PublisherResponseDto(1L, "test_login", null, null, 0.0),
+                                    new UserResponseDto(1L, "test_login", null, null, 0.0),
                                     LocalDateTime.now().toString(),
                                     false)
                     ),
@@ -71,7 +71,7 @@ class AdSearchControllerTest {
                                     new BigDecimal("12345"),
                                     null,
                                     List.of(new LocalityResponseDto(1L, "Test City", "CITY")),
-                                    new PublisherResponseDto(1L, "test_login", null, null, 0.0),
+                                    new UserResponseDto(1L, "test_login", null, null, 0.0),
                                     LocalDateTime.now().toString(),
                                     false)
                     ),
@@ -129,7 +129,7 @@ class AdSearchControllerTest {
                     new BigDecimal("12345"),
                     null,
                     List.of(new LocalityResponseDto(1L, "Test City", "CITY")),
-                    new PublisherResponseDto(1L, "test_login", null, null, 0.0),
+                    new UserResponseDto(1L, "test_login", null, null, 0.0),
                     LocalDateTime.now().toString(),
                     false);
             doReturn(findByIdStub).when(adSearchService).findById(anyLong());

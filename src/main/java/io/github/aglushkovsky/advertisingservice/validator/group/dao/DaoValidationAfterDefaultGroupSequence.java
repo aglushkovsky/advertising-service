@@ -1,4 +1,4 @@
-package io.github.aglushkovsky.advertisingservice.validator.group;
+package io.github.aglushkovsky.advertisingservice.validator.group.dao;
 
 import jakarta.validation.GroupSequence;
 import jakarta.validation.groups.Default;

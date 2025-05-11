@@ -33,7 +33,7 @@ public class CommonExceptionHandler {
         log.info("Start handling Exception", e);
 
         ErrorResponseDto<String> response = new ErrorResponseDto<>(
-                HttpStatus.BAD_REQUEST.value(),
+                HttpStatus.INTERNAL_SERVER_ERROR.value(),
                 "Что-то пошло не так"
         );
 
