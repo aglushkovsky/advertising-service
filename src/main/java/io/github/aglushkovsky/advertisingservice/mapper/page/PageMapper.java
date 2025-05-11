@@ -1,4 +1,4 @@
-package io.github.aglushkovsky.advertisingservice.mapper;
+package io.github.aglushkovsky.advertisingservice.mapper.page;
 
 import io.github.aglushkovsky.advertisingservice.dao.PageEntity;
 

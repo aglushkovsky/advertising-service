@@ -1,9 +1,15 @@
 package io.github.aglushkovsky.advertisingservice.entity;
 
 import jakarta.persistence.*;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@ToString(exclude = {"author", "ad"})
+@EqualsAndHashCode(exclude = {"author", "ad"})
 @Entity
 public class Comment {
 
@@ -11,10 +17,10 @@ public class Comment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(optional = false)
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
     private User author;
 
-    @ManyToOne(optional = false)
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
     private Ad ad;
 
     private LocalDateTime createdAt;

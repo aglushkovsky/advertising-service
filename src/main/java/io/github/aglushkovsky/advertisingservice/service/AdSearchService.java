@@ -6,9 +6,8 @@ import io.github.aglushkovsky.advertisingservice.dao.PageEntity;
 import io.github.aglushkovsky.advertisingservice.dto.request.PageableRequestDto;
 import io.github.aglushkovsky.advertisingservice.dto.response.AdResponseDto;
 import io.github.aglushkovsky.advertisingservice.entity.Ad;
-import io.github.aglushkovsky.advertisingservice.exception.NotFoundException;
 import io.github.aglushkovsky.advertisingservice.mapper.AdMapper;
-import io.github.aglushkovsky.advertisingservice.mapper.AdPageMapper;
+import io.github.aglushkovsky.advertisingservice.mapper.page.AdPageMapper;
 import io.github.aglushkovsky.advertisingservice.util.PredicateChainBuilder;
 import io.github.aglushkovsky.advertisingservice.dao.impl.AdDao;
 import io.github.aglushkovsky.advertisingservice.dto.request.FindAllAdsFilterRequestDto;
@@ -72,13 +71,5 @@ public class AdSearchService {
         return param -> isOnlyInTitle
                 ? ad.title.containsIgnoreCase(param)
                 : ad.title.containsIgnoreCase(param).or(ad.description.containsIgnoreCase(param));
-    }
-
-    public AdResponseDto findById(Long id) {
-        log.info("Start findById; id={}", id);
-        return adDao.findById(id).map(adMapper::toDto).orElseThrow(() -> {
-            log.error("Could not find ad with id: {}", id);
-            return new NotFoundException(id);
-        });
     }
 }

@@ -30,14 +30,6 @@ public class AdSearchController {
         return result;
     }
 
-    @GetMapping("/{id}")
-    public AdResponseDto findById(@PathVariable @Positive Long id) {
-        log.info("Start GET /api/v1/ads/{}; id={}", id, id);
-        AdResponseDto result = adSearchService.findById(id);
-        log.info("Finished GET /api/v1/ads/{}; id={}", id, id);
-        return result;
-    }
-
     @ModelAttribute("filter")
     public FindAllAdsFilterRequestDto createFilterAttributes(FindAllAdsFilterRequestDto filterRequestDto,
                                                              @RequestParam(defaultValue = "false") Boolean onlyInTerm) {

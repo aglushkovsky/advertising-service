@@ -10,7 +10,6 @@ import org.hibernate.graph.GraphSemantic;
 import java.util.List;
 import java.util.Objects;
 
-import static io.github.aglushkovsky.advertisingservice.entity.QAd.ad;
 import static java.util.Collections.*;
 
 public abstract class PageableAbstractDao<E, I> extends AbstractDao<E, I> {
@@ -21,27 +20,50 @@ public abstract class PageableAbstractDao<E, I> extends AbstractDao<E, I> {
                            EntityGraph<E> entityGraph,
                            Predicate predicate,
                            OrderSpecifier<?>... orders) {
-        Long totalRecordsCount = getTotalRecordsCount(predicate);
+        Long totalRecordsCount = getTotalRecordsCount(fromEntityPath, predicate);
 
         if (totalRecordsCount == 0) {
             return new PageEntity<>(
-                    emptyList(), new PageEntity.Metadata(1L, 1L, totalRecordsCount, true)
+                    emptyList(),
+                    new PageEntity.Metadata(1L, 1L, totalRecordsCount, true)
             );
         }
 
-        List<E> body = createFindAllQuery(fromEntityPath)
-                .where(predicate)
-                .orderBy(orders)
-                .limit(limit)
-                .offset(calculateOffset(limit, page))
-                .setHint(GraphSemantic.LOAD.getJakartaHintName(), entityGraph)
-                .fetch();
+        JPAQuery<E> findAllJpaQuery = buildFindAllJpaQuery(limit, page, fromEntityPath, entityGraph, predicate, orders);
         Long totalPages = calculateTotalPages(totalRecordsCount, limit);
+        List<E> body = findAllJpaQuery.fetch();
 
         return new PageEntity<>(
                 unmodifiableList(body),
                 new PageEntity.Metadata(page, totalPages, totalRecordsCount, isLastPage(totalPages, page))
         );
+    }
+
+    private JPAQuery<E> buildFindAllJpaQuery(Long limit,
+                                             Long page,
+                                             EntityPathBase<E> fromEntityPath,
+                                             EntityGraph<E> entityGraph,
+                                             Predicate predicate,
+                                             OrderSpecifier<?>... orders) {
+        JPAQuery<E> findAllJpaQuery = createFindAllQuery(fromEntityPath);
+
+        if (predicate != null) {
+            findAllJpaQuery.where(predicate);
+        }
+        if (orders != null) {
+            findAllJpaQuery.orderBy(orders);
+        }
+        if (limit != null) {
+            findAllJpaQuery.limit(limit);
+        }
+        if (page != null) {
+            findAllJpaQuery.offset(calculateOffset(limit, page));
+        }
+        if (entityGraph != null) {
+            findAllJpaQuery.setHint(GraphSemantic.LOAD.getJakartaHintName(), entityGraph);
+        }
+
+        return findAllJpaQuery;
     }
 
     private Long calculateOffset(Long limit, Long page) {
@@ -56,10 +78,10 @@ public abstract class PageableAbstractDao<E, I> extends AbstractDao<E, I> {
         return Objects.equals(totalPages, currentPage);
     }
 
-    public Long getTotalRecordsCount(Predicate predicate) {
+    private Long getTotalRecordsCount(EntityPathBase<E> fromEntityPath, Predicate predicate) {
         return new JPAQuery<>(entityManager)
-                .select(ad.id.count())
-                .from(ad)
+                .select(fromEntityPath.count())
+                .from(fromEntityPath)
                 .where(predicate)
                 .fetchOne();
     }

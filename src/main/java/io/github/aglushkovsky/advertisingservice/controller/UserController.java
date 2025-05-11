@@ -31,7 +31,7 @@ public class UserController {
         return response;
     }
 
-    @PatchMapping("/user/{id}/edit")
+    @PatchMapping("/users/{id}/edit")
     public UserResponseDto editUser(@PathVariable Long id,
                                     @RequestBody @Validated(Default.class)
                                     UserCreateEditRequestDto userCreateEditRequestDto) {
