@@ -19,7 +19,7 @@ public class CommonExceptionHandler {
 
         ErrorResponseDto<String> response = new ErrorResponseDto<>(
                 HttpStatus.NOT_FOUND.value(),
-                "Элемент не найден"
+                "Элемент с id=%d не найден".formatted(e.getId())
         );
 
         log.info("Finished handling NotFoundException");

@@ -15,7 +15,7 @@ public class AdCrudService {
 
     private final AdDao adDao;
 
-    private AdMapper adMapper;
+    private final AdMapper adMapper;
 
     public AdResponseDto findById(Long id) {
         log.info("Start findById; id={}", id);

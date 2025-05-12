@@ -7,12 +7,14 @@ import io.github.aglushkovsky.advertisingservice.dto.response.CommentResponseDto
 import io.github.aglushkovsky.advertisingservice.service.CommentService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1/ads/{adId}/comments")
 @RequiredArgsConstructor
+@Slf4j
 public class AdCommentController {
 
     private final CommentService commentService;
@@ -20,14 +22,27 @@ public class AdCommentController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public CommentResponseDto createCommentForAd(@PathVariable Long adId,
-                                                 @RequestBody CommentCreateRequestDto commentCreateRequestDto) {
-        return commentService.createComment(adId, commentCreateRequestDto);
+                                                 @RequestBody @Valid CommentCreateRequestDto commentCreateRequestDto) {
+        log.info("Start POST /api/v1/ads/{}/comments", adId);
+        CommentResponseDto response = commentService.createComment(adId, commentCreateRequestDto);
+        log.info("End POST /api/v1/ads/{}/comments", adId);
+        return response;
     }
 
-    // TODO Сделать параметры pageable по умолчанию
     @GetMapping
     public PageEntity<CommentResponseDto> findAllCommentsByAdId(@PathVariable Long adId,
-                                                                @Valid PageableRequestDto pageable) {
-        return commentService.findAllCommentsByAdId(adId, pageable);
+                                                                @ModelAttribute("pageable") @Valid
+                                                                PageableRequestDto pageable) {
+        log.info("Start GET /api/v1/ads/{}/comments", adId);
+        PageEntity<CommentResponseDto> response = commentService.findAllCommentsByAdId(adId, pageable);
+        log.info("End GET /api/v1/ads/{}/comments", adId);
+        return response;
+    }
+
+    // TODO Точно такой же код есть в AdSearchController. Подумать, как сделать это лучше.
+    @ModelAttribute("pageable")
+    public PageableRequestDto createPageableAttributes(@RequestParam(defaultValue = "10") Long limit,
+                                                       @RequestParam(defaultValue = "1") Long page) {
+        return new PageableRequestDto(limit, page);
     }
 }

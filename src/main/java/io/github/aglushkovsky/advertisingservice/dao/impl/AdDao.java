@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static io.github.aglushkovsky.advertisingservice.entity.QAd.*;
+import static io.github.aglushkovsky.advertisingservice.entity.QComment.comment;
 import static io.github.aglushkovsky.advertisingservice.entity.QLocality.*;
 import static io.github.aglushkovsky.advertisingservice.entity.QLocalityPart.*;
 import static io.github.aglushkovsky.advertisingservice.util.QueryDslUtils.*;
@@ -61,5 +62,10 @@ public class AdDao extends PageableAbstractDao<Ad, Long> {
                 .fetchOne();
 
         return Optional.ofNullable(result);
+    }
+
+    @Transactional(readOnly = true)
+    public boolean isExists(Long adId) {
+        return isExists(ad, ad.id.eq(adId));
     }
 }

@@ -5,7 +5,6 @@ import io.github.aglushkovsky.advertisingservice.dto.response.LocalityResponseDt
 import io.github.aglushkovsky.advertisingservice.entity.Locality;
 import io.github.aglushkovsky.advertisingservice.entity.enumeration.LocalityType;
 import io.github.aglushkovsky.advertisingservice.mapper.LocalityMapper;
-import io.github.aglushkovsky.advertisingservice.validator.annotation.ExistsIdInLocalityDao;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -14,10 +13,11 @@ import org.springframework.validation.annotation.Validated;
 import java.util.Arrays;
 import java.util.List;
 
+import static io.github.aglushkovsky.advertisingservice.validator.DaoIdValidator.validateId;
+
 @Service
 @RequiredArgsConstructor
 @Slf4j
-@Validated
 public class LocalityService {
 
     private final LocalityDao localityDao;
@@ -34,9 +34,10 @@ public class LocalityService {
         return result.stream().map(localityMapper::toDto).toList();
     }
 
-    public List<LocalityResponseDto> findDirectDescendantsByLocalityId(@ExistsIdInLocalityDao Long localityId) {
+    public List<LocalityResponseDto> findDirectDescendantsByLocalityId(Long localityId) {
         log.info("Start findDirectDescendantsByLocalityId; localityId={}", localityId);
 
+        validateId(localityId, localityDao::isExists, "Not found locality with id={}", false);
         List<Locality> result = localityDao.findDirectDescendantsByLocalityId(localityId);
 
         log.info("Finished findDirectDescendantsByLocalityId; localityId={}, found items: {}", localityId, result.size());

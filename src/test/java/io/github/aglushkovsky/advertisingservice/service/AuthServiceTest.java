@@ -1,6 +1,5 @@
 package io.github.aglushkovsky.advertisingservice.service;
 
-import io.github.aglushkovsky.advertisingservice.annotation.ServiceUnitTest;
 import io.github.aglushkovsky.advertisingservice.dao.impl.UserDao;
 import io.github.aglushkovsky.advertisingservice.dto.request.JwtAuthRequestDto;
 import io.github.aglushkovsky.advertisingservice.dto.response.JwtAuthResponseDto;
@@ -13,6 +12,7 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
 import java.util.Map;
 import java.util.Optional;
@@ -21,7 +21,7 @@ import static java.util.Collections.*;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-@ServiceUnitTest(value = AuthService.class)
+@SpringJUnitConfig({AuthService.class})
 class AuthServiceTest {
 
     private static final Map<String, String> userStubPasswordsHashes = Map.of("qwerty12345",

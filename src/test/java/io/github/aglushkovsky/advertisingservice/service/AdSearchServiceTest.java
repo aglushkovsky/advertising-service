@@ -1,6 +1,5 @@
 package io.github.aglushkovsky.advertisingservice.service;
 
-import io.github.aglushkovsky.advertisingservice.annotation.ServiceUnitTest;
 import io.github.aglushkovsky.advertisingservice.dao.PageEntity;
 import io.github.aglushkovsky.advertisingservice.dao.impl.AdDao;
 import io.github.aglushkovsky.advertisingservice.dao.impl.LocalityDao;
@@ -12,13 +11,18 @@ import io.github.aglushkovsky.advertisingservice.entity.Ad;
 import io.github.aglushkovsky.advertisingservice.entity.Locality;
 import io.github.aglushkovsky.advertisingservice.entity.User;
 import io.github.aglushkovsky.advertisingservice.entity.enumeration.LocalityType;
+import io.github.aglushkovsky.advertisingservice.exception.NotFoundException;
+import io.github.aglushkovsky.advertisingservice.test.config.MapperTestConfig;
+import io.github.aglushkovsky.advertisingservice.util.MappingUtils;
 import jakarta.validation.ConstraintViolationException;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Import;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -28,7 +32,8 @@ import static java.util.Collections.*;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-@ServiceUnitTest(AdSearchService.class)
+@SpringJUnitConfig(AdSearchService.class)
+@Import(MapperTestConfig.class)
 class AdSearchServiceTest {
 
     private static final Long DEFAULT_LIMIT = 50L;
@@ -51,6 +56,9 @@ class AdSearchServiceTest {
 
     @MockitoBean
     private UserDao userDao;
+
+    @MockitoBean
+    private MappingUtils mappingUtils;
 
     @Nested
     class SearchByTerm {
@@ -129,8 +137,8 @@ class AdSearchServiceTest {
         }
 
         @Test
-        void findAllShouldNotThrowExceptionWhenLocalityIdAndPublisherIdDoesNotExists() {
-            Long localityId = 1L;
+        void findAllShouldThrowExceptionWhenLocalityIdDoesNotExists() {
+            Long invalidLocalityId = 1L;
             Long publisherId = 2L;
             var filter = new FindAllAdsFilterRequestDto(
                     null,
@@ -138,15 +146,32 @@ class AdSearchServiceTest {
                     null,
                     null,
                     publisherId,
+                    invalidLocalityId
+            );
+            var pageable = new PageableRequestDto(DEFAULT_LIMIT, DEFAULT_PAGE);
+            doReturn(false).when(localityDao).isExists(invalidLocalityId);
+
+            assertThatThrownBy(() -> adSearchService.findAll(filter, pageable))
+                    .isInstanceOf(NotFoundException.class);
+        }
+
+        @Test
+        void findAllShouldThrowExceptionWhenPublisherIdDoesNotExists() {
+            Long localityId = 1L;
+            Long invalidPublisherId = 2L;
+            var filter = new FindAllAdsFilterRequestDto(
+                    null,
+                    false,
+                    null,
+                    null,
+                    invalidPublisherId,
                     localityId
             );
             var pageable = new PageableRequestDto(DEFAULT_LIMIT, DEFAULT_PAGE);
-            doReturn(false).when(localityDao).isExists(localityId);
-            doReturn(false).when(userDao).isExists(publisherId);
-            doReturn(EMPTY_AD_PAGE).when(adDao).findAll(anyLong(), anyLong(), any(), any());
+            doReturn(false).when(userDao).isExists(invalidPublisherId);
 
             assertThatThrownBy(() -> adSearchService.findAll(filter, pageable))
-                    .isInstanceOf(ConstraintViolationException.class);
+                    .isInstanceOf(NotFoundException.class);
         }
     }
 }

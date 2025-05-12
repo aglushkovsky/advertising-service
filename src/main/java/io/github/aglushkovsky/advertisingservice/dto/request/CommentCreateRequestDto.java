@@ -1,4 +1,6 @@
 package io.github.aglushkovsky.advertisingservice.dto.request;
 
-public record CommentCreateRequestDto(String text) {
+import jakarta.validation.constraints.Size;
+
+public record CommentCreateRequestDto(@Size(min = 5) String text) {
 }

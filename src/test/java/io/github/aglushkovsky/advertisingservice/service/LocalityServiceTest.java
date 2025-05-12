@@ -1,22 +1,23 @@
 package io.github.aglushkovsky.advertisingservice.service;
 
-import io.github.aglushkovsky.advertisingservice.annotation.ServiceUnitTest;
 import io.github.aglushkovsky.advertisingservice.dao.impl.LocalityDao;
 import io.github.aglushkovsky.advertisingservice.dto.response.LocalityResponseDto;
 import io.github.aglushkovsky.advertisingservice.entity.Locality;
 import io.github.aglushkovsky.advertisingservice.entity.enumeration.LocalityType;
-import jakarta.validation.ConstraintViolationException;
+import io.github.aglushkovsky.advertisingservice.exception.NotFoundException;
+import io.github.aglushkovsky.advertisingservice.mapper.LocalityMapperImpl;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-@ServiceUnitTest(LocalityService.class)
+@SpringJUnitConfig({LocalityService.class, LocalityMapperImpl.class})
 class LocalityServiceTest {
 
     @MockitoBean
@@ -56,12 +57,12 @@ class LocalityServiceTest {
         }
 
         @Test
-        void findDirectDescendantsByLocalityIdShouldReturnMappedDtoListWhenLocalityIdNotExists() {
+        void findDirectDescendantsByLocalityIdShouldThrowExceptionWhenLocalityIdNotExists() {
             Long localityId = 1L;
             doReturn(false).when(localityDao).isExists(localityId);
 
             assertThatThrownBy(() -> localityService.findDirectDescendantsByLocalityId(localityId))
-                    .isInstanceOf(ConstraintViolationException.class);
+                    .isInstanceOf(NotFoundException.class);
         }
     }
 }

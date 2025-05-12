@@ -3,40 +3,41 @@ package io.github.aglushkovsky.advertisingservice.service;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.Predicate;
 import io.github.aglushkovsky.advertisingservice.dao.PageEntity;
+import io.github.aglushkovsky.advertisingservice.dao.impl.LocalityDao;
+import io.github.aglushkovsky.advertisingservice.dao.impl.UserDao;
 import io.github.aglushkovsky.advertisingservice.dto.request.PageableRequestDto;
 import io.github.aglushkovsky.advertisingservice.dto.response.AdResponseDto;
 import io.github.aglushkovsky.advertisingservice.entity.Ad;
-import io.github.aglushkovsky.advertisingservice.mapper.AdMapper;
 import io.github.aglushkovsky.advertisingservice.mapper.page.AdPageMapper;
 import io.github.aglushkovsky.advertisingservice.util.PredicateChainBuilder;
 import io.github.aglushkovsky.advertisingservice.dao.impl.AdDao;
 import io.github.aglushkovsky.advertisingservice.dto.request.FindAllAdsFilterRequestDto;
-import io.github.aglushkovsky.advertisingservice.validator.group.dao.DaoValidationGroup;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.validation.annotation.Validated;
 
 import java.util.function.Function;
 
 import static com.querydsl.jpa.JPAExpressions.selectFrom;
 import static io.github.aglushkovsky.advertisingservice.entity.QAd.*;
 import static io.github.aglushkovsky.advertisingservice.entity.QLocalityPart.localityPart;
+import static io.github.aglushkovsky.advertisingservice.validator.DaoIdValidator.*;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
-@Validated(DaoValidationGroup.class)
 public class AdSearchService {
 
     private final AdDao adDao;
-    private final AdMapper adMapper;
+    private final LocalityDao localityDao;
+    private final UserDao userDao;
     private final AdPageMapper adPageMapper;
 
-    public PageEntity<AdResponseDto> findAll(@Valid FindAllAdsFilterRequestDto filter,
-                                             PageableRequestDto pageable) {
+    public PageEntity<AdResponseDto> findAll(FindAllAdsFilterRequestDto filter, PageableRequestDto pageable) {
         log.info("Start findAll; filter: {}", filter);
+
+        validateId(filter.localityId(), localityDao::isExists, "Not found locality with id={}", true);
+        validateId(filter.publisherId(), userDao::isExists, "Not found publisher with id={}", true);
 
         Predicate predicate = buildPredicate(filter);
         OrderSpecifier<Boolean> order = getDefaultPromotedAdsPrecedenceOrder();

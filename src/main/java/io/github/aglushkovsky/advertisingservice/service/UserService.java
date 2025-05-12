@@ -28,7 +28,7 @@ public class UserService {
     public UserResponseDto createUser(UserCreateEditRequestDto userCreateEditRequestDto) {
         log.info("Start createUser");
 
-        User user = userMapper.toUserFromAuthenticatedUserId(userCreateEditRequestDto);
+        User user = userMapper.toUser(userCreateEditRequestDto);
         User createdUser = userDao.add(user);
         UserResponseDto userResponseDto = userMapper.toDto(createdUser);
 

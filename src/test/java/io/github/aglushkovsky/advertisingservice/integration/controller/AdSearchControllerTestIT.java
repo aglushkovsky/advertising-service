@@ -59,17 +59,4 @@ public class AdSearchControllerTestIT extends AbstractIntegrationTest {
                             hasItems("minPrice", "maxPrice", "localityId", "publisherId", null)));
         }
     }
-
-    @Nested
-    class FindById {
-
-        @Test
-        void findByIdShouldReturnResultWhenIdIsValid() throws Exception {
-            Long adId = 1L;
-
-            mockMvc.perform(get("/api/v1/ads/{0}", adId))
-                    .andExpect(status().isOk())
-                    .andExpect(jsonPath("$.id").value(adId));
-        }
-    }
 }

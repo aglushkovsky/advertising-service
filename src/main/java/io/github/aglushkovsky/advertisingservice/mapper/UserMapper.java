@@ -27,7 +27,7 @@ public abstract class UserMapper {
     protected UserDao userDao;
 
     @Mapping(target = "passwordHash", source = "password", qualifiedByName = {"MappingUtils", "getPasswordHash"})
-    public abstract User toUserFromAuthenticatedUserId(UserCreateEditRequestDto userCreateEditRequestDto);
+    public abstract User toUser(UserCreateEditRequestDto userCreateEditRequestDto);
 
     public abstract UserResponseDto toDto(User user);
 

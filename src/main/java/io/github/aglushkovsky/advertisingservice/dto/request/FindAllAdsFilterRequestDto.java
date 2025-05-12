@@ -1,9 +1,6 @@
 package io.github.aglushkovsky.advertisingservice.dto.request;
 
-import io.github.aglushkovsky.advertisingservice.validator.annotation.ExistsIdInLocalityDao;
-import io.github.aglushkovsky.advertisingservice.validator.annotation.ExistsIdInUserDao;
 import io.github.aglushkovsky.advertisingservice.validator.annotation.ValidPriceRange;
-import io.github.aglushkovsky.advertisingservice.validator.group.dao.DaoValidationGroup;
 import jakarta.validation.constraints.*;
 
 import java.math.BigDecimal;
@@ -18,10 +15,8 @@ public record FindAllAdsFilterRequestDto(String term,
                                          BigDecimal minPrice,
                                          @PositiveOrZero(message = "Максимальная сумма не может быть меньше 0.")
                                          BigDecimal maxPrice,
-                                         @ExistsIdInUserDao(groups = DaoValidationGroup.class)
-                                         @Positive(message = "Идентификатор автора не может быть меньше 1.")
+                                         @Min(value = 1, message = "Идентификатор автора не может быть меньше 1.")
                                          Long publisherId,
-                                         @Positive(message = "Идентификатор адреса не может быть меньше 1.")
-                                         @ExistsIdInLocalityDao(groups = DaoValidationGroup.class)
+                                         @Min(value = 1, message = "Идентификатор адреса не может быть меньше 1.")
                                          Long localityId) {
 }
