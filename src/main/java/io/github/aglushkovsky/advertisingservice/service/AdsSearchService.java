@@ -26,7 +26,7 @@ import static io.github.aglushkovsky.advertisingservice.validator.DaoIdValidator
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class AdSearchService {
+public class AdsSearchService {
 
     private final AdDao adDao;
     private final LocalityDao localityDao;

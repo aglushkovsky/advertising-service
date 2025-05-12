@@ -14,7 +14,6 @@ import io.github.aglushkovsky.advertisingservice.entity.enumeration.LocalityType
 import io.github.aglushkovsky.advertisingservice.exception.NotFoundException;
 import io.github.aglushkovsky.advertisingservice.test.config.MapperTestConfig;
 import io.github.aglushkovsky.advertisingservice.util.MappingUtils;
-import jakarta.validation.ConstraintViolationException;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -32,9 +31,9 @@ import static java.util.Collections.*;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-@SpringJUnitConfig(AdSearchService.class)
+@SpringJUnitConfig(AdsSearchService.class)
 @Import(MapperTestConfig.class)
-class AdSearchServiceTest {
+class AdsSearchServiceTest {
 
     private static final Long DEFAULT_LIMIT = 50L;
 
@@ -46,7 +45,7 @@ class AdSearchServiceTest {
     );
 
     @Autowired
-    private AdSearchService adSearchService;
+    private AdsSearchService adsSearchService;
 
     @MockitoBean
     private AdDao adDao;
@@ -88,7 +87,7 @@ class AdSearchServiceTest {
             );
             doReturn(pageEntityStub).when(adDao).findAll(anyLong(), anyLong(), any(), any());
 
-            PageEntity<AdResponseDto> ads = adSearchService.findAll(filter, pageable);
+            PageEntity<AdResponseDto> ads = adsSearchService.findAll(filter, pageable);
 
             assertThat(ads.body()).hasSize(1);
             assertThat(ads.body().stream().findFirst().map(AdResponseDto::title).orElseThrow()).containsIgnoringCase(term);
@@ -107,7 +106,7 @@ class AdSearchServiceTest {
                     null);
             var pageable = new PageableRequestDto(DEFAULT_LIMIT, DEFAULT_PAGE);
 
-            PageEntity<AdResponseDto> ads = adSearchService.findAll(filter, pageable);
+            PageEntity<AdResponseDto> ads = adsSearchService.findAll(filter, pageable);
 
             assertThat(ads.body()).isEmpty();
         }
@@ -133,7 +132,7 @@ class AdSearchServiceTest {
             doReturn(true).when(userDao).isExists(publisherId);
             doReturn(EMPTY_AD_PAGE).when(adDao).findAll(anyLong(), anyLong(), any(), any());
 
-            assertThatCode(() -> adSearchService.findAll(filter, pageable)).doesNotThrowAnyException();
+            assertThatCode(() -> adsSearchService.findAll(filter, pageable)).doesNotThrowAnyException();
         }
 
         @Test
@@ -151,7 +150,7 @@ class AdSearchServiceTest {
             var pageable = new PageableRequestDto(DEFAULT_LIMIT, DEFAULT_PAGE);
             doReturn(false).when(localityDao).isExists(invalidLocalityId);
 
-            assertThatThrownBy(() -> adSearchService.findAll(filter, pageable))
+            assertThatThrownBy(() -> adsSearchService.findAll(filter, pageable))
                     .isInstanceOf(NotFoundException.class);
         }
 
@@ -170,7 +169,7 @@ class AdSearchServiceTest {
             var pageable = new PageableRequestDto(DEFAULT_LIMIT, DEFAULT_PAGE);
             doReturn(false).when(userDao).isExists(invalidPublisherId);
 
-            assertThatThrownBy(() -> adSearchService.findAll(filter, pageable))
+            assertThatThrownBy(() -> adsSearchService.findAll(filter, pageable))
                     .isInstanceOf(NotFoundException.class);
         }
     }

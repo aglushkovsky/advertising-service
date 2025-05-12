@@ -27,11 +27,15 @@ public abstract class UserMapper {
     protected UserDao userDao;
 
     @Mapping(target = "passwordHash", source = "password", qualifiedByName = {"MappingUtils", "getPasswordHash"})
+    @Mapping(target = "role", constant = "USER")
+    @Mapping(target = "totalRating", constant = "0.0")
     public abstract User toUser(UserCreateEditRequestDto userCreateEditRequestDto);
 
     public abstract UserResponseDto toDto(User user);
 
     @Mapping(target = "passwordHash", source = "password", qualifiedByName = {"MappingUtils", "getPasswordHash"})
+    @Mapping(target = "role", constant = "USER")
+    @Mapping(target = "totalRating", constant = "0.0")
     @BeanMapping(nullValuePropertyMappingStrategy = IGNORE)
     public abstract User updateUser(@MappingTarget User user, UserCreateEditRequestDto userCreateEditRequestDto);
 

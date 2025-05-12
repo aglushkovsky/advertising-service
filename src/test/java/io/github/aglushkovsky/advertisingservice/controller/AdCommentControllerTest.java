@@ -4,13 +4,13 @@ import io.github.aglushkovsky.advertisingservice.annotation.WebMvcUnitTest;
 import io.github.aglushkovsky.advertisingservice.service.CommentService;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 // TODO Написать тесты
 @WebMvcUnitTest(AdCommentController.class)
 class AdCommentControllerTest {
 
-    @Autowired
+    @MockitoBean
     private CommentService commentService;
 
     @Nested

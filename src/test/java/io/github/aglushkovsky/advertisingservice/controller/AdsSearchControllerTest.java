@@ -6,8 +6,7 @@ import io.github.aglushkovsky.advertisingservice.dao.PageEntity;
 import io.github.aglushkovsky.advertisingservice.dto.response.AdResponseDto;
 import io.github.aglushkovsky.advertisingservice.dto.response.LocalityResponseDto;
 import io.github.aglushkovsky.advertisingservice.dto.response.UserResponseDto;
-import io.github.aglushkovsky.advertisingservice.exception.NotFoundException;
-import io.github.aglushkovsky.advertisingservice.service.AdSearchService;
+import io.github.aglushkovsky.advertisingservice.service.AdsSearchService;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,11 +22,11 @@ import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@WebMvcUnitTest(AdSearchController.class)
-class AdSearchControllerTest {
+@WebMvcUnitTest(AdsSearchController.class)
+class AdsSearchControllerTest {
 
     @MockitoBean
-    private AdSearchService adSearchService;
+    private AdsSearchService adsSearchService;
 
     @Autowired
     private MockMvc mockMvc;
@@ -54,7 +53,7 @@ class AdSearchControllerTest {
                     ),
                     new PageEntity.Metadata(1L, 1L, 1L, true)
             );
-            doReturn(findAllResultStub).when(adSearchService).findAll(any(), any());
+            doReturn(findAllResultStub).when(adsSearchService).findAll(any(), any());
 
             mockMvc.perform(get("/api/v1/ads"))
                     .andExpect(status().isOk())
@@ -77,7 +76,7 @@ class AdSearchControllerTest {
                     ),
                     new PageEntity.Metadata(1L, 1L, 1L, true)
             );
-            doReturn(findAllResultStub).when(adSearchService).findAll(any(), any());
+            doReturn(findAllResultStub).when(adsSearchService).findAll(any(), any());
 
             mockMvc.perform(get("/api/v1/ads")
                             .queryParam("term", "test")

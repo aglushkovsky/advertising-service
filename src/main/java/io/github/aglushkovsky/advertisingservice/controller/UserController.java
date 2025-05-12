@@ -3,7 +3,7 @@ package io.github.aglushkovsky.advertisingservice.controller;
 import io.github.aglushkovsky.advertisingservice.dto.request.UserCreateEditRequestDto;
 import io.github.aglushkovsky.advertisingservice.dto.response.UserResponseDto;
 import io.github.aglushkovsky.advertisingservice.service.UserService;
-import io.github.aglushkovsky.advertisingservice.validator.group.user.create.UserCreateGroup;
+import io.github.aglushkovsky.advertisingservice.validator.group.CreateGroup;
 import io.swagger.v3.oas.annotations.security.SecurityRequirements;
 import jakarta.validation.groups.Default;
 import lombok.RequiredArgsConstructor;
@@ -23,7 +23,7 @@ public class UserController {
     @PostMapping("/registration")
     @PreAuthorize("isAnonymous()")
     @SecurityRequirements
-    public UserResponseDto createUser(@RequestBody @Validated({Default.class, UserCreateGroup.class})
+    public UserResponseDto createUser(@RequestBody @Validated({Default.class, CreateGroup.class})
                                       UserCreateEditRequestDto userCreateEditRequestDto) {
         log.info("Start POST /api/v1/registration");
         UserResponseDto response = userService.createUser(userCreateEditRequestDto);
@@ -31,7 +31,7 @@ public class UserController {
         return response;
     }
 
-    @PatchMapping("/users/{id}/edit")
+    @PatchMapping("/users/{id}")
     public UserResponseDto editUser(@PathVariable Long id,
                                     @RequestBody @Validated(Default.class)
                                     UserCreateEditRequestDto userCreateEditRequestDto) {

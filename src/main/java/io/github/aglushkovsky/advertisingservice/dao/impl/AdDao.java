@@ -29,6 +29,11 @@ public class AdDao extends PageableAbstractDao<Ad, Long> {
         delete(Ad.class, id);
     }
 
+    // TODO Подумать, какой вариант delete оставить
+    public void delete(Ad ad) {
+        entityManager.remove(ad);
+    }
+
     @Override
     @Transactional(readOnly = true)
     public List<Ad> findAll() {
