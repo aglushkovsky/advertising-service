@@ -1,11 +1,15 @@
 package io.github.aglushkovsky.advertisingservice.entity;
 
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
+@ToString(exclude = {"author", "recipient"})
+@EqualsAndHashCode(exclude = {"author", "recipient"})
 @Entity
 public class UserRate {
 

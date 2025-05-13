@@ -24,5 +24,3 @@ hibernate:
 jwt:
   secret: bW3JzRFeKqdEOcGlZxaCwAn3m6EB1qUZxtIAOd1O2za4kYwFesJA6YEio5upaaTmEM1LtTltKvuqcvIiHohzmQ==
   expiration: 604800000
-
-root.locality.type: CITY

@@ -39,4 +39,15 @@ public class UserDao extends AbstractDao<User, Long> {
 
         return Optional.ofNullable(result);
     }
+
+    public void updateTotalRating(Long userId, Double totalRating) {
+        String updateTotalRatingQuery = """
+                UPDATE User u SET u.totalRating = :totalRating WHERE u.id = :userId
+                """;
+
+        entityManager.createQuery(updateTotalRatingQuery)
+                .setParameter("totalRating", totalRating)
+                .setParameter("userId", userId)
+                .executeUpdate();
+    }
 }

@@ -21,8 +21,7 @@ public class LocalityController {
     private final LocalityService localityService;
 
     @GetMapping
-    public List<LocalityResponseDto> findAllByLocalityType(@RequestParam(defaultValue = "${root.locality.type}")
-                                                           LocalityType type) {
+    public List<LocalityResponseDto> findAllByLocalityType(@RequestParam(defaultValue = "CITY") LocalityType type) {
         log.info("Start GET /api/v1/localities; type={}", type);
         List<LocalityResponseDto> result = localityService.findAllByLocalityType(type);
         log.info("Finished GET /api/v1/localities; type={}; found items: {}", type, result.size());

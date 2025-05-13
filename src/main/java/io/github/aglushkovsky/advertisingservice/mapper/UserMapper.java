@@ -5,13 +5,12 @@ import io.github.aglushkovsky.advertisingservice.dto.request.UserCreateEditReque
 import io.github.aglushkovsky.advertisingservice.dto.response.UserResponseDto;
 import io.github.aglushkovsky.advertisingservice.entity.User;
 import io.github.aglushkovsky.advertisingservice.exception.NotFoundException;
-import io.github.aglushkovsky.advertisingservice.jwt.JwtAuthentication;
 import io.github.aglushkovsky.advertisingservice.util.MappingUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.mapstruct.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.context.SecurityContextHolder;
 
+import static io.github.aglushkovsky.advertisingservice.util.SecurityUtils.*;
 import static org.mapstruct.MappingConstants.ComponentModel.*;
 import static org.mapstruct.NullValuePropertyMappingStrategy.*;
 
@@ -40,8 +39,7 @@ public abstract class UserMapper {
     public abstract User updateUser(@MappingTarget User user, UserCreateEditRequestDto userCreateEditRequestDto);
 
     public User toUserFromAuthenticatedUserId() {
-        JwtAuthentication authentication = (JwtAuthentication) SecurityContextHolder.getContext().getAuthentication();
-        return toUserFromUserId(authentication.getId());
+        return toUserFromUserId(getAuthenticatedUserId());
     }
 
     public User toUserFromUserId(Long userId) {
