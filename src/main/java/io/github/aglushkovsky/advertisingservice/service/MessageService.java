@@ -1,5 +1,7 @@
 package io.github.aglushkovsky.advertisingservice.service;
 
+import com.querydsl.core.types.dsl.BooleanExpression;
+import io.github.aglushkovsky.advertisingservice.controller.ScrollDirection;
 import io.github.aglushkovsky.advertisingservice.dao.impl.MessageDao;
 import io.github.aglushkovsky.advertisingservice.dao.impl.UserDao;
 import io.github.aglushkovsky.advertisingservice.dto.request.MessageCreateRequestDto;
@@ -14,6 +16,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+import static io.github.aglushkovsky.advertisingservice.controller.ScrollDirection.*;
+import static io.github.aglushkovsky.advertisingservice.entity.QMessage.message;
 import static io.github.aglushkovsky.advertisingservice.validator.DaoIdValidator.validateId;
 
 @Service
@@ -25,14 +29,18 @@ public class MessageService {
     private final UserDao userDao;
     private final MessageMapper messageMapper;
 
-    public List<MessageResponseDto> findMessage(Long receiverId, Long lastMessageId, Long limit) {
-        log.info("Finding messages for receiverId={}; lastMessageId={}", receiverId, lastMessageId);
+    public List<MessageResponseDto> findMessage(Long receiverId, Long keysetMessageId, Long limit, ScrollDirection scrollDirection) {
+        log.info("Finding messages for receiverId={}; lastMessageId={}", receiverId, keysetMessageId);
 
-        validateId(receiverId, messageDao::isExists, "Not found message with id={}", false);
-        validateId(lastMessageId, userDao::isExists, "Not found receiver with id={}", false);
+        validateId(receiverId, userDao::isExists, "Not found receiver with id={}", false);
+        validateId(keysetMessageId, messageDao::isExists, "Not found message with id={}", false);
 
         List<MessageResponseDto> messageResponseDtoList = messageDao
-                .findAfterId(lastMessageId, limit, getSenderIdFromAuthenticatedUser(), receiverId)
+                .findAll(
+                        receiverId,
+                        getSenderIdFromAuthenticatedUser(),
+                        limit,
+                        getKeysetFilter(keysetMessageId, scrollDirection))
                 .stream()
                 .map(messageMapper::toDto)
                 .toList();
@@ -40,6 +48,10 @@ public class MessageService {
         log.info("Found {} messages", messageResponseDtoList.size());
 
         return messageResponseDtoList;
+    }
+
+    private BooleanExpression getKeysetFilter(Long keysetMessageId, ScrollDirection scrollDirection) {
+        return scrollDirection == DOWN ? message.id.gt(keysetMessageId) : message.id.lt(keysetMessageId);
     }
 
     // TODO похожая функциональность используется много где, поэтому можно вынести в какой-нибудь утилитный класс

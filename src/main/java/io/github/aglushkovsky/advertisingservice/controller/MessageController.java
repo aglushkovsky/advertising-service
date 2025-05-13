@@ -34,10 +34,11 @@ public class MessageController {
     @GetMapping
     public List<MessageResponseDto> findMessages(@RequestParam @Min(1) Long receiverId,
                                                  @RequestParam @Min(1) Long lastMessageId,
-                                                 @RequestParam(defaultValue = "10") @Min(1) @Max(50) Long limit) {
+                                                 @RequestParam(defaultValue = "10") @Min(1) @Max(50) Long limit,
+                                                 @RequestParam(defaultValue = "DOWN") ScrollDirection scrollDirection) {
         log.info("Start GET /api/v1/messages; receiverId={}, lastMessageId={}, limit={}",
                 receiverId, lastMessageId, limit);
-        List<MessageResponseDto> response = messageService.findMessage(receiverId, lastMessageId, limit);
+        List<MessageResponseDto> response = messageService.findMessage(receiverId, lastMessageId, limit, scrollDirection);
         log.info("Finished GET /api/v1/messages; found {} messages", response.size());
         return response;
     }

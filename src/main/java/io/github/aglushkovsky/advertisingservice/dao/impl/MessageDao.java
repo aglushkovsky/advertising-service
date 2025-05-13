@@ -1,5 +1,6 @@
 package io.github.aglushkovsky.advertisingservice.dao.impl;
 
+import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQuery;
 import io.github.aglushkovsky.advertisingservice.dao.AbstractDao;
 import io.github.aglushkovsky.advertisingservice.entity.Message;
@@ -29,11 +30,11 @@ public class MessageDao extends AbstractDao<Message, Long> {
         return isExists(message, message.id.eq(messageId));
     }
 
-    public List<Message> findAfterId(Long afterId, Long limit, Long senderId, Long receiverId) {
+    public List<Message> findAll(Long receiverId, Long senderId, Long limit, BooleanExpression keysetWhereFilter) {
         return new JPAQuery<>(entityManager)
                 .select(message)
                 .from(message)
-                .where(message.id.eq(afterId)
+                .where(keysetWhereFilter
                         .and(message.sender.id.in(senderId, receiverId))
                         .and(message.receiver.id.in(senderId, receiverId)))
                 .orderBy(message.sentAt.asc())
