@@ -29,7 +29,7 @@ public class AdsSearchControllerTestIT extends AbstractIntegrationTest {
             mockMvc.perform(get("/api/v1/ads")
                             .queryParam("term", searchTerm)
                             .queryParam("onlyInTitle", "true")
-                            .queryParam("minPrice", "10000000") // TODO подумать, оставить так или поменять?
+                            .queryParam("minPrice", "10000000")
                             .queryParam("maxPrice", "20000000")
                             .queryParam("localityId", localityId.toString())
                             .queryParam("publisherId", publisherId.toString())
@@ -49,7 +49,7 @@ public class AdsSearchControllerTestIT extends AbstractIntegrationTest {
         @Test
         void searchAdsShouldReturnErrorResponseWhenFilterParametersIsInvalid() throws Exception {
             mockMvc.perform(get("/api/v1/ads")
-                            .queryParam("minPrice", "-10000000") // TODO подумать, оставить так или поменять?
+                            .queryParam("minPrice", "-10000000")
                             .queryParam("maxPrice", "-20000000")
                             .queryParam("localityId", "0")
                             .queryParam("publisherId", "0"))

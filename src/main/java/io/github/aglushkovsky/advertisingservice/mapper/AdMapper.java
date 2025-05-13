@@ -9,7 +9,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.mapstruct.*;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 import static org.mapstruct.MappingConstants.ComponentModel.*;
@@ -24,8 +23,6 @@ import static org.mapstruct.ReportingPolicy.*;
 @Slf4j
 public abstract class AdMapper {
 
-    protected static final int DIGITS_AFTER_POINT = 2;
-
     @Autowired
     protected AdDao adDao;
 
@@ -37,10 +34,6 @@ public abstract class AdMapper {
 
     @Mapping(target = "localityParts", source = "locality")
     public abstract AdResponseDto toDto(Ad ad);
-
-    public BigDecimal convertToReadablePrice(BigDecimal price) {
-        return price == null ? null : price.movePointLeft(DIGITS_AFTER_POINT);
-    }
 
     public Ad toEntityFromAdId(Long adId) {
         return adDao.findById(adId).orElseThrow(() -> {
