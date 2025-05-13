@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/v1/ads")
 @RequiredArgsConstructor
 @Slf4j
-// TODO Добавить логирование!
 public class AdCrudController {
 
     private final AdCrudService adCrudService;
@@ -35,12 +34,17 @@ public class AdCrudController {
     @PatchMapping("/{id}")
     public AdResponseDto editAd(@PathVariable Long id,
                                 @RequestBody @Valid AdCreateEditResponseDto adCreateEditResponseDto) {
-        return adCrudService.editAd(id, adCreateEditResponseDto);
+        log.info("Start PATCH /api/v1/ads; id={}, {}", id, adCreateEditResponseDto);
+        AdResponseDto adResponseDto = adCrudService.editAd(id, adCreateEditResponseDto);
+        log.info("Finished PATCH /api/v1/ads; updated ad with id={}: {}", id, adResponseDto);
+        return adResponseDto;
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteAd(@PathVariable Long id) {
+        log.info("Start DELETE /api/v1/ads; id={}", id);
         adCrudService.deleteAd(id);
+        log.info("Finished DELETE /api/v1/ads; deleted ad: {}", id);
         return ResponseEntity.noContent().build();
     }
 
