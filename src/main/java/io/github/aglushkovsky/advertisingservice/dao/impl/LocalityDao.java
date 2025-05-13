@@ -14,29 +14,20 @@ import static io.github.aglushkovsky.advertisingservice.entity.QLocality.*;
 import static io.github.aglushkovsky.advertisingservice.entity.QLocalityPart.*;
 
 @Repository
-@Transactional
 public class LocalityDao extends AbstractDao<Locality, Long> {
 
     private static final Integer DIRECT_DESCENDANTS_DEPTH = 1;
 
     @Override
-    public void delete(Long id) {
-        delete(Locality.class, id);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
     public List<Locality> findAll() {
         return findAll(locality);
     }
 
     @Override
-    @Transactional(readOnly = true)
     public Optional<Locality> findById(Long id) {
         return findById(Locality.class, id);
     }
 
-    @Transactional(readOnly = true)
     public List<Locality> findDirectDescendantsByLocalityId(Long localityId) {
         return new JPAQuery<>(entityManager)
                 .select(locality)
@@ -47,7 +38,6 @@ public class LocalityDao extends AbstractDao<Locality, Long> {
                 .fetch();
     }
 
-    @Transactional(readOnly = true)
     public List<Locality> findAllByLocalityType(LocalityType localityType) {
         return new JPAQuery<>(entityManager)
                 .select(locality)

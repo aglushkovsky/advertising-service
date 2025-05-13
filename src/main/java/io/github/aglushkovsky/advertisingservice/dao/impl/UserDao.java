@@ -12,22 +12,14 @@ import java.util.Optional;
 import static io.github.aglushkovsky.advertisingservice.entity.QUser.*;
 
 @Repository
-@Transactional
 public class UserDao extends AbstractDao<User, Long> {
 
     @Override
-    public void delete(Long id) {
-        delete(User.class, id);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
     public List<User> findAll() {
         return findAll(user);
     }
 
     @Override
-    @Transactional(readOnly = true)
     public Optional<User> findById(Long id) {
         return findById(User.class, id);
     }

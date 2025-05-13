@@ -15,7 +15,6 @@ import java.util.List;
 import java.util.Optional;
 
 import static io.github.aglushkovsky.advertisingservice.entity.QAd.*;
-import static io.github.aglushkovsky.advertisingservice.entity.QComment.comment;
 import static io.github.aglushkovsky.advertisingservice.entity.QLocality.*;
 import static io.github.aglushkovsky.advertisingservice.entity.QLocalityPart.*;
 import static io.github.aglushkovsky.advertisingservice.util.QueryDslUtils.*;
@@ -25,22 +24,10 @@ import static io.github.aglushkovsky.advertisingservice.util.QueryDslUtils.*;
 public class AdDao extends PageableAbstractDao<Ad, Long> {
 
     @Override
-    public void delete(Long id) {
-        delete(Ad.class, id);
-    }
-
-    // TODO Подумать, какой вариант delete оставить
-    public void delete(Ad ad) {
-        entityManager.remove(ad);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
     public List<Ad> findAll() {
         return findAll(ad);
     }
 
-    @Transactional(readOnly = true)
     public PageEntity<Ad> findAll(Long limit, Long page, Predicate predicate, OrderSpecifier<?>... orders) {
         return findAll(limit, page, ad, getEntityGraph(), predicate, orders);
     }
@@ -59,7 +46,6 @@ public class AdDao extends PageableAbstractDao<Ad, Long> {
     }
 
     @Override
-    @Transactional(readOnly = true)
     public Optional<Ad> findById(Long id) {
         Ad result = createFindAllQuery(ad)
                 .where(ad.id.eq(id))

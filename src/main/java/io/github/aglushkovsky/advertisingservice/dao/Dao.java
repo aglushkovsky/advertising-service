@@ -5,7 +5,7 @@ import java.util.Optional;
 
 public interface Dao<E, I> {
     E add(E e);
-    void delete(I id);
+    void delete(E e);
     void update(E e);
     List<E> findAll();
     Optional<E> findById(I id);

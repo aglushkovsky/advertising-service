@@ -6,14 +6,17 @@ import com.querydsl.core.types.dsl.EntityPathBase;
 import com.querydsl.jpa.impl.JPAQuery;
 import jakarta.persistence.EntityGraph;
 import org.hibernate.graph.GraphSemantic;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Objects;
 
 import static java.util.Collections.*;
 
+@Transactional
 public abstract class PageableAbstractDao<E, I> extends AbstractDao<E, I> {
 
+    @Transactional(readOnly = true)
     public PageEntity<E> findAll(Long limit,
                                  Long page,
                                  EntityPathBase<E> fromEntityPath,
@@ -22,6 +25,7 @@ public abstract class PageableAbstractDao<E, I> extends AbstractDao<E, I> {
         return findAll(limit, page, fromEntityPath, null, predicate, orders);
     }
 
+    @Transactional(readOnly = true)
     public PageEntity<E> findAll(Long limit,
                            Long page,
                            EntityPathBase<E> fromEntityPath,

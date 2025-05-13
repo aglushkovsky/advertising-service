@@ -13,10 +13,6 @@ import static io.github.aglushkovsky.advertisingservice.entity.QUserRate.*;
 @Repository
 @Transactional
 public class UserRateDao extends AbstractDao<UserRate, Long> {
-    @Override
-    public void delete(Long id) {
-        delete(UserRate.class, id);
-    }
 
     @Override
     @Transactional(readOnly = true)

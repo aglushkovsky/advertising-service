@@ -18,18 +18,11 @@ import static io.github.aglushkovsky.advertisingservice.entity.QComment.*;
 public class CommentDao extends PageableAbstractDao<Comment, Long> {
 
     @Override
-    public void delete(Long id) {
-        delete(Comment.class, id);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
     public List<Comment> findAll() {
         return findAll(comment);
     }
 
     @Override
-    @Transactional(readOnly = true)
     public Optional<Comment> findById(Long id) {
         return findById(Comment.class, id);
     }

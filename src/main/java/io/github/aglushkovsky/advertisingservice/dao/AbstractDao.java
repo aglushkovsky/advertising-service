@@ -23,8 +23,8 @@ public abstract class AbstractDao<E, I> implements Dao<E, I> {
         return e;
     }
 
-    protected void delete(Class<E> aClass, I id) {
-        E e = entityManager.find(aClass, id);
+    @Override
+    public void delete(E e) {
         entityManager.remove(e);
     }
 
@@ -32,6 +32,14 @@ public abstract class AbstractDao<E, I> implements Dao<E, I> {
     public void update(E e) {
         entityManager.merge(e);
     }
+
+    @Override
+    @Transactional(readOnly = true)
+    public abstract List<E> findAll();
+
+    @Override
+    @Transactional(readOnly = true)
+    public abstract Optional<E> findById(I id);
 
     protected List<E> findAll(EntityPathBase<E> aClass) {
         JPAQuery<E> findAllQuery = createFindAllQuery(aClass);
