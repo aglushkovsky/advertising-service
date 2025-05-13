@@ -5,6 +5,7 @@ import io.github.aglushkovsky.advertisingservice.dto.response.UserResponseDto;
 import io.github.aglushkovsky.advertisingservice.service.UserService;
 import io.github.aglushkovsky.advertisingservice.validator.group.CreateGroup;
 import io.swagger.v3.oas.annotations.security.SecurityRequirements;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.groups.Default;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -32,7 +33,7 @@ public class UserController {
     }
 
     @PatchMapping("/users/{id}")
-    public UserResponseDto editUser(@PathVariable Long id,
+    public UserResponseDto editUser(@PathVariable @Min(1) Long id,
                                     @RequestBody @Validated(Default.class)
                                     UserCreateEditRequestDto userCreateEditRequestDto) {
         log.info("Start PATCH /api/v1/user/{}/edit", id);

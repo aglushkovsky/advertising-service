@@ -25,8 +25,13 @@ public record AdCreateEditResponseDto(
                 value = 0,
                 message = "Цена не должна быть меньше {value}"
         )
+        // FIXME Поскольку я решил, что будет оперировать копейками (целым числом), то BigDecimal здесь не уместен.
         BigDecimal price,
 
+        @Size(
+                min = 5,
+                message = "Текст описания не может быть меньше {min} символов"
+        )
         String description,
 
         @NotNull(

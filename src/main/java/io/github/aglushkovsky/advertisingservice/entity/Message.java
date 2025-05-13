@@ -1,9 +1,15 @@
 package io.github.aglushkovsky.advertisingservice.entity;
 
 import jakarta.persistence.*;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@ToString(exclude = {"sender", "receiver"})
+@EqualsAndHashCode(exclude = {"sender", "receiver"})
 @Entity
 public class Message {
 

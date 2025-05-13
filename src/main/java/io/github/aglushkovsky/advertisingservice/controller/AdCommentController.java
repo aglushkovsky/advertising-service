@@ -6,6 +6,7 @@ import io.github.aglushkovsky.advertisingservice.dto.request.PageableRequestDto;
 import io.github.aglushkovsky.advertisingservice.dto.response.CommentResponseDto;
 import io.github.aglushkovsky.advertisingservice.service.CommentService;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -21,7 +22,7 @@ public class AdCommentController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public CommentResponseDto createCommentForAd(@PathVariable Long adId,
+    public CommentResponseDto createCommentForAd(@PathVariable @Min(1) Long adId,
                                                  @RequestBody @Valid CommentCreateRequestDto commentCreateRequestDto) {
         log.info("Start POST /api/v1/ads/{}/comments", adId);
         CommentResponseDto response = commentService.createComment(adId, commentCreateRequestDto);
@@ -30,7 +31,7 @@ public class AdCommentController {
     }
 
     @GetMapping
-    public PageEntity<CommentResponseDto> findAllCommentsByAdId(@PathVariable Long adId,
+    public PageEntity<CommentResponseDto> findAllCommentsByAdId(@PathVariable @Min(1) Long adId,
                                                                 @ModelAttribute("pageable") @Valid
                                                                 PageableRequestDto pageable) {
         log.info("Start GET /api/v1/ads/{}/comments", adId);

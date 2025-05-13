@@ -41,8 +41,10 @@ public abstract class UserMapper {
 
     public User toUserFromAuthenticatedUserId() {
         JwtAuthentication authentication = (JwtAuthentication) SecurityContextHolder.getContext().getAuthentication();
-        Long userId = authentication.getId();
+        return toUserFromUserId(authentication.getId());
+    }
 
+    public User toUserFromUserId(Long userId) {
         return userDao.findById(userId)
                 .orElseThrow(() -> {
                     log.error("User with id {} not found", userId);

@@ -5,6 +5,7 @@ import io.github.aglushkovsky.advertisingservice.dto.response.AdResponseDto;
 import io.github.aglushkovsky.advertisingservice.service.AdCrudService;
 import io.github.aglushkovsky.advertisingservice.validator.group.CreateGroup;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -32,7 +33,7 @@ public class AdCrudController {
     }
 
     @PatchMapping("/{id}")
-    public AdResponseDto editAd(@PathVariable Long id,
+    public AdResponseDto editAd(@PathVariable @Min(1) Long id,
                                 @RequestBody @Valid AdCreateEditResponseDto adCreateEditResponseDto) {
         log.info("Start PATCH /api/v1/ads; id={}, {}", id, adCreateEditResponseDto);
         AdResponseDto adResponseDto = adCrudService.editAd(id, adCreateEditResponseDto);
@@ -41,7 +42,7 @@ public class AdCrudController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteAd(@PathVariable Long id) {
+    public ResponseEntity<?> deleteAd(@PathVariable @Min(1) Long id) {
         log.info("Start DELETE /api/v1/ads; id={}", id);
         adCrudService.deleteAd(id);
         log.info("Finished DELETE /api/v1/ads; deleted ad: {}", id);
