@@ -20,28 +20,35 @@ import java.util.Objects;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-// TODO Добавить логирование!
 public class AdCrudService {
 
     private final AdDao adDao;
-
     private final AdMapper adMapper;
 
-    // FIXME некорректный маппинг цены, надо пофиксить
     @Transactional
     public AdResponseDto createAd(AdCreateEditResponseDto adCreateEditResponseDto) {
+        log.info("Creating new Ad; adCreateEditResponseDto: {}", adCreateEditResponseDto);
+
         Ad ad = adMapper.toEntity(adCreateEditResponseDto);
         Ad createdAd = adDao.add(ad);
-        return adMapper.toDto(createdAd);
+        AdResponseDto adResponseDto = adMapper.toDto(createdAd);
+
+        log.info("Created ad with id={}", adResponseDto.id());
+
+        return adResponseDto;
     }
 
     @Transactional
     public AdResponseDto editAd(Long adId, AdCreateEditResponseDto adCreateEditResponseDto) {
+        log.info("Editing Ad; id={}", adId);
+
         Ad adForUpdate = adDao.findById(adId).orElseThrow(() -> {
+            log.error("Can't edit: ad with id={} not found", adId);
             return new NotFoundException(adId);
         });
 
-        if (!isUserAuthorizedForAction(adForUpdate.getPublisher().getId())) {
+        if (isUserNotAuthorizedForAction(adForUpdate.getPublisher().getId())) {
+            log.error("User is not authorized for editing ad with id={}", adId);
             throw new AccessDeniedException("User is not authorized to edit ad with id=%d".formatted(adId));
         }
 
@@ -49,26 +56,33 @@ public class AdCrudService {
         adDao.update(updatedAd);
         AdResponseDto adResponseDto = adMapper.toDto(updatedAd);
 
+        log.info("Edited ad with id={}", adResponseDto.id());
+
         return adResponseDto;
     }
 
     @Transactional
     public void deleteAd(Long adId) {
+        log.info("Deleting Ad; id={}", adId);
+
         Ad adForDelete = adDao.findById(adId).orElseThrow(() -> {
+            log.error("Can't delete: ad with id={} not found", adId);
             return new NotFoundException(adId);
         });
 
-        if (!isUserAuthorizedForAction(adForDelete.getPublisher().getId())) {
+        if (isUserNotAuthorizedForAction(adForDelete.getPublisher().getId())) {
             throw new AccessDeniedException("User is not authorized to delete ad with id=%d".formatted(adId));
         }
 
         adDao.delete(adForDelete);
+
+        log.info("Deleted ad with id={}", adId);
     }
 
-    private boolean isUserAuthorizedForAction(Long adPublisherId) {
+    private boolean isUserNotAuthorizedForAction(Long adPublisherId) {
         JwtAuthentication authentication = (JwtAuthentication) SecurityContextHolder.getContext().getAuthentication();
-        return authentication.getAuthorities().contains(Role.ADMIN) ||
-               Objects.equals(authentication.getId(), adPublisherId);
+        return !authentication.getAuthorities().contains(Role.ADMIN) &&
+               !Objects.equals(authentication.getId(), adPublisherId);
     }
 
     public AdResponseDto findById(Long id) {

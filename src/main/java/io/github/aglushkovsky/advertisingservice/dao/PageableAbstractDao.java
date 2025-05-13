@@ -86,8 +86,6 @@ public abstract class PageableAbstractDao<E, I> extends AbstractDao<E, I> {
                 .fetchOne();
     }
 
-    // TODO Похоже на нарушение SRP. Подумать, куда эти методы вынести.
-
     private Long calculateOffset(Long limit, Long page) {
         return (page - 1) * limit;
     }
