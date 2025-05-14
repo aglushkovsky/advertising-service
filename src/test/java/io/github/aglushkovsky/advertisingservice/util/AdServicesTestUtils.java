@@ -14,24 +14,13 @@ import java.util.List;
 
 import static io.github.aglushkovsky.advertisingservice.entity.enumeration.AdStatus.ACTIVE;
 import static io.github.aglushkovsky.advertisingservice.entity.enumeration.LocalityType.CITY;
-import static io.github.aglushkovsky.advertisingservice.entity.enumeration.Role.USER;
+import static io.github.aglushkovsky.advertisingservice.util.PageableTestCommonUtils.*;
+import static io.github.aglushkovsky.advertisingservice.util.UserServiceTestUtils.createUserStub;
 
 @UtilityClass
 public class AdServicesTestUtils {
 
     private static final Long DEFAULT_ID = 1L;
-
-    public static User createUserStub() {
-        return User.builder()
-                .id(DEFAULT_ID)
-                .login("test_user")
-                .passwordHash("password_hash")
-                .email(null)
-                .phoneNumber(null)
-                .role(USER)
-                .totalRating(0.0)
-                .build();
-    }
 
     public static Ad createAdStub(Long adId) {
         User user = createUserStub();
@@ -46,7 +35,7 @@ public class AdServicesTestUtils {
                         .type(CITY)
                         .build())
                 .publisher(user)
-                .publishedAt(LocalDateTime.parse("2025-05-12T13:51:48.899862700"))
+                .publishedAt(LocalDateTime.now())
                 .status(ACTIVE)
                 .isPromoted(false)
                 .build();
@@ -88,19 +77,5 @@ public class AdServicesTestUtils {
 
     public static PageEntity<AdResponseDto> createAdResponseDtoStubPageEntityStub() {
         return createPageEntityStubWithSingleRecord(createAdStubResponseDto(DEFAULT_ID));
-    }
-
-    private static <T> PageEntity<T> createPageEntityStubWithSingleRecord(T entity) {
-        return PageEntity.<T>builder()
-                .body(List.of(entity))
-                .metadata(
-                        PageEntity.Metadata.builder()
-                                .currentPage(1L)
-                                .totalPages(1L)
-                                .totalRecords(1L)
-                                .isLastPage(true)
-                                .build()
-                )
-                .build();
     }
 }

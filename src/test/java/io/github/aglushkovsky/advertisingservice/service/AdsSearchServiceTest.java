@@ -20,15 +20,12 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import static io.github.aglushkovsky.advertisingservice.util.AdServicesTestUtils.*;
+import static io.github.aglushkovsky.advertisingservice.util.PageableTestCommonUtils.*;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class AdsSearchServiceTest {
-
-    private static final Long DEFAULT_LIMIT = 50L;
-
-    private static final Long DEFAULT_PAGE = 1L;
 
     @Mock
     private AdDao adDao;
@@ -60,10 +57,7 @@ class AdsSearchServiceTest {
                     .publisherId(publisherId)
                     .localityId(localityId)
                     .build();
-            PageableRequestDto pageable = PageableRequestDto.builder()
-                    .limit(DEFAULT_LIMIT)
-                    .page(DEFAULT_PAGE)
-                    .build();
+            PageableRequestDto pageable = createPageableRequestDto();
             PageEntity<Ad> adStubPageEntityStub = createAdStubPageEntityStub();
             PageEntity<AdResponseDto> adResponseDtoStubPageEntityStub = createAdResponseDtoStubPageEntityStub();
             doReturn(true).when(localityDao).isExists(localityId);
@@ -94,10 +88,7 @@ class AdsSearchServiceTest {
                     .publisherId(publisherId)
                     .localityId(localityId)
                     .build();
-            PageableRequestDto pageable = PageableRequestDto.builder()
-                    .limit(DEFAULT_LIMIT)
-                    .page(DEFAULT_PAGE)
-                    .build();
+            PageableRequestDto pageable = createPageableRequestDto();
             doReturn(false).when(localityDao).isExists(localityId);
 
             assertThatThrownBy(() -> adsSearchService.findAll(filter, pageable))
@@ -116,10 +107,7 @@ class AdsSearchServiceTest {
                     .publisherId(publisherId)
                     .localityId(localityId)
                     .build();
-            PageableRequestDto pageable = PageableRequestDto.builder()
-                    .limit(DEFAULT_LIMIT)
-                    .page(DEFAULT_PAGE)
-                    .build();
+            PageableRequestDto pageable = createPageableRequestDto();
             doReturn(true).when(localityDao).isExists(localityId);
             doReturn(false).when(userDao).isExists(publisherId);
 
@@ -134,10 +122,7 @@ class AdsSearchServiceTest {
         @Test
         void getAdsHistoryByUserIdShouldReturnResultWhenAllParametersAreValid() {
             Long userId = 1L;
-            PageableRequestDto pageable = PageableRequestDto.builder()
-                    .limit(DEFAULT_LIMIT)
-                    .page(DEFAULT_PAGE)
-                    .build();
+            PageableRequestDto pageable = createPageableRequestDto();
             PageEntity<Ad> adStubPageEntityStub = createAdStubPageEntityStub();
             PageEntity<AdResponseDto> adResponseDtoStubPageEntityStub = createAdResponseDtoStubPageEntityStub();
             doReturn(true).when(userDao).isExists(userId);
@@ -159,10 +144,7 @@ class AdsSearchServiceTest {
         @Test
         void getAdsHistoryByUserIdShouldReturnResultWhenUserIdIsInvalid() {
             Long userId = 1L;
-            PageableRequestDto pageable = PageableRequestDto.builder()
-                    .limit(DEFAULT_LIMIT)
-                    .page(DEFAULT_PAGE)
-                    .build();
+            PageableRequestDto pageable = createPageableRequestDto();
             doReturn(false).when(userDao).isExists(userId);
 
             assertThatThrownBy(() -> adsSearchService.getAdsHistoryByUserId(userId, pageable))
