@@ -1,5 +1,6 @@
 package io.github.aglushkovsky.advertisingservice.util;
 
+import io.github.aglushkovsky.advertisingservice.dao.PageEntity;
 import io.github.aglushkovsky.advertisingservice.dto.response.AdResponseDto;
 import io.github.aglushkovsky.advertisingservice.dto.response.LocalityResponseDto;
 import io.github.aglushkovsky.advertisingservice.dto.response.UserResponseDto;
@@ -16,11 +17,13 @@ import static io.github.aglushkovsky.advertisingservice.entity.enumeration.Local
 import static io.github.aglushkovsky.advertisingservice.entity.enumeration.Role.USER;
 
 @UtilityClass
-public class AdCrudServiceTestUtils {
+public class AdServicesTestUtils {
+
+    private static final Long DEFAULT_ID = 1L;
 
     public static User createUserStub() {
         return User.builder()
-                .id(1L)
+                .id(DEFAULT_ID)
                 .login("test_user")
                 .passwordHash("password_hash")
                 .email(null)
@@ -38,7 +41,7 @@ public class AdCrudServiceTestUtils {
                 .price(12345L)
                 .description(null)
                 .locality(Locality.builder()
-                        .id(1L)
+                        .id(DEFAULT_ID)
                         .name("Test City")
                         .type(CITY)
                         .build())
@@ -76,6 +79,28 @@ public class AdCrudServiceTestUtils {
                 .publishedAt(adStub.getPublishedAt().toString())
                 .status(adStub.getStatus().name())
                 .isPromoted(adStub.getIsPromoted())
+                .build();
+    }
+
+    public static PageEntity<Ad> createAdStubPageEntityStub() {
+        return createPageEntityStubWithSingleRecord(createAdStub(DEFAULT_ID));
+    }
+
+    public static PageEntity<AdResponseDto> createAdResponseDtoStubPageEntityStub() {
+        return createPageEntityStubWithSingleRecord(createAdStubResponseDto(DEFAULT_ID));
+    }
+
+    private static <T> PageEntity<T> createPageEntityStubWithSingleRecord(T entity) {
+        return PageEntity.<T>builder()
+                .body(List.of(entity))
+                .metadata(
+                        PageEntity.Metadata.builder()
+                                .currentPage(1L)
+                                .totalPages(1L)
+                                .totalRecords(1L)
+                                .isLastPage(true)
+                                .build()
+                )
                 .build();
     }
 }

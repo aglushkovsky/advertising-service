@@ -17,7 +17,7 @@ import org.springframework.security.access.AccessDeniedException;
 import java.util.Optional;
 
 import static io.github.aglushkovsky.advertisingservice.entity.enumeration.AdStatus.*;
-import static io.github.aglushkovsky.advertisingservice.util.AdCrudServiceTestUtils.*;
+import static io.github.aglushkovsky.advertisingservice.util.AdServicesTestUtils.*;
 import static io.github.aglushkovsky.advertisingservice.util.SecurityTestUtils.*;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;

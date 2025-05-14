@@ -1,5 +1,7 @@
 package io.github.aglushkovsky.advertisingservice.service;
 
+import com.querydsl.core.types.OrderSpecifier;
+import com.querydsl.core.types.Predicate;
 import io.github.aglushkovsky.advertisingservice.dao.PageEntity;
 import io.github.aglushkovsky.advertisingservice.dao.impl.AdDao;
 import io.github.aglushkovsky.advertisingservice.dao.impl.LocalityDao;
@@ -8,169 +10,163 @@ import io.github.aglushkovsky.advertisingservice.dto.request.PageableRequestDto;
 import io.github.aglushkovsky.advertisingservice.dto.response.AdResponseDto;
 import io.github.aglushkovsky.advertisingservice.dto.request.FindAllAdsFilterRequestDto;
 import io.github.aglushkovsky.advertisingservice.entity.Ad;
-import io.github.aglushkovsky.advertisingservice.entity.Locality;
-import io.github.aglushkovsky.advertisingservice.entity.User;
-import io.github.aglushkovsky.advertisingservice.entity.enumeration.LocalityType;
 import io.github.aglushkovsky.advertisingservice.exception.NotFoundException;
-import io.github.aglushkovsky.advertisingservice.test.config.MapperTestConfig;
-import io.github.aglushkovsky.advertisingservice.util.UserMapperUtils;
+import io.github.aglushkovsky.advertisingservice.mapper.page.AdPageMapper;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Import;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
-import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.util.List;
-
-import static java.util.Collections.*;
+import static io.github.aglushkovsky.advertisingservice.util.AdServicesTestUtils.*;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-@SpringJUnitConfig(AdsSearchService.class)
-@Import(MapperTestConfig.class)
+@ExtendWith(MockitoExtension.class)
 class AdsSearchServiceTest {
 
     private static final Long DEFAULT_LIMIT = 50L;
 
     private static final Long DEFAULT_PAGE = 1L;
 
-    private static final PageEntity<Ad> EMPTY_AD_PAGE = new PageEntity<>(
-            emptyList(),
-            new PageEntity.Metadata(1L, 1L, 0L, true)
-    );
-
-    @Autowired
-    private AdsSearchService adsSearchService;
-
-    @MockitoBean
+    @Mock
     private AdDao adDao;
 
-    @MockitoBean
+    @Mock
     private LocalityDao localityDao;
 
-    @MockitoBean
+    @Mock
     private UserDao userDao;
 
-    @MockitoBean
-    private UserMapperUtils userMapperUtils;
+    @Mock
+    private AdPageMapper adPageMapper;
 
-//    @Nested
-//    class SearchByTerm {
-//
-//        @ParameterizedTest
-//        @ValueSource(strings = {"macbook", "Macbook", "macbook pro", "Macbook pro", "Macbook Pro", "macbook Pro", "mAcbook"})
-//        void findAllShouldReturnAdsListWhenTermMatchWasFoundInTitleWithIgnoringCase(String term) {
-//            Ad ad = new Ad(1L,
-//                    "Macbook Pro M4 16/512 новый запечатанный из ОАЭ",
-//                    new BigDecimal("15000000"),
-//                    null,
-//                    new Locality(1L, "Орёл", List.of(), List.of(), LocalityType.CITY),
-//                    new User(),
-//                    LocalDateTime.now(),
-//                    true);
-//            var filter = new FindAllAdsFilterRequestDto(
-//                    term,
-//                    true,
-//                    null,
-//                    null,
-//                    null,
-//                    null);
-//            var pageable = new PageableRequestDto(DEFAULT_LIMIT, DEFAULT_PAGE);
-//            PageEntity<Ad> pageEntityStub = new PageEntity<>(
-//                    List.of(ad),
-//                    new PageEntity.Metadata(1L, 1L, 1L, true)
-//            );
-//            doReturn(pageEntityStub).when(adDao).findAll(anyLong(), anyLong(), any(), any());
-//
-//            PageEntity<AdResponseDto> ads = adsSearchService.findAll(filter, pageable);
-//
-//            assertThat(ads.body()).hasSize(1);
-//            assertThat(ads.body().stream().findFirst().map(AdResponseDto::title).orElseThrow()).containsIgnoringCase(term);
-//        }
-//
-//        @ParameterizedTest
-//        @ValueSource(booleans = {true, false})
-//        void findAllShouldReturnEmptyListWhenThereAreNoMatchesForTermInTitleAndDescription(Boolean onlyInTitle) {
-//            doReturn(EMPTY_AD_PAGE).when(adDao).findAll(anyLong(), anyLong(), any(), any());
-//            FindAllAdsFilterRequestDto filter = new FindAllAdsFilterRequestDto(
-//                    "dasddsad",
-//                    onlyInTitle,
-//                    null,
-//                    null,
-//                    null,
-//                    null);
-//            var pageable = new PageableRequestDto(DEFAULT_LIMIT, DEFAULT_PAGE);
-//
-//            PageEntity<AdResponseDto> ads = adsSearchService.findAll(filter, pageable);
-//
-//            assertThat(ads.body()).isEmpty();
-//        }
-//    }
-//
-//    @Nested
-//    class FindAllWithFiltering {
-//
-//        @Test
-//        void findAllShouldNotThrowExceptionWhenLocalityIdAndPublisherIdExists() {
-//            Long localityId = 1L;
-//            Long publisherId = 2L;
-//            var filter = new FindAllAdsFilterRequestDto(
-//                    null,
-//                    false,
-//                    null,
-//                    null,
-//                    publisherId,
-//                    localityId
-//            );
-//            var pageable = new PageableRequestDto(DEFAULT_LIMIT, DEFAULT_PAGE);
-//            doReturn(true).when(localityDao).isExists(localityId);
-//            doReturn(true).when(userDao).isExists(publisherId);
-//            doReturn(EMPTY_AD_PAGE).when(adDao).findAll(anyLong(), anyLong(), any(), any());
-//
-//            assertThatCode(() -> adsSearchService.findAll(filter, pageable)).doesNotThrowAnyException();
-//        }
-//
-//        @Test
-//        void findAllShouldThrowExceptionWhenLocalityIdDoesNotExists() {
-//            Long invalidLocalityId = 1L;
-//            Long publisherId = 2L;
-//            var filter = new FindAllAdsFilterRequestDto(
-//                    null,
-//                    false,
-//                    null,
-//                    null,
-//                    publisherId,
-//                    invalidLocalityId
-//            );
-//            var pageable = new PageableRequestDto(DEFAULT_LIMIT, DEFAULT_PAGE);
-//            doReturn(false).when(localityDao).isExists(invalidLocalityId);
-//
-//            assertThatThrownBy(() -> adsSearchService.findAll(filter, pageable))
-//                    .isInstanceOf(NotFoundException.class);
-//        }
-//
-//        @Test
-//        void findAllShouldThrowExceptionWhenPublisherIdDoesNotExists() {
-//            Long localityId = 1L;
-//            Long invalidPublisherId = 2L;
-//            var filter = new FindAllAdsFilterRequestDto(
-//                    null,
-//                    false,
-//                    null,
-//                    null,
-//                    invalidPublisherId,
-//                    localityId
-//            );
-//            var pageable = new PageableRequestDto(DEFAULT_LIMIT, DEFAULT_PAGE);
-//            doReturn(false).when(userDao).isExists(invalidPublisherId);
-//
-//            assertThatThrownBy(() -> adsSearchService.findAll(filter, pageable))
-//                    .isInstanceOf(NotFoundException.class);
-//        }
-//    }
+    @InjectMocks
+    private AdsSearchService adsSearchService;
+
+    @Nested
+    class FindAll {
+
+        @Test
+        void findAllShouldReturnAdsListWhenAllParametersAreValid() {
+            Long publisherId = 1L;
+            Long localityId = 1L;
+            FindAllAdsFilterRequestDto filter = FindAllAdsFilterRequestDto.builder()
+                    .term("term")
+                    .onlyInTitle(false)
+                    .minPrice(10000000L)
+                    .maxPrice(20000000L)
+                    .publisherId(publisherId)
+                    .localityId(localityId)
+                    .build();
+            PageableRequestDto pageable = PageableRequestDto.builder()
+                    .limit(DEFAULT_LIMIT)
+                    .page(DEFAULT_PAGE)
+                    .build();
+            PageEntity<Ad> adStubPageEntityStub = createAdStubPageEntityStub();
+            PageEntity<AdResponseDto> adResponseDtoStubPageEntityStub = createAdResponseDtoStubPageEntityStub();
+            doReturn(true).when(localityDao).isExists(localityId);
+            doReturn(true).when(userDao).isExists(publisherId);
+            doReturn(adStubPageEntityStub).when(adDao)
+                    .findAll(eq(pageable.limit()), eq(pageable.page()), any(Predicate.class), any(OrderSpecifier[].class));
+            doReturn(adResponseDtoStubPageEntityStub).when(adPageMapper).toDtoPage(adStubPageEntityStub);
+
+            PageEntity<AdResponseDto> result = adsSearchService.findAll(filter, pageable);
+
+            assertThat(result)
+                    .isNotNull()
+                    .isEqualTo(adResponseDtoStubPageEntityStub);
+            verify(localityDao).isExists(localityId);
+            verify(userDao).isExists(publisherId);
+            verify(adDao).findAll(eq(pageable.limit()), eq(pageable.page()), any(Predicate.class), any(OrderSpecifier[].class));
+        }
+
+        @Test
+        void findAllShouldThrowExceptionWhenLocalityIdDoesNotExists() {
+            Long publisherId = 1L;
+            Long localityId = 1L;
+            FindAllAdsFilterRequestDto filter = FindAllAdsFilterRequestDto.builder()
+                    .term("term")
+                    .onlyInTitle(false)
+                    .minPrice(10000000L)
+                    .maxPrice(20000000L)
+                    .publisherId(publisherId)
+                    .localityId(localityId)
+                    .build();
+            PageableRequestDto pageable = PageableRequestDto.builder()
+                    .limit(DEFAULT_LIMIT)
+                    .page(DEFAULT_PAGE)
+                    .build();
+            doReturn(false).when(localityDao).isExists(localityId);
+
+            assertThatThrownBy(() -> adsSearchService.findAll(filter, pageable))
+                    .isInstanceOf(NotFoundException.class);
+        }
+
+        @Test
+        void findAllShouldThrowExceptionWhenPublisherIdDoesNotExists() {
+            Long publisherId = 1L;
+            Long localityId = 1L;
+            FindAllAdsFilterRequestDto filter = FindAllAdsFilterRequestDto.builder()
+                    .term("term")
+                    .onlyInTitle(false)
+                    .minPrice(10000000L)
+                    .maxPrice(20000000L)
+                    .publisherId(publisherId)
+                    .localityId(localityId)
+                    .build();
+            PageableRequestDto pageable = PageableRequestDto.builder()
+                    .limit(DEFAULT_LIMIT)
+                    .page(DEFAULT_PAGE)
+                    .build();
+            doReturn(true).when(localityDao).isExists(localityId);
+            doReturn(false).when(userDao).isExists(publisherId);
+
+            assertThatThrownBy(() -> adsSearchService.findAll(filter, pageable))
+                    .isInstanceOf(NotFoundException.class);
+        }
+    }
+
+    @Nested
+    class GetAdsHistoryByUserId {
+
+        @Test
+        void getAdsHistoryByUserIdShouldReturnResultWhenAllParametersAreValid() {
+            Long userId = 1L;
+            PageableRequestDto pageable = PageableRequestDto.builder()
+                    .limit(DEFAULT_LIMIT)
+                    .page(DEFAULT_PAGE)
+                    .build();
+            PageEntity<Ad> adStubPageEntityStub = createAdStubPageEntityStub();
+            PageEntity<AdResponseDto> adResponseDtoStubPageEntityStub = createAdResponseDtoStubPageEntityStub();
+            doReturn(true).when(userDao).isExists(userId);
+            doReturn(adStubPageEntityStub).when(adDao)
+                    .findAll(eq(pageable.limit()), eq(pageable.page()), any(Predicate.class), any(OrderSpecifier[].class));
+            doReturn(adResponseDtoStubPageEntityStub).when(adPageMapper).toDtoPage(adStubPageEntityStub);
+
+            PageEntity<AdResponseDto> result = adsSearchService.getAdsHistoryByUserId(userId, pageable);
+
+            assertThat(result)
+                    .isNotNull()
+                    .isEqualTo(adResponseDtoStubPageEntityStub);
+            verify(userDao).isExists(userId);
+            verify(adDao).findAll(eq(pageable.limit()), eq(pageable.page()), any(Predicate.class), any(OrderSpecifier[].class));
+            verify(adPageMapper).toDtoPage(adStubPageEntityStub);
+            verifyNoInteractions(localityDao);
+        }
+
+        @Test
+        void getAdsHistoryByUserIdShouldReturnResultWhenUserIdIsInvalid() {
+            Long userId = 1L;
+            PageableRequestDto pageable = PageableRequestDto.builder()
+                    .limit(DEFAULT_LIMIT)
+                    .page(DEFAULT_PAGE)
+                    .build();
+            doReturn(false).when(userDao).isExists(userId);
+
+            assertThatThrownBy(() -> adsSearchService.getAdsHistoryByUserId(userId, pageable))
+                    .isInstanceOf(NotFoundException.class);
+        }
+    }
 }

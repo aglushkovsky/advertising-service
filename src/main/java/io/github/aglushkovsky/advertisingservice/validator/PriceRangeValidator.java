@@ -13,8 +13,8 @@ public class PriceRangeValidator implements ConstraintValidator<ValidPriceRange,
 
     @Override
     public boolean isValid(FindAllAdsFilterRequestDto value, ConstraintValidatorContext context) {
-        BigDecimal minPrice = value.minPrice();
-        BigDecimal maxPrice = value.maxPrice();
+        Long minPrice = value.minPrice();
+        Long maxPrice = value.maxPrice();
 
         if (minPrice == null || maxPrice == null) {
             log.info("Min price or max price is null, skip validation");
