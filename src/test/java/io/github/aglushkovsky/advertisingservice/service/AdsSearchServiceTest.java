@@ -93,6 +93,7 @@ class AdsSearchServiceTest {
 
             assertThatThrownBy(() -> adsSearchService.findAll(filter, pageable))
                     .isInstanceOf(NotFoundException.class);
+            verify(localityDao).isExists(localityId);
         }
 
         @Test
@@ -113,6 +114,7 @@ class AdsSearchServiceTest {
 
             assertThatThrownBy(() -> adsSearchService.findAll(filter, pageable))
                     .isInstanceOf(NotFoundException.class);
+            verify(userDao).isExists(publisherId);
         }
     }
 
@@ -149,6 +151,7 @@ class AdsSearchServiceTest {
 
             assertThatThrownBy(() -> adsSearchService.getAdsHistoryByUserId(userId, pageable))
                     .isInstanceOf(NotFoundException.class);
+            verify(userDao).isExists(userId);
         }
     }
 }

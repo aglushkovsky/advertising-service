@@ -139,6 +139,7 @@ class AdCrudServiceTest {
 
             assertThatThrownBy(() -> adCrudService.editAd(adId, adCreateEditResponseDto))
                     .isInstanceOf(NotFoundException.class);
+            verify(adDao).findById(adId);
         }
 
         @Test
@@ -150,6 +151,7 @@ class AdCrudServiceTest {
 
             assertThatThrownBy(() -> adCrudService.editAd(adId, adCreateEditResponseDto))
                     .isInstanceOf(AccessDeniedException.class);
+            verify(adDao).findById(adId);
         }
     }
 
@@ -176,6 +178,7 @@ class AdCrudServiceTest {
 
             assertThatThrownBy(() -> adCrudService.deleteAd(adId))
                     .isInstanceOf(NotFoundException.class);
+            verify(adDao).findById(adId);
         }
 
         @Test
@@ -187,6 +190,7 @@ class AdCrudServiceTest {
 
             assertThatThrownBy(() -> adCrudService.deleteAd(adId))
                     .isInstanceOf(AccessDeniedException.class);
+            verify(adDao).findById(adId);
         }
     }
 }

@@ -7,12 +7,13 @@ import io.github.aglushkovsky.advertisingservice.entity.User;
 import io.github.aglushkovsky.advertisingservice.entity.enumeration.Role;
 import io.github.aglushkovsky.advertisingservice.jwt.JwtUtils;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
-import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
 import java.util.Map;
 import java.util.Optional;
@@ -21,40 +22,29 @@ import static java.util.Collections.*;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-@SpringJUnitConfig({AuthService.class})
+@ExtendWith(MockitoExtension.class)
 class AuthServiceTest {
 
     private static final Map<String, String> userStubPasswordsHashes = Map.of("qwerty12345",
             "$2a$12$sGu145CigoPn4HWjLOndX.QenSaUBRZreuex2fdo3wtUriQ9dBwie");
 
-    @MockitoBean
+    @Mock
     private JwtUtils jwtUtils;
 
-    @MockitoBean
+    @Mock
     private UserDao userDao;
 
-    @MockitoBean
+    @Mock
     private PasswordEncoder passwordEncoder;
 
-    @Autowired
+    @InjectMocks
     private AuthService authService;
 
     @Test
-    void loginShouldReturnJwtAuthenticationTokenWhenUserExistsAndPasswordAreCorrect() {
+    void loginShouldReturnJwtAuthenticationTokenWhenUserByLoginExistsAndPasswordAreCorrect() {
         String login = "test_user";
         String password = "qwerty12345";
-        User userStub = new User(
-                1L,
-                login,
-                userStubPasswordsHashes.get(password),
-                null,
-                null,
-                Role.USER,
-                0.0,
-                emptyList(),
-                emptyList(),
-                emptyList()
-        );
+        User userStub = createUserStubWithHashedPassword(login, password);
         JwtAuthRequestDto jwtAuthRequestDto = new JwtAuthRequestDto(login, password);
         doReturn(Optional.of(userStub)).when(userDao).findByLogin(login);
         doReturn(true).when(passwordEncoder).matches(anyString(), anyString());
@@ -69,13 +59,15 @@ class AuthServiceTest {
     }
 
     @Test
-    void loginShouldReturnJwtAuthenticationTokenWhenUserDoesNotExist() {
+    void loginShouldReturnJwtAuthenticationTokenWhenUserByLoginDoesNotExist() {
         String invalidLogin = "test_invalid_login";
         String password = "qwerty12345";
         JwtAuthRequestDto jwtAuthRequestDto = new JwtAuthRequestDto(invalidLogin, password);
         doReturn(Optional.empty()).when(userDao).findByLogin(invalidLogin);
 
-        assertThatThrownBy(() -> authService.login(jwtAuthRequestDto)).isInstanceOf(UsernameNotFoundException.class);
+        assertThatThrownBy(() -> authService.login(jwtAuthRequestDto))
+                .isInstanceOf(UsernameNotFoundException.class);
+        verify(userDao).findByLogin(invalidLogin);
     }
 
     @Test
@@ -83,21 +75,25 @@ class AuthServiceTest {
         String login = "test_user";
         String incorrectPassword = "incorrect_password";
         JwtAuthRequestDto jwtAuthRequestDto = new JwtAuthRequestDto(login, incorrectPassword);
-        User userStub = new User(
-                1L,
-                login,
-                userStubPasswordsHashes.get("qwerty12345"),
-                null,
-                null,
-                Role.USER,
-                0.0,
-                emptyList(),
-                emptyList(),
-                emptyList()
-        );
+        User userStub = createUserStubWithHashedPassword(login, incorrectPassword);
         doReturn(Optional.of(userStub)).when(userDao).findByLogin(login);
-        doReturn(false).when(passwordEncoder).matches(anyString(), anyString());
+        doReturn(false).when(passwordEncoder).matches(incorrectPassword, userStub.getPasswordHash());
 
-        assertThatThrownBy(() -> authService.login(jwtAuthRequestDto)).isInstanceOf(BadCredentialsException.class);
+        assertThatThrownBy(() -> authService.login(jwtAuthRequestDto))
+                .isInstanceOf(BadCredentialsException.class);
+        verify(userDao).findByLogin(login);
+        verify(passwordEncoder).matches(incorrectPassword, userStub.getPasswordHash());
+    }
+
+    private static User createUserStubWithHashedPassword(String login, String password) {
+        return User.builder()
+                .id(1L)
+                .login(login)
+                .passwordHash(userStubPasswordsHashes.get(password))
+                .email(null)
+                .phoneNumber(null)
+                .role(Role.USER)
+                .totalRating(0.0)
+                .build();
     }
 }
