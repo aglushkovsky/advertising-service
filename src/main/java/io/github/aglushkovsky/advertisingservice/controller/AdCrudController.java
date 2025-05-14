@@ -50,7 +50,7 @@ public class AdCrudController {
     }
 
     @GetMapping("/{id}")
-    public AdResponseDto findById(@PathVariable @Positive Long id) {
+    public AdResponseDto findById(@PathVariable @Min(1) Long id) {
         log.info("Start GET /api/v1/ads/{}; id={}", id, id);
         AdResponseDto result = adCrudService.findById(id);
         log.info("Finished GET /api/v1/ads/{}; id={}", id, id);

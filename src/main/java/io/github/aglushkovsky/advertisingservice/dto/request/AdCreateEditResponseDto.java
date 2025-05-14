@@ -47,5 +47,7 @@ public record AdCreateEditResponseDto(
         )
         Long localityId,
 
+        Boolean isPromoted,
+
         AdStatus status) {
 }
