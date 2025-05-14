@@ -7,12 +7,13 @@ import io.github.aglushkovsky.advertisingservice.dto.response.AdResponseDto;
 import io.github.aglushkovsky.advertisingservice.service.AdsSearchService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirements;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/v1/ads")
+@RequestMapping("/api/v1")
 @SecurityRequirements
 @RequiredArgsConstructor
 @Slf4j
@@ -20,13 +21,24 @@ public class AdsSearchController {
 
     private final AdsSearchService adsSearchService;
 
-    @GetMapping
+    @GetMapping("/ads")
     public PageEntity<AdResponseDto> searchAds(@ModelAttribute("filter") @Valid FindAllAdsFilterRequestDto filter,
                                                @ModelAttribute("pageable") @Valid PageableRequestDto pageable) {
         log.info("Start GET /api/v1/ads; params={}", filter);
         PageEntity<AdResponseDto> result = adsSearchService.findAll(filter, pageable);
         log.info("Finished GET /api/v1/ads; found items on page {}: {}", pageable.page(), result.body().size());
         return result;
+    }
+
+    @GetMapping("/users/{userId}/adsHistory")
+    public PageEntity<AdResponseDto> getAdsHistoryByUserId(@PathVariable @Min(1) Long userId,
+                                                           @ModelAttribute("pageable")
+                                                           @Valid PageableRequestDto pageable) {
+        log.info("Start GET /api/v1/users/{}/ads; params={}", userId, pageable);
+        PageEntity<AdResponseDto> adsHistoryByUserId = adsSearchService.getAdsHistoryByUserId(userId, pageable);
+        log.info("Finished GET /api/v1/users/{}/ads; found items on page {}: {}",
+                userId, pageable.page(), adsHistoryByUserId.body().size());
+        return adsHistoryByUserId;
     }
 
     @ModelAttribute("filter")

@@ -52,7 +52,7 @@ public class AdCrudService {
             throw new AccessDeniedException("User is not authorized to edit ad with id=%d".formatted(adId));
         }
 
-        Ad updatedAd = adMapper.updateAd(adForUpdate, adCreateEditResponseDto);
+        Ad updatedAd = adMapper.editAd(adForUpdate, adCreateEditResponseDto);
         adDao.update(updatedAd);
         AdResponseDto adResponseDto = adMapper.toDto(updatedAd);
 

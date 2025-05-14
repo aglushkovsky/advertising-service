@@ -1,9 +1,8 @@
 package io.github.aglushkovsky.advertisingservice.dto.request;
 
+import io.github.aglushkovsky.advertisingservice.entity.enumeration.AdStatus;
 import io.github.aglushkovsky.advertisingservice.validator.group.CreateGroup;
 import jakarta.validation.constraints.*;
-
-import java.math.BigDecimal;
 
 // FIXME NotBlank игнорируется при редактировании => можно поставить логин с blank-символами
 public record AdCreateEditResponseDto(
@@ -25,8 +24,12 @@ public record AdCreateEditResponseDto(
                 value = 0,
                 message = "Цена не должна быть меньше {value}"
         )
-        // FIXME Поскольку я решил, что будет оперировать копейками (целым числом), то BigDecimal здесь не уместен.
-        BigDecimal price,
+
+        @Min(
+                value = 0,
+                message = "Цена не должна быть меньше {value}"
+        )
+        Long price,
 
         @Size(
                 min = 5,
@@ -42,5 +45,7 @@ public record AdCreateEditResponseDto(
                 value = 1,
                 message = "Идентификатор адреса не должен быть меньше {value}"
         )
-        Long localityId) {
+        Long localityId,
+
+        AdStatus status) {
 }

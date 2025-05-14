@@ -16,11 +16,13 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.function.Function;
 
 import static com.querydsl.jpa.JPAExpressions.selectFrom;
 import static io.github.aglushkovsky.advertisingservice.entity.QAd.*;
 import static io.github.aglushkovsky.advertisingservice.entity.QLocalityPart.localityPart;
+import static io.github.aglushkovsky.advertisingservice.entity.enumeration.AdStatus.*;
 import static io.github.aglushkovsky.advertisingservice.validator.DaoIdValidator.*;
 
 @Service
@@ -39,24 +41,28 @@ public class AdsSearchService {
         validateId(filter.localityId(), localityDao::isExists, "Not found locality with id={}", true);
         validateId(filter.publisherId(), userDao::isExists, "Not found publisher with id={}", true);
 
-        Predicate predicate = buildPredicate(filter);
+        Predicate predicate = buildFilterPredicate(filter);
         OrderSpecifier<?>[] orders = new OrderSpecifier[]{
                 getDefaultPromotedAdsPrecedenceOrder(),
                 getDefaultUserTotalRatingOrder()
         };
 
         PageEntity<Ad> resultPage = adDao.findAll(pageable.limit(), pageable.page(), predicate, orders);
-        log.info("Finished findAll; found items: {}, filter: {}", resultPage.body().size(), filter);
-        return adPageMapper.toDtoPage(resultPage);
+        PageEntity<AdResponseDto> resultDtoPage = adPageMapper.toDtoPage(resultPage);
+
+        log.info("Finished findAll; found items: {}, filter: {}", resultDtoPage.body().size(), filter);
+
+        return resultDtoPage;
     }
 
-    private Predicate buildPredicate(FindAllAdsFilterRequestDto filterRequestDto) {
+    private Predicate buildFilterPredicate(FindAllAdsFilterRequestDto filterRequestDto) {
         return PredicateChainBuilder.builder()
                 .and(filterRequestDto.localityId(), getLocalityIdExistsInLocalityAncestorsPredicate())
                 .and(filterRequestDto.term(), getSearchByTermPredicateFunction(filterRequestDto.onlyInTitle()))
                 .and(filterRequestDto.minPrice(), ad.price::gt)
                 .and(filterRequestDto.maxPrice(), ad.price::lt)
                 .and(filterRequestDto.publisherId(), ad.publisher.id::eq)
+                .and(ACTIVE, ad.status::eq)
                 .build();
     }
 
@@ -79,5 +85,35 @@ public class AdsSearchService {
         return param -> isOnlyInTitle
                 ? ad.title.containsIgnoreCase(param)
                 : ad.title.containsIgnoreCase(param).or(ad.description.containsIgnoreCase(param));
+    }
+
+    public PageEntity<AdResponseDto> getAdsHistoryByUserId(Long userId, PageableRequestDto pageable) {
+        log.info("Start getAdsHistoryByUserId; userId: {}", userId);
+
+        validateId(userId, userDao::isExists, "Not found user with id={}", false);
+
+        Predicate predicate = buildPredicateForGettingUserAdsHistory(userId);
+        PageEntity<Ad> userAdsHistoryPage = adDao.findAll(
+                pageable.limit(),
+                pageable.page(),
+                predicate,
+                getDefaultPublishingDateOrder()
+        );
+        PageEntity<AdResponseDto> userDtoAdsHistoryPage = adPageMapper.toDtoPage(userAdsHistoryPage);
+
+        log.info("Finished getAdsHistoryByUserId; userId: {}", userId);
+
+        return userDtoAdsHistoryPage;
+    }
+
+    private Predicate buildPredicateForGettingUserAdsHistory(Long userId) {
+        return PredicateChainBuilder.builder()
+                .and(userId, ad.publisher.id::eq)
+                .and(SOLD, ad.status::eq)
+                .build();
+    }
+
+    private OrderSpecifier<LocalDateTime> getDefaultPublishingDateOrder() {
+        return ad.publishedAt.desc();
     }
 }

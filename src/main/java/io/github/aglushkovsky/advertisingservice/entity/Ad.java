@@ -1,12 +1,12 @@
 package io.github.aglushkovsky.advertisingservice.entity;
 
+import io.github.aglushkovsky.advertisingservice.entity.enumeration.AdStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Data
@@ -22,7 +22,7 @@ public class Ad {
 
     private String title;
 
-    private BigDecimal price;
+    private Long price;
 
     private String description;
 
@@ -33,6 +33,9 @@ public class Ad {
     private User publisher;
 
     private LocalDateTime publishedAt;
+
+    @Enumerated(EnumType.STRING)
+    private AdStatus status;
 
     private Boolean isPromoted;
 }

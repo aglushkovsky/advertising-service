@@ -13,7 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.time.LocalDateTime;
 
 import static org.mapstruct.MappingConstants.ComponentModel.*;
-import static org.mapstruct.ReportingPolicy.*;
+import static org.mapstruct.ReportingPolicy.IGNORE;
 
 @Mapper(
         componentModel = SPRING,
@@ -49,6 +49,7 @@ public abstract class AdMapper {
             expression = "java(localityMapper.toEntityFromLocalityId(adCreateEditResponseDto.localityId()))")
     @Mapping(target = "isPromoted", constant = "false")
     @Mapping(target = "publishedAt", expression = "java(LocalDateTime.now())")
+    @Mapping(target = "status", constant = "ACTIVE")
     public abstract Ad toEntity(AdCreateEditResponseDto adCreateEditResponseDto);
 
     @Mapping(target = "locality",
@@ -58,5 +59,5 @@ public abstract class AdMapper {
                             : localityMapper.toEntityFromLocalityId(adCreateEditResponseDto.localityId()))
                     """)
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    public abstract Ad updateAd(@MappingTarget Ad ad, AdCreateEditResponseDto adCreateEditResponseDto);
+    public abstract Ad editAd(@MappingTarget Ad ad, AdCreateEditResponseDto adCreateEditResponseDto);
 }
