@@ -2,35 +2,42 @@ package io.github.aglushkovsky.advertisingservice.service;
 
 import io.github.aglushkovsky.advertisingservice.dao.impl.AdDao;
 import io.github.aglushkovsky.advertisingservice.dto.response.AdResponseDto;
+import io.github.aglushkovsky.advertisingservice.dto.response.LocalityResponseDto;
+import io.github.aglushkovsky.advertisingservice.dto.response.UserResponseDto;
 import io.github.aglushkovsky.advertisingservice.entity.Ad;
 import io.github.aglushkovsky.advertisingservice.entity.Locality;
 import io.github.aglushkovsky.advertisingservice.entity.User;
 import io.github.aglushkovsky.advertisingservice.exception.NotFoundException;
-import io.github.aglushkovsky.advertisingservice.mapper.AdMapperImpl;
-import io.github.aglushkovsky.advertisingservice.mapper.LocalityMapperImpl;
+import io.github.aglushkovsky.advertisingservice.mapper.AdMapper;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
-import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
+import static io.github.aglushkovsky.advertisingservice.entity.enumeration.AdStatus.*;
 import static io.github.aglushkovsky.advertisingservice.entity.enumeration.LocalityType.CITY;
 import static io.github.aglushkovsky.advertisingservice.entity.enumeration.Role.USER;
 import static java.util.Collections.*;
 import static org.assertj.core.api.Assertions.*;
+import static org.mockito.Mockito.*;
 import static org.mockito.Mockito.doReturn;
 
-@SpringJUnitConfig({AdCrudService.class, AdMapperImpl.class, LocalityMapperImpl.class})
+@ExtendWith(MockitoExtension.class)
 class AdCrudServiceTest {
 
-    @MockitoBean
+    @Mock
     private AdDao adDao;
 
-    @Autowired
+    @Mock
+    private AdMapper adMapper;
+
+    @InjectMocks
     private AdCrudService adCrudService;
 
     @Nested
@@ -38,7 +45,7 @@ class AdCrudServiceTest {
 
         @Test
         void findByIdShouldReturnResultWhenAdIdExists() {
-            // TODO Надо вынести куда-то в одно место создание тестовых объектов сущностей.
+            Long adId = 1L;
             User user = new User(
                     1L,
                     "test_user",
@@ -51,23 +58,51 @@ class AdCrudServiceTest {
                     emptyList(),
                     emptyList()
             );
-            LocalDateTime createdAt = LocalDateTime.parse("2025-05-12T13:51:48.899862700");
-            Long adId = 1L;
+            Locality testCity = new Locality(1L, "Test City", emptyList(), emptyList(), CITY);
             Ad adStub = new Ad(
                     adId,
                     "ad title",
-                    new BigDecimal("12345"),
+                    12345L,
                     null,
-                    new Locality(1L, "Test City", emptyList(), emptyList(), CITY),
+                    testCity,
                     user,
-                    createdAt,
+                    LocalDateTime.parse("2025-05-12T13:51:48.899862700"),
+                    ACTIVE,
                     false
             );
+            AdResponseDto adStubResponseDto = new AdResponseDto(
+                    adId,
+                    adStub.getTitle(),
+                    adStub.getPrice(),
+                    adStub.getDescription(),
+                    List.of(
+                            new LocalityResponseDto(
+                                    adStub.getLocality().getId(),
+                                    adStub.getLocality().getName(),
+                                    adStub.getLocality().getType().name()
+                            )
+                    ),
+                    new UserResponseDto(
+                            user.getId(),
+                            user.getLogin(),
+                            user.getEmail(),
+                            user.getPhoneNumber(),
+                            user.getTotalRating()
+                    ),
+                    adStub.getPublishedAt().toString(),
+                    adStub.getStatus().name(),
+                    adStub.getIsPromoted()
+            );
             doReturn(Optional.of(adStub)).when(adDao).findById(adId);
+            doReturn(adStubResponseDto).when(adMapper).toDto(adStub);
 
-            AdResponseDto adResponseDto = adCrudService.findById(adId);
+            AdResponseDto result = adCrudService.findById(adId);
 
-            assertThat(adResponseDto.id()).isEqualTo(adId);
+            assertThat(result)
+                    .isNotNull()
+                    .isEqualTo(adStubResponseDto);
+            verify(adDao).findById(adId);
+            verify(adMapper).toDto(adStub);
         }
 
         @Test
@@ -75,7 +110,9 @@ class AdCrudServiceTest {
             Long adId = 1L;
             doReturn(Optional.empty()).when(adDao).findById(adId);
 
-            assertThatThrownBy(() -> adCrudService.findById(adId)).isInstanceOf(NotFoundException.class);
+            assertThatThrownBy(() -> adCrudService.findById(adId))
+                    .isInstanceOf(NotFoundException.class);
+            verify(adDao).findById(adId);
         }
     }
 }
