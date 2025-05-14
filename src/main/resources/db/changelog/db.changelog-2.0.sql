@@ -187,7 +187,7 @@ FROM new_descendant_locality;
 
 --changeset aglushkovsky:12
 INSERT
-INTO ad (title, price, description, locality_id, publisher_id, published_at, is_promoted)
+INTO ad (title, price, description, locality_id, publisher_id, published_at, status, is_promoted)
 VALUES ('Macbook Pro M4 16/512 новый запечатанный из ОАЭ',
         15000000,
         'Зaпaкованныe и пoлнocтью нoвыe.' ||
@@ -214,11 +214,12 @@ VALUES ('Macbook Pro M4 16/512 новый запечатанный из ОАЭ',
            AND lpr.depth = 0),
         (SELECT id FROM "user" WHERE login = 'test_user'),
         NOW(),
+        'ACTIVE',
         TRUE);
 
 --changeset aglushkovsky:13
 INSERT
-INTO ad (title, price, description, locality_id, publisher_id, published_at, is_promoted)
+INTO ad (title, price, description, locality_id, publisher_id, published_at, status, is_promoted)
 VALUES ('Xiaomi Redmi Note 13 256 ГБ',
         1000000,
         'В хорошем состоянии',
@@ -243,11 +244,12 @@ VALUES ('Xiaomi Redmi Note 13 256 ГБ',
            AND lpr.depth = 0),
         (SELECT id FROM "user" WHERE login = 'test_user'),
         NOW(),
+        'ACTIVE',
         FALSE);
 
 --changeset aglushkovsky:14
 INSERT
-INTO ad (title, price, description, locality_id, publisher_id, published_at, is_promoted)
+INTO ad (title, price, description, locality_id, publisher_id, published_at, status, is_promoted)
 VALUES ('телефон xiaomi A3x',
         250000,
         'пользовались мало. коробку потеряли',
@@ -266,4 +268,5 @@ VALUES ('телефон xiaomi A3x',
            AND lpr.depth = 0),
         (SELECT id FROM "user" WHERE login = 'test_user'),
         NOW(),
+        'ACTIVE',
         FALSE);

@@ -36,9 +36,9 @@ CREATE TABLE IF NOT EXISTS message
 --changeset aglushkovsky:4
 CREATE TABLE IF NOT EXISTS locality
 (
-    id                 bigserial PRIMARY KEY,
-    name               varchar(255) NOT NULL,
-    type               varchar(20)  NOT NULL
+    id   bigserial PRIMARY KEY,
+    name varchar(255) NOT NULL,
+    type varchar(20)  NOT NULL
 );
 
 --changeset aglushkovsky:5
@@ -61,6 +61,7 @@ CREATE TABLE IF NOT EXISTS ad
     locality_id  bigint       NOT NULL REFERENCES locality,
     publisher_id bigint       NOT NULL REFERENCES "user" ON DELETE CASCADE,
     published_at timestamp with time zone,
+    status       varchar(30)  NOT NULL,
     is_promoted  boolean      NOT NULL
 );
 
