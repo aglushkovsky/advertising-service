@@ -5,40 +5,46 @@ import io.github.aglushkovsky.advertisingservice.dto.response.LocalityResponseDt
 import io.github.aglushkovsky.advertisingservice.entity.Locality;
 import io.github.aglushkovsky.advertisingservice.entity.enumeration.LocalityType;
 import io.github.aglushkovsky.advertisingservice.exception.NotFoundException;
-import io.github.aglushkovsky.advertisingservice.mapper.LocalityMapperImpl;
+import io.github.aglushkovsky.advertisingservice.mapper.LocalityMapper;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
-import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-@SpringJUnitConfig({LocalityService.class, LocalityMapperImpl.class})
+@ExtendWith(MockitoExtension.class)
 class LocalityServiceTest {
 
-    @MockitoBean
+    @Mock
     private LocalityDao localityDao;
 
-    @Autowired
+    @Mock
+    private LocalityMapper localityMapper;
+
+    @InjectMocks
     private LocalityService localityService;
 
     @Test
     void findAllByLocalityTypeShouldReturnMappedDtoListWhenTypeIsValid() {
         LocalityType cityType = LocalityType.CITY;
-        List<Locality> mockLocalities = List.of(
-                new Locality(null, null, List.of(), List.of(), cityType),
-                new Locality(null, null, List.of(), List.of(), cityType));
-        doReturn(mockLocalities).when(localityDao).findAllByLocalityType(cityType);
+        Locality mockLocality = mock(Locality.class);
+        doReturn(List.of(mockLocality)).when(localityDao).findAllByLocalityType(cityType);
+        LocalityResponseDto resultListItem = mock(LocalityResponseDto.class);
+        doReturn(resultListItem).when(localityMapper).toDto(mockLocality);
 
         List<LocalityResponseDto> result = localityService.findAllByLocalityType(cityType);
 
         assertThat(result)
-                .hasSize(mockLocalities.size())
-                .allSatisfy(localityDto -> assertThat(localityDto.type()).isEqualTo(cityType.name()));
+                .isNotNull()
+                .isEqualTo(List.of(resultListItem));
+        verify(localityDao).findAllByLocalityType(cityType);
+        verify(localityMapper).toDto(mockLocality);
     }
 
     @Nested
@@ -48,12 +54,19 @@ class LocalityServiceTest {
         void findDirectDescendantsByLocalityIdShouldReturnMappedDtoListWhenLocalityIdExists() {
             Long localityId = 1L;
             doReturn(true).when(localityDao).isExists(localityId);
-            List<Locality> mockLocalities = List.of(mock(Locality.class), mock(Locality.class));
-            doReturn(mockLocalities).when(localityDao).findDirectDescendantsByLocalityId(localityId);
+            Locality mockLocality = mock(Locality.class);
+            doReturn(List.of(mockLocality)).when(localityDao).findDirectDescendantsByLocalityId(localityId);
+            LocalityResponseDto localityResponseDtoMock = mock(LocalityResponseDto.class);
+            doReturn(localityResponseDtoMock).when(localityMapper).toDto(mockLocality);
 
             List<LocalityResponseDto> result = localityService.findDirectDescendantsByLocalityId(localityId);
 
-            assertThat(result).hasSize(mockLocalities.size());
+            assertThat(result)
+                    .isNotNull()
+                    .isEqualTo(List.of(localityResponseDtoMock));
+            verify(localityDao).isExists(localityId);
+            verify(localityDao).findDirectDescendantsByLocalityId(localityId);
+            verify(localityMapper).toDto(mockLocality);
         }
 
         @Test
@@ -63,6 +76,7 @@ class LocalityServiceTest {
 
             assertThatThrownBy(() -> localityService.findDirectDescendantsByLocalityId(localityId))
                     .isInstanceOf(NotFoundException.class);
+            verify(localityDao).isExists(localityId);
         }
     }
 }
