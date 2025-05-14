@@ -33,7 +33,7 @@ public class UserRateService {
         UserRate savedCreatedUserRate = userRateDao.add(createdUserRate);
         UserRateResponseDto userRateResponseDto = userRateMapper.toDto(savedCreatedUserRate);
         log.info("Created rate for recipientId={} with id={}", recipientId, userRateResponseDto.id());
-        recalculateUserTotalRating(recipientId);
+        recalculateRecipientUserTotalRating(recipientId);
 
         return userRateResponseDto;
     }
@@ -48,7 +48,7 @@ public class UserRateService {
 
         validateId(recipientId, userDao::isExists, "Not found recipient with id={}", false);
 
-        userRateDao.findByAuthorId(authenticatedUserId, recipientId)
+        userRateDao.findByAuthorAndRecipientId(authenticatedUserId, recipientId)
                 .ifPresent(result -> {
                     log.error("Authenticated user (id={}) has already left a rating for the user with id={}",
                             authenticatedUserId, recipientId);
@@ -56,17 +56,17 @@ public class UserRateService {
                 });
     }
 
-    private void recalculateUserTotalRating(Long userId) {
+    private void recalculateRecipientUserTotalRating(Long recipientId) {
         double recalculatedUserTotalRating = userRateDao
-                .findByRecipientId(userId)
+                .findByRecipientId(recipientId)
                 .stream()
                 .mapToDouble(UserRate::getValue)
                 .average()
                 .orElseThrow();
 
         double roundedRecalculatedTotalRating = Math.round(recalculatedUserTotalRating * 10.0) / 10.0;
-        userDao.updateTotalRating(userId, roundedRecalculatedTotalRating);
+        userDao.updateTotalRating(recipientId, roundedRecalculatedTotalRating);
         log.info("Total rating for user with id={} was recalculated; new value: {}",
-                userId, roundedRecalculatedTotalRating);
+                recipientId, roundedRecalculatedTotalRating);
     }
 }

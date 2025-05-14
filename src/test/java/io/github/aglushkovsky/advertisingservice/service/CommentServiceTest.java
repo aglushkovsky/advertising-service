@@ -29,6 +29,7 @@ import java.util.Optional;
 
 import static io.github.aglushkovsky.advertisingservice.entity.enumeration.LocalityType.*;
 import static io.github.aglushkovsky.advertisingservice.entity.enumeration.Role.*;
+import static io.github.aglushkovsky.advertisingservice.util.SecurityUtils.*;
 import static java.util.Collections.*;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -97,7 +98,7 @@ class CommentServiceTest {
                     createdAt,
                     "test comment"
             );
-            doReturn(user).when(userMapper).toUserFromAuthenticatedUserId();
+            doReturn(user).when(userMapper).toUserFromUserId(getAuthenticatedUserId());
             doReturn(userResponseDtoStub).when(userMapper).toDto(user);
             doReturn(adStub).when(adMapper).toEntityFromAdId(adId);
             doReturn(createdCommentStub).when(commentDao).add(any(Comment.class));

@@ -19,10 +19,10 @@ public class UserRate {
 
     private Double value;
 
-    @ManyToOne(optional = false)
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
     private User author;
 
-    @ManyToOne(optional = false)
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
     private User recipient;
 
     private LocalDateTime createdAt;

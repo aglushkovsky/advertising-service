@@ -40,9 +40,12 @@ public class AdsSearchService {
         validateId(filter.publisherId(), userDao::isExists, "Not found publisher with id={}", true);
 
         Predicate predicate = buildPredicate(filter);
-        OrderSpecifier<Boolean> order = getDefaultPromotedAdsPrecedenceOrder();
+        OrderSpecifier<?>[] orders = new OrderSpecifier[]{
+                getDefaultPromotedAdsPrecedenceOrder(),
+                getDefaultUserTotalRatingOrder()
+        };
 
-        PageEntity<Ad> resultPage = adDao.findAll(pageable.limit(), pageable.page(), predicate, order);
+        PageEntity<Ad> resultPage = adDao.findAll(pageable.limit(), pageable.page(), predicate, orders);
         log.info("Finished findAll; found items: {}, filter: {}", resultPage.body().size(), filter);
         return adPageMapper.toDtoPage(resultPage);
     }
@@ -66,6 +69,10 @@ public class AdsSearchService {
 
     private OrderSpecifier<Boolean> getDefaultPromotedAdsPrecedenceOrder() {
         return ad.isPromoted.desc();
+    }
+
+    private OrderSpecifier<Double> getDefaultUserTotalRatingOrder() {
+        return ad.publisher.totalRating.desc();
     }
 
     private Function<String, Predicate> getSearchByTermPredicateFunction(boolean isOnlyInTitle) {

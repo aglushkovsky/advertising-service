@@ -1,7 +1,5 @@
 package io.github.aglushkovsky.advertisingservice.dao.impl;
 
-import com.querydsl.core.types.Predicate;
-import com.querydsl.jpa.impl.JPAQuery;
 import io.github.aglushkovsky.advertisingservice.dao.AbstractDao;
 import io.github.aglushkovsky.advertisingservice.entity.UserRate;
 import org.springframework.stereotype.Repository;
@@ -24,22 +22,16 @@ public class UserRateDao extends AbstractDao<UserRate, Long> {
         return findById(UserRate.class, id);
     }
 
-    public Optional<UserRate> findByRecipientId(Long recipientId) {
-        return findByPredicate(userRate.recipient.id.eq(recipientId));
+    public List<UserRate> findByRecipientId(Long recipientId) {
+        return createFindAllQuery(userRate)
+                .where(userRate.recipient.id.eq(recipientId))
+                .fetch();
     }
 
-    public Optional<UserRate> findByAuthorId(Long authorId, Long recipientId) {
-        return findByPredicate(
-                userRate.author.id.eq(authorId)
-                        .and(userRate.recipient.id.eq(recipientId))
-        );
-    }
-
-    private Optional<UserRate> findByPredicate(Predicate predicate) {
-        UserRate result = new JPAQuery<>(entityManager)
-                .select(userRate)
-                .from(userRate)
-                .where(predicate)
+    public Optional<UserRate> findByAuthorAndRecipientId(Long authorId, Long recipientId) {
+        UserRate result = createFindAllQuery(userRate)
+                .where(userRate.author.id.eq(authorId)
+                        .and(userRate.recipient.id.eq(recipientId)))
                 .fetchOne();
 
         return Optional.ofNullable(result);

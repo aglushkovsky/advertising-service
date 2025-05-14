@@ -7,8 +7,8 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-@Named("MappingUtils")
-public class MappingUtils {
+@Named("UserMapperUtils")
+public class UserMapperUtils {
 
     private final PasswordEncoder passwordEncoder;
 

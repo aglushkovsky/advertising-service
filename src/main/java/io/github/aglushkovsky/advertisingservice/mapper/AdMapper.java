@@ -5,6 +5,7 @@ import io.github.aglushkovsky.advertisingservice.dto.request.AdCreateEditRespons
 import io.github.aglushkovsky.advertisingservice.dto.response.AdResponseDto;
 import io.github.aglushkovsky.advertisingservice.entity.Ad;
 import io.github.aglushkovsky.advertisingservice.exception.NotFoundException;
+import io.github.aglushkovsky.advertisingservice.util.SecurityUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.mapstruct.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +18,7 @@ import static org.mapstruct.ReportingPolicy.*;
 @Mapper(
         componentModel = SPRING,
         uses = LocalityMapper.class,
-        imports = LocalDateTime.class,
+        imports = {LocalDateTime.class, SecurityUtils.class},
         unmappedTargetPolicy = IGNORE
 )
 @Slf4j
@@ -43,7 +44,7 @@ public abstract class AdMapper {
     }
 
     @Mapping(target = "publisher",
-            expression = "java(userMapper.toUserFromAuthenticatedUserId())")
+            expression = "java(userMapper.toUserFromUserId(SecurityUtils.getAuthenticatedUserId()))")
     @Mapping(target = "locality",
             expression = "java(localityMapper.toEntityFromLocalityId(adCreateEditResponseDto.localityId()))")
     @Mapping(target = "isPromoted", constant = "false")

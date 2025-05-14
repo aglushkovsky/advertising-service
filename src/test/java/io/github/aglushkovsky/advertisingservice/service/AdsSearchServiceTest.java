@@ -13,7 +13,7 @@ import io.github.aglushkovsky.advertisingservice.entity.User;
 import io.github.aglushkovsky.advertisingservice.entity.enumeration.LocalityType;
 import io.github.aglushkovsky.advertisingservice.exception.NotFoundException;
 import io.github.aglushkovsky.advertisingservice.test.config.MapperTestConfig;
-import io.github.aglushkovsky.advertisingservice.util.MappingUtils;
+import io.github.aglushkovsky.advertisingservice.util.UserMapperUtils;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -57,7 +57,7 @@ class AdsSearchServiceTest {
     private UserDao userDao;
 
     @MockitoBean
-    private MappingUtils mappingUtils;
+    private UserMapperUtils userMapperUtils;
 
     @Nested
     class SearchByTerm {
