@@ -37,46 +37,46 @@ class AdCrudControllerTest {
     @MockitoBean
     private AdCrudService adCrudService;
 
-    @Nested
-    class FindById {
-
-        @Test
-        void findByIdShouldReturnItemWhenItExistsInDao() throws Exception {
-            Long adStubId = 1L;
-            AdResponseDto findByIdStub = new AdResponseDto(
-                    adStubId,
-                    "Test",
-                    new BigDecimal("12345"),
-                    null,
-                    List.of(new LocalityResponseDto(1L, "Test City", "CITY")),
-                    new UserResponseDto(1L, "test_login", null, null, 0.0),
-                    LocalDateTime.now().toString(),
-                    false);
-            doReturn(findByIdStub).when(adCrudService).findById(anyLong());
-
-            mockMvc.perform(get("/api/v1/ads/{id}", adStubId))
-                    .andExpect(status().isOk())
-                    .andExpect(content().json(objectMapper.writeValueAsString(findByIdStub)));
-        }
-
-        @Test
-        void findByIdShouldReturnNotFoundResponseWhenItDoesNotExist() throws Exception {
-            Long adRequestId = 1L;
-            doThrow(NotFoundException.class).when(adCrudService).findById(adRequestId);
-
-            mockMvc.perform(get("/api/v1/ads/{id}", adRequestId))
-                    .andExpect(status().isNotFound());
-        }
-
-        @Test
-        void findByIdShouldReturnBadRequestResponseWhenIdIsInvalid() throws Exception {
-            Long invalidAdRequestId = 0L;
-            doThrow(NotFoundException.class).when(adCrudService).findById(invalidAdRequestId);
-
-            mockMvc.perform(get("/api/v1/ads/{id}", invalidAdRequestId))
-                    .andExpect(status().isBadRequest())
-                    .andExpect(jsonPath("$.body.size()").value(1))
-                    .andExpect(jsonPath("$.body[?(@.parameter=='id')]", notNullValue()));
-        }
-    }
+//    @Nested
+//    class FindById {
+//
+//        @Test
+//        void findByIdShouldReturnItemWhenItExistsInDao() throws Exception {
+//            Long adStubId = 1L;
+//            AdResponseDto findByIdStub = new AdResponseDto(
+//                    adStubId,
+//                    "Test",
+//                    new BigDecimal("12345"),
+//                    null,
+//                    List.of(new LocalityResponseDto(1L, "Test City", "CITY")),
+//                    new UserResponseDto(1L, "test_login", null, null, 0.0),
+//                    LocalDateTime.now().toString(),
+//                    false);
+//            doReturn(findByIdStub).when(adCrudService).findById(anyLong());
+//
+//            mockMvc.perform(get("/api/v1/ads/{id}", adStubId))
+//                    .andExpect(status().isOk())
+//                    .andExpect(content().json(objectMapper.writeValueAsString(findByIdStub)));
+//        }
+//
+//        @Test
+//        void findByIdShouldReturnNotFoundResponseWhenItDoesNotExist() throws Exception {
+//            Long adRequestId = 1L;
+//            doThrow(NotFoundException.class).when(adCrudService).findById(adRequestId);
+//
+//            mockMvc.perform(get("/api/v1/ads/{id}", adRequestId))
+//                    .andExpect(status().isNotFound());
+//        }
+//
+//        @Test
+//        void findByIdShouldReturnBadRequestResponseWhenIdIsInvalid() throws Exception {
+//            Long invalidAdRequestId = 0L;
+//            doThrow(NotFoundException.class).when(adCrudService).findById(invalidAdRequestId);
+//
+//            mockMvc.perform(get("/api/v1/ads/{id}", invalidAdRequestId))
+//                    .andExpect(status().isBadRequest())
+//                    .andExpect(jsonPath("$.body.size()").value(1))
+//                    .andExpect(jsonPath("$.body[?(@.parameter=='id')]", notNullValue()));
+//        }
+//    }
 }

@@ -3,8 +3,10 @@ package io.github.aglushkovsky.advertisingservice.dto.request;
 import io.github.aglushkovsky.advertisingservice.entity.enumeration.AdStatus;
 import io.github.aglushkovsky.advertisingservice.validator.group.CreateGroup;
 import jakarta.validation.constraints.*;
+import lombok.Builder;
 
 // FIXME NotBlank игнорируется при редактировании => можно поставить логин с blank-символами
+@Builder
 public record AdCreateEditResponseDto(
         @NotBlank(
                 groups = {CreateGroup.class},

@@ -11,6 +11,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString(exclude = {"ancestors", "descendants"})
+@Builder
 @Entity
 public class Locality {
 
@@ -20,9 +21,11 @@ public class Locality {
 
     private String name;
 
+    @Builder.Default
     @OneToMany(mappedBy = "descendantLocality")
     private List<LocalityPart> ancestors = new ArrayList<>();
 
+    @Builder.Default
     @OneToMany(mappedBy = "ancestorLocality")
     private List<LocalityPart> descendants = new ArrayList<>();
 

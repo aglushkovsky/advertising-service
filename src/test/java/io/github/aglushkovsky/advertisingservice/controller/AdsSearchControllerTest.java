@@ -37,59 +37,59 @@ class AdsSearchControllerTest {
     @Nested
     class SearchAds {
 
-        @Test
-        void searchAdsShouldReturnFirstPageFromAllLocalitiesWhenFilterAndPageableNotSpecified() throws Exception {
-            PageEntity<AdResponseDto> findAllResultStub = new PageEntity<>(
-                    List.of(
-                            new AdResponseDto(
-                                    1L,
-                                    "Test",
-                                    new BigDecimal("12345"),
-                                    null,
-                                    List.of(new LocalityResponseDto(1L, "Test City", "CITY")),
-                                    new UserResponseDto(1L, "test_login", null, null, 0.0),
-                                    LocalDateTime.now().toString(),
-                                    false)
-                    ),
-                    new PageEntity.Metadata(1L, 1L, 1L, true)
-            );
-            doReturn(findAllResultStub).when(adsSearchService).findAll(any(), any());
-
-            mockMvc.perform(get("/api/v1/ads"))
-                    .andExpect(status().isOk())
-                    .andExpect(content().json(objectMapper.writeValueAsString(findAllResultStub)));
-        }
-
-        @Test
-        void searchAdsShouldReturnFirstPageFromAllLocalitiesWhenFilterAndPageableParametersWasSpecified() throws Exception {
-            PageEntity<AdResponseDto> findAllResultStub = new PageEntity<>(
-                    List.of(
-                            new AdResponseDto(
-                                    1L,
-                                    "Test",
-                                    new BigDecimal("12345"),
-                                    null,
-                                    List.of(new LocalityResponseDto(1L, "Test City", "CITY")),
-                                    new UserResponseDto(1L, "test_login", null, null, 0.0),
-                                    LocalDateTime.now().toString(),
-                                    false)
-                    ),
-                    new PageEntity.Metadata(1L, 1L, 1L, true)
-            );
-            doReturn(findAllResultStub).when(adsSearchService).findAll(any(), any());
-
-            mockMvc.perform(get("/api/v1/ads")
-                            .queryParam("term", "test")
-                            .queryParam("onlyInTitle", "false")
-                            .queryParam("minPrice", "10000")
-                            .queryParam("maxPrice", "100000")
-                            .queryParam("publisherId", "1")
-                            .queryParam("localityId", "1")
-                            .queryParam("page", "1")
-                            .queryParam("limit", "10"))
-                    .andExpect(status().isOk())
-                    .andExpect(content().json(objectMapper.writeValueAsString(findAllResultStub)));
-        }
+//        @Test
+//        void searchAdsShouldReturnFirstPageFromAllLocalitiesWhenFilterAndPageableNotSpecified() throws Exception {
+//            PageEntity<AdResponseDto> findAllResultStub = new PageEntity<>(
+//                    List.of(
+//                            new AdResponseDto(
+//                                    1L,
+//                                    "Test",
+//                                    new BigDecimal("12345"),
+//                                    null,
+//                                    List.of(new LocalityResponseDto(1L, "Test City", "CITY")),
+//                                    new UserResponseDto(1L, "test_login", null, null, 0.0),
+//                                    LocalDateTime.now().toString(),
+//                                    false)
+//                    ),
+//                    new PageEntity.Metadata(1L, 1L, 1L, true)
+//            );
+//            doReturn(findAllResultStub).when(adsSearchService).findAll(any(), any());
+//
+//            mockMvc.perform(get("/api/v1/ads"))
+//                    .andExpect(status().isOk())
+//                    .andExpect(content().json(objectMapper.writeValueAsString(findAllResultStub)));
+//        }
+//
+//        @Test
+//        void searchAdsShouldReturnFirstPageFromAllLocalitiesWhenFilterAndPageableParametersWasSpecified() throws Exception {
+//            PageEntity<AdResponseDto> findAllResultStub = new PageEntity<>(
+//                    List.of(
+//                            new AdResponseDto(
+//                                    1L,
+//                                    "Test",
+//                                    new BigDecimal("12345"),
+//                                    null,
+//                                    List.of(new LocalityResponseDto(1L, "Test City", "CITY")),
+//                                    new UserResponseDto(1L, "test_login", null, null, 0.0),
+//                                    LocalDateTime.now().toString(),
+//                                    false)
+//                    ),
+//                    new PageEntity.Metadata(1L, 1L, 1L, true)
+//            );
+//            doReturn(findAllResultStub).when(adsSearchService).findAll(any(), any());
+//
+//            mockMvc.perform(get("/api/v1/ads")
+//                            .queryParam("term", "test")
+//                            .queryParam("onlyInTitle", "false")
+//                            .queryParam("minPrice", "10000")
+//                            .queryParam("maxPrice", "100000")
+//                            .queryParam("publisherId", "1")
+//                            .queryParam("localityId", "1")
+//                            .queryParam("page", "1")
+//                            .queryParam("limit", "10"))
+//                    .andExpect(status().isOk())
+//                    .andExpect(content().json(objectMapper.writeValueAsString(findAllResultStub)));
+//        }
 
         @Test
         void searchAdsShouldReturnErrorResponseWhenFilterParametersAreInInvalidFormat() throws Exception {

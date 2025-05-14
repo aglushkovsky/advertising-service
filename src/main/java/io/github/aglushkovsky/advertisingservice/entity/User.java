@@ -12,6 +12,7 @@ import java.util.List;
 @NoArgsConstructor
 @ToString(exclude = {"outgoingRates", "incomingRates", "createdAds"})
 @EqualsAndHashCode(exclude = {"outgoingRates", "incomingRates", "createdAds"})
+@Builder
 @Entity
 @Table(schema = "public")
 public class User {
@@ -33,12 +34,15 @@ public class User {
 
     private Double totalRating;
 
+    @Builder.Default
     @OneToMany(mappedBy = "author")
     private List<UserRate> outgoingRates = new ArrayList<>();
 
+    @Builder.Default
     @OneToMany(mappedBy = "recipient")
     private List<UserRate> incomingRates = new ArrayList<>();
 
+    @Builder.Default
     @OneToMany(mappedBy = "publisher")
     private List<Ad> createdAds = new ArrayList<>();
 }

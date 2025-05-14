@@ -2,10 +2,7 @@ package io.github.aglushkovsky.advertisingservice.entity;
 
 import io.github.aglushkovsky.advertisingservice.entity.enumeration.AdStatus;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
@@ -13,6 +10,8 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString(exclude = {"locality", "publisher"})
+@EqualsAndHashCode(exclude = {"locality", "publisher"})
+@Builder
 @Entity
 public class Ad {
 
