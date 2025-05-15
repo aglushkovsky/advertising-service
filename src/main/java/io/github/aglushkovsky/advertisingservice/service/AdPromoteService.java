@@ -28,14 +28,9 @@ public class AdPromoteService {
             throw new AccessDeniedException("You do not have permission to promote ad");
         }
 
-        AdCreateEditResponseDto adCreateEditResponseDto = new AdCreateEditResponseDto(
-                null,
-                null,
-                null,
-                null,
-                true,
-                null
-        );
+        AdCreateEditResponseDto adCreateEditResponseDto = AdCreateEditResponseDto.builder()
+                .isPromoted(true)
+                .build();
 
         AdResponseDto adResponseDto = adCrudService.editAd(adId, adCreateEditResponseDto);
 

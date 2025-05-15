@@ -37,9 +37,9 @@ class AdCrudControllerTest {
     @MockitoBean
     private AdCrudService adCrudService;
 
-//    @Nested
-//    class FindById {
-//
+    @Nested
+    class FindById {
+
 //        @Test
 //        void findByIdShouldReturnItemWhenItExistsInDao() throws Exception {
 //            Long adStubId = 1L;
@@ -58,25 +58,25 @@ class AdCrudControllerTest {
 //                    .andExpect(status().isOk())
 //                    .andExpect(content().json(objectMapper.writeValueAsString(findByIdStub)));
 //        }
-//
-//        @Test
-//        void findByIdShouldReturnNotFoundResponseWhenItDoesNotExist() throws Exception {
-//            Long adRequestId = 1L;
-//            doThrow(NotFoundException.class).when(adCrudService).findById(adRequestId);
-//
-//            mockMvc.perform(get("/api/v1/ads/{id}", adRequestId))
-//                    .andExpect(status().isNotFound());
-//        }
-//
-//        @Test
-//        void findByIdShouldReturnBadRequestResponseWhenIdIsInvalid() throws Exception {
-//            Long invalidAdRequestId = 0L;
-//            doThrow(NotFoundException.class).when(adCrudService).findById(invalidAdRequestId);
-//
-//            mockMvc.perform(get("/api/v1/ads/{id}", invalidAdRequestId))
-//                    .andExpect(status().isBadRequest())
-//                    .andExpect(jsonPath("$.body.size()").value(1))
-//                    .andExpect(jsonPath("$.body[?(@.parameter=='id')]", notNullValue()));
-//        }
-//    }
+
+        @Test
+        void findByIdShouldReturnNotFoundResponseWhenItDoesNotExist() throws Exception {
+            Long adRequestId = 1L;
+            doThrow(NotFoundException.class).when(adCrudService).findById(adRequestId);
+
+            mockMvc.perform(get("/api/v1/ads/{id}", adRequestId))
+                    .andExpect(status().isNotFound());
+        }
+
+        @Test
+        void findByIdShouldReturnBadRequestResponseWhenIdIsInvalid() throws Exception {
+            Long invalidAdRequestId = 0L;
+            doThrow(NotFoundException.class).when(adCrudService).findById(invalidAdRequestId);
+
+            mockMvc.perform(get("/api/v1/ads/{id}", invalidAdRequestId))
+                    .andExpect(status().isBadRequest())
+                    .andExpect(jsonPath("$.body.size()").value(1))
+                    .andExpect(jsonPath("$.body[?(@.parameter=='id')]", notNullValue()));
+        }
+    }
 }

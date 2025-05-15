@@ -28,7 +28,7 @@ public class MessageService {
     private final UserDao userDao;
     private final MessageMapper messageMapper;
 
-    public List<MessageResponseDto> findMessage(Long receiverId, Long keysetMessageId, Long limit, ScrollDirection scrollDirection) {
+    public List<MessageResponseDto> findMessages(Long receiverId, Long keysetMessageId, Long limit, ScrollDirection scrollDirection) {
         log.info("Finding messages for receiverId={}; lastMessageId={}", receiverId, keysetMessageId);
 
         validateId(receiverId, userDao::isExists, "Not found receiver with id={}", false);

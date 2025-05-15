@@ -59,7 +59,7 @@ class AdsSearchControllerTest {
 //                    .andExpect(status().isOk())
 //                    .andExpect(content().json(objectMapper.writeValueAsString(findAllResultStub)));
 //        }
-//
+
 //        @Test
 //        void searchAdsShouldReturnFirstPageFromAllLocalitiesWhenFilterAndPageableParametersWasSpecified() throws Exception {
 //            PageEntity<AdResponseDto> findAllResultStub = new PageEntity<>(

@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @ToString(exclude = {"sender", "receiver"})
 @EqualsAndHashCode(exclude = {"sender", "receiver"})
+@Builder
 @Entity
 public class Message {
 

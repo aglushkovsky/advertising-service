@@ -38,7 +38,7 @@ public class MessageController {
                                                  @RequestParam(defaultValue = "DOWN") ScrollDirection scrollDirection) {
         log.info("Start GET /api/v1/messages; receiverId={}, lastMessageId={}, limit={}",
                 receiverId, lastMessageId, limit);
-        List<MessageResponseDto> response = messageService.findMessage(receiverId, lastMessageId, limit, scrollDirection);
+        List<MessageResponseDto> response = messageService.findMessages(receiverId, lastMessageId, limit, scrollDirection);
         log.info("Finished GET /api/v1/messages; found {} messages", response.size());
         return response;
     }
