@@ -12,8 +12,12 @@ public class UserServiceTestUtils {
     private static final Long DEFAULT_ID = 1L;
 
     public static User createUserStub() {
+        return createUserStub(DEFAULT_ID);
+    }
+
+    public static User createUserStub(Long id) {
         return User.builder()
-                .id(DEFAULT_ID)
+                .id(id)
                 .login("test_user")
                 .passwordHash("password_hash")
                 .email(null)

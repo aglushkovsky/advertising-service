@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @ToString(exclude = {"author", "recipient"})
 @EqualsAndHashCode(exclude = {"author", "recipient"})
+@Builder
 @Entity
 public class UserRate {
 
