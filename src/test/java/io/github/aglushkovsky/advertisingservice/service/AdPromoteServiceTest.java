@@ -3,7 +3,6 @@ package io.github.aglushkovsky.advertisingservice.service;
 import io.github.aglushkovsky.advertisingservice.dto.request.AdCreateEditResponseDto;
 import io.github.aglushkovsky.advertisingservice.dto.response.AdResponseDto;
 import io.github.aglushkovsky.advertisingservice.exception.NotFoundException;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -11,7 +10,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.access.AccessDeniedException;
 
-import static io.github.aglushkovsky.advertisingservice.util.AdServicesTestUtils.*;
+import static io.github.aglushkovsky.advertisingservice.util.AdTestUtils.*;
 import static io.github.aglushkovsky.advertisingservice.util.SecurityTestUtils.*;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;

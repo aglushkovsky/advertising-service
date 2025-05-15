@@ -19,7 +19,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import static io.github.aglushkovsky.advertisingservice.util.AdServicesTestUtils.*;
+import static io.github.aglushkovsky.advertisingservice.util.AdTestUtils.*;
 import static io.github.aglushkovsky.advertisingservice.util.PageableTestCommonUtils.*;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;

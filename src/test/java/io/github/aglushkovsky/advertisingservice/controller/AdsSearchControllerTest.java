@@ -3,9 +3,9 @@ package io.github.aglushkovsky.advertisingservice.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.aglushkovsky.advertisingservice.annotation.WebMvcUnitTest;
 import io.github.aglushkovsky.advertisingservice.dao.PageEntity;
+import io.github.aglushkovsky.advertisingservice.dto.request.PageableRequestDto;
 import io.github.aglushkovsky.advertisingservice.dto.response.AdResponseDto;
-import io.github.aglushkovsky.advertisingservice.dto.response.LocalityResponseDto;
-import io.github.aglushkovsky.advertisingservice.dto.response.UserResponseDto;
+import io.github.aglushkovsky.advertisingservice.exception.NotFoundException;
 import io.github.aglushkovsky.advertisingservice.service.AdsSearchService;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -13,13 +13,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.util.List;
-
+import static io.github.aglushkovsky.advertisingservice.util.AdTestUtils.*;
+import static io.github.aglushkovsky.advertisingservice.util.PageableTestCommonUtils.*;
 import static org.hamcrest.Matchers.*;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
+import static org.springframework.http.HttpStatus.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcUnitTest(AdsSearchController.class)
@@ -37,59 +38,33 @@ class AdsSearchControllerTest {
     @Nested
     class SearchAds {
 
-//        @Test
-//        void searchAdsShouldReturnFirstPageFromAllLocalitiesWhenFilterAndPageableNotSpecified() throws Exception {
-//            PageEntity<AdResponseDto> findAllResultStub = new PageEntity<>(
-//                    List.of(
-//                            new AdResponseDto(
-//                                    1L,
-//                                    "Test",
-//                                    new BigDecimal("12345"),
-//                                    null,
-//                                    List.of(new LocalityResponseDto(1L, "Test City", "CITY")),
-//                                    new UserResponseDto(1L, "test_login", null, null, 0.0),
-//                                    LocalDateTime.now().toString(),
-//                                    false)
-//                    ),
-//                    new PageEntity.Metadata(1L, 1L, 1L, true)
-//            );
-//            doReturn(findAllResultStub).when(adsSearchService).findAll(any(), any());
-//
-//            mockMvc.perform(get("/api/v1/ads"))
-//                    .andExpect(status().isOk())
-//                    .andExpect(content().json(objectMapper.writeValueAsString(findAllResultStub)));
-//        }
+        @Test
+        void searchAdsShouldReturnFirstPageFromAllLocalitiesWhenFilterAndPageableNotSpecified() throws Exception {
+            PageEntity<AdResponseDto> findAllResultStub = createAdResponseDtoStubPageEntityStub();
+            doReturn(findAllResultStub).when(adsSearchService).findAll(any(), any());
 
-//        @Test
-//        void searchAdsShouldReturnFirstPageFromAllLocalitiesWhenFilterAndPageableParametersWasSpecified() throws Exception {
-//            PageEntity<AdResponseDto> findAllResultStub = new PageEntity<>(
-//                    List.of(
-//                            new AdResponseDto(
-//                                    1L,
-//                                    "Test",
-//                                    new BigDecimal("12345"),
-//                                    null,
-//                                    List.of(new LocalityResponseDto(1L, "Test City", "CITY")),
-//                                    new UserResponseDto(1L, "test_login", null, null, 0.0),
-//                                    LocalDateTime.now().toString(),
-//                                    false)
-//                    ),
-//                    new PageEntity.Metadata(1L, 1L, 1L, true)
-//            );
-//            doReturn(findAllResultStub).when(adsSearchService).findAll(any(), any());
-//
-//            mockMvc.perform(get("/api/v1/ads")
-//                            .queryParam("term", "test")
-//                            .queryParam("onlyInTitle", "false")
-//                            .queryParam("minPrice", "10000")
-//                            .queryParam("maxPrice", "100000")
-//                            .queryParam("publisherId", "1")
-//                            .queryParam("localityId", "1")
-//                            .queryParam("page", "1")
-//                            .queryParam("limit", "10"))
-//                    .andExpect(status().isOk())
-//                    .andExpect(content().json(objectMapper.writeValueAsString(findAllResultStub)));
-//        }
+            mockMvc.perform(get("/api/v1/ads"))
+                    .andExpect(status().isOk())
+                    .andExpect(content().json(objectMapper.writeValueAsString(findAllResultStub)));
+        }
+
+        @Test
+        void searchAdsShouldReturnFirstPageFromAllLocalitiesWhenFilterAndPageableParametersWasSpecified() throws Exception {
+            PageEntity<AdResponseDto> findAllResultStub = createAdResponseDtoStubPageEntityStub();
+            doReturn(findAllResultStub).when(adsSearchService).findAll(any(), any());
+
+            mockMvc.perform(get("/api/v1/ads")
+                            .queryParam("term", "test")
+                            .queryParam("onlyInTitle", "false")
+                            .queryParam("minPrice", "10000")
+                            .queryParam("maxPrice", "100000")
+                            .queryParam("publisherId", "1")
+                            .queryParam("localityId", "1")
+                            .queryParam("page", "1")
+                            .queryParam("limit", "10"))
+                    .andExpect(status().isOk())
+                    .andExpect(content().json(objectMapper.writeValueAsString(findAllResultStub)));
+        }
 
         @Test
         void searchAdsShouldReturnErrorResponseWhenFilterParametersAreInInvalidFormat() throws Exception {
@@ -113,6 +88,57 @@ class AdsSearchControllerTest {
                     .andExpect(jsonPath("$.body.size()").value(2))
                     .andExpect(jsonPath("$.body[?(@.parameter=='page')]", notNullValue()))
                     .andExpect(jsonPath("$.body[?(@.parameter=='limit')]", notNullValue()));
+        }
+    }
+
+    @Nested
+    class GetAdsHistoryByUserId {
+
+        @Test
+        void getAdsHistoryByUserIdShouldReturnResultWhenAllParametersAreValid() throws Exception {
+            Long userId = 1L;
+            PageEntity<AdResponseDto> pageEntityStubWithSingleRecord = createPageEntityStubWithSingleRecord(mock(AdResponseDto.class));
+            PageableRequestDto pageable = createPageableRequestDto();
+            doReturn(pageEntityStubWithSingleRecord).when(adsSearchService).getAdsHistoryByUserId(userId, pageable);
+
+            mockMvc.perform(get("/api/v1/users/{0}/adsHistory", userId))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.body.size()").value(1))
+                    .andExpect(jsonPath("$.metadata.currentPage").value(pageable.page()));
+        }
+
+        @Test
+        void getAdsHistoryByUserIdShouldReturnBadRequestResponseWhenUserIdIsInvalid() throws Exception {
+            Long userId = 0L;
+
+            mockMvc.perform(get("/api/v1/users/{0}/adsHistory", userId))
+                    .andExpect(status().isBadRequest())
+                    .andExpect(jsonPath("$.status").value(BAD_REQUEST.value()));
+        }
+
+        @Test
+        void getAdsHistoryByUserIdShouldReturnBadRequestResponseWhenPageableParametersAreInvalid() throws Exception {
+            Long userId = 1L;
+
+            mockMvc.perform(get("/api/v1/users/{0}/adsHistory", userId)
+                            .queryParam("limit", "0")
+                            .queryParam("page", "0"))
+                    .andExpect(status().isBadRequest())
+                    .andExpect(jsonPath("$.status").value(BAD_REQUEST.value()))
+                    .andExpect(jsonPath("$.body.size()").value(1))
+                    .andExpect(jsonPath("$.body[?(@.parameter=='pageable')].messages.size()")
+                            .value(2));
+        }
+
+        @Test
+        void getAdsHistoryByUserIdShouldReturnNotFoundResponseWhenUserIdIsNotExists() throws Exception {
+            Long userId = 12345L;
+            PageableRequestDto pageable = createPageableRequestDto();
+            doThrow(NotFoundException.class).when(adsSearchService).getAdsHistoryByUserId(userId, pageable);
+
+            mockMvc.perform(get("/api/v1/users/{0}/adsHistory", userId))
+                    .andExpect(status().isNotFound())
+                    .andExpect(jsonPath("$.status").value(NOT_FOUND.value()));
         }
     }
 }

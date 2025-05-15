@@ -18,7 +18,7 @@ import static io.github.aglushkovsky.advertisingservice.util.PageableTestCommonU
 import static io.github.aglushkovsky.advertisingservice.util.UserServiceTestUtils.createUserStub;
 
 @UtilityClass
-public class AdServicesTestUtils {
+public class AdTestUtils {
 
     private static final Long DEFAULT_ID = 1L;
 
