@@ -20,7 +20,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
 
-import static io.github.aglushkovsky.advertisingservice.util.CommentServiceTestUtils.*;
+import static io.github.aglushkovsky.advertisingservice.util.CommentTestUtils.*;
 import static io.github.aglushkovsky.advertisingservice.util.PageableTestCommonUtils.*;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;

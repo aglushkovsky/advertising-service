@@ -40,7 +40,6 @@ public class AdCommentController {
         return response;
     }
 
-    // TODO Точно такой же код есть в AdSearchController. Подумать, как сделать это лучше.
     @ModelAttribute("pageable")
     public PageableRequestDto createPageableAttributes(@RequestParam(defaultValue = "10") Long limit,
                                                        @RequestParam(defaultValue = "1") Long page) {
