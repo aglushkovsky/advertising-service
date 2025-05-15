@@ -101,7 +101,7 @@ class AdsSearchControllerTest {
             PageableRequestDto pageable = createPageableRequestDto();
             doReturn(pageEntityStubWithSingleRecord).when(adsSearchService).getAdsHistoryByUserId(userId, pageable);
 
-            mockMvc.perform(get("/api/v1/users/{0}/adsHistory", userId))
+            mockMvc.perform(get("/api/v1/users/{0}/ads/history", userId))
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.body.size()").value(1))
                     .andExpect(jsonPath("$.metadata.currentPage").value(pageable.page()));
@@ -111,7 +111,7 @@ class AdsSearchControllerTest {
         void getAdsHistoryByUserIdShouldReturnBadRequestResponseWhenUserIdIsInvalid() throws Exception {
             Long userId = 0L;
 
-            mockMvc.perform(get("/api/v1/users/{0}/adsHistory", userId))
+            mockMvc.perform(get("/api/v1/users/{0}/ads/history", userId))
                     .andExpect(status().isBadRequest())
                     .andExpect(jsonPath("$.status").value(BAD_REQUEST.value()));
         }
@@ -120,7 +120,7 @@ class AdsSearchControllerTest {
         void getAdsHistoryByUserIdShouldReturnBadRequestResponseWhenPageableParametersAreInvalid() throws Exception {
             Long userId = 1L;
 
-            mockMvc.perform(get("/api/v1/users/{0}/adsHistory", userId)
+            mockMvc.perform(get("/api/v1/users/{0}/ads/history", userId)
                             .queryParam("limit", "0")
                             .queryParam("page", "0"))
                     .andExpect(status().isBadRequest())
@@ -136,7 +136,7 @@ class AdsSearchControllerTest {
             PageableRequestDto pageable = createPageableRequestDto();
             doThrow(NotFoundException.class).when(adsSearchService).getAdsHistoryByUserId(userId, pageable);
 
-            mockMvc.perform(get("/api/v1/users/{0}/adsHistory", userId))
+            mockMvc.perform(get("/api/v1/users/{0}/ads/history", userId))
                     .andExpect(status().isNotFound())
                     .andExpect(jsonPath("$.status").value(NOT_FOUND.value()));
         }

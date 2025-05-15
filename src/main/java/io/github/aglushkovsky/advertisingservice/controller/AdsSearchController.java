@@ -30,7 +30,7 @@ public class AdsSearchController {
         return result;
     }
 
-    @GetMapping("/users/{userId}/adsHistory")
+    @GetMapping("/users/{userId}/ads/history")
     public PageEntity<AdResponseDto> getAdsHistoryByUserId(@PathVariable @Min(1) Long userId,
                                                            @ModelAttribute("pageable")
                                                            @Valid PageableRequestDto pageable) {
