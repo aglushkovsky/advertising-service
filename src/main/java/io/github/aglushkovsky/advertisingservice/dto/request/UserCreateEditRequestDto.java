@@ -2,9 +2,9 @@ package io.github.aglushkovsky.advertisingservice.dto.request;
 
 import io.github.aglushkovsky.advertisingservice.validator.group.CreateGroup;
 import jakarta.validation.constraints.*;
+import lombok.Builder;
 
-// FIXME NotBlank игнорируется при редактировании => можно поставить логин с blank-символами.
-// TODO Попробовать заиспользовать MessageSource для сообщений, чтобы их так не хардкодить.
+@Builder
 public record UserCreateEditRequestDto(
         @NotBlank(groups = CreateGroup.class, message = "Логин не может быть пустым")
         @Size(min = 5, max = 50, message = "Длина должна быть от {min} до {max} символов")

@@ -39,15 +39,16 @@ public class UserService {
     public UserResponseDto editUser(Long id, UserCreateEditRequestDto userCreateEditRequestDto) {
         log.info("Start editUser");
 
+        User userForEdit = userDao.findById(id).orElseThrow(() -> {
+            log.error("Can't edit: user with id={} not found", id);
+            return new NotFoundException(id);
+        });
+
         if (!isAuthorizedForEditUser(id)) {
             log.error("User is not authorized for editing user with id={}", id);
             throw new AccessDeniedException("User is not authorized to edit user with id=%d".formatted(id));
         }
 
-        User userForEdit = userDao.findById(id).orElseThrow(() -> {
-            log.error("Can't edit: user with id={} not found", id);
-            return new NotFoundException(id);
-        });
         User updatedUser = userMapper.updateUser(userForEdit, userCreateEditRequestDto);
         userDao.update(updatedUser);
         UserResponseDto userResponseDto = userMapper.toDto(updatedUser);

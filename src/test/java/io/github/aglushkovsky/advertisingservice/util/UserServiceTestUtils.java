@@ -1,5 +1,6 @@
 package io.github.aglushkovsky.advertisingservice.util;
 
+import io.github.aglushkovsky.advertisingservice.dto.request.UserCreateEditRequestDto;
 import io.github.aglushkovsky.advertisingservice.dto.response.UserResponseDto;
 import io.github.aglushkovsky.advertisingservice.entity.User;
 import lombok.experimental.UtilityClass;
@@ -34,6 +35,13 @@ public class UserServiceTestUtils {
                 .email(null)
                 .phoneNumber(null)
                 .totalRating(0.0)
+                .build();
+    }
+
+    public static UserCreateEditRequestDto createUserCreateEditRequestDtoStub() {
+        return UserCreateEditRequestDto.builder()
+                .login("test_login")
+                .password("test_password")
                 .build();
     }
 }

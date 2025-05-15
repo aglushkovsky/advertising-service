@@ -44,9 +44,9 @@ public class UserController {
 
     @GetMapping("/users/{id}")
     public UserResponseDto getUserById(@PathVariable @Min(1) Long id) {
-        log.info("Start GET /api/v1/user/{id}", id);
+        log.info("Start GET /api/v1/user/{}", id);
         UserResponseDto response = userService.findById(id);
-        log.info("Finished GET /api/v1/user/{id}", id);
+        log.info("Finished GET /api/v1/user/{}", id);
         return response;
     }
 }
