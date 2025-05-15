@@ -22,7 +22,6 @@ import java.util.Objects;
 public class UserService {
 
     private final UserDao userDao;
-
     private final UserMapper userMapper;
 
     public UserResponseDto createUser(UserCreateEditRequestDto userCreateEditRequestDto) {
@@ -46,7 +45,7 @@ public class UserService {
         }
 
         User userForEdit = userDao.findById(id).orElseThrow(() -> {
-            log.error("User with id={} not found", id);
+            log.error("Can't edit: user with id={} not found", id);
             return new NotFoundException(id);
         });
         User updatedUser = userMapper.updateUser(userForEdit, userCreateEditRequestDto);
@@ -62,5 +61,20 @@ public class UserService {
         JwtAuthentication authentication = (JwtAuthentication) SecurityContextHolder.getContext().getAuthentication();
         return authentication.getAuthorities().contains(Role.ADMIN) ||
                Objects.equals(authentication.getId(), targetUserEditId);
+    }
+
+    public UserResponseDto findById(Long id) {
+        log.info("Start findById; id={}", id);
+
+        UserResponseDto result = userDao.findById(id)
+                .map(userMapper::toDto)
+                .orElseThrow(() -> {
+                    log.error("User with id={} not found", id);
+                    return new NotFoundException(id);
+                });
+
+        log.info("End findById; found user with id={}", id);
+
+        return result;
     }
 }

@@ -41,4 +41,12 @@ public class UserController {
         log.info("Finished PATCH /api/v1/user/{}/edit", id);
         return response;
     }
+
+    @GetMapping("/users/{id}")
+    public UserResponseDto getUserById(@PathVariable @Min(1) Long id) {
+        log.info("Start GET /api/v1/user/{id}", id);
+        UserResponseDto response = userService.findById(id);
+        log.info("Finished GET /api/v1/user/{id}", id);
+        return response;
+    }
 }
