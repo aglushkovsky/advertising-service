@@ -1,6 +1,6 @@
 package io.github.aglushkovsky.advertisingservice.service;
 
-import io.github.aglushkovsky.advertisingservice.dto.request.AdCreateEditResponseDto;
+import io.github.aglushkovsky.advertisingservice.dto.request.AdCreateEditRequestDto;
 import io.github.aglushkovsky.advertisingservice.dto.response.AdResponseDto;
 import io.github.aglushkovsky.advertisingservice.exception.NotFoundException;
 import org.junit.jupiter.api.Test;
@@ -32,7 +32,7 @@ class AdPromoteServiceTest {
                 .id(adId)
                 .isPromoted(true)
                 .build();
-        AdCreateEditResponseDto editResponseDto = AdCreateEditResponseDto.builder()
+        AdCreateEditRequestDto editResponseDto = AdCreateEditRequestDto.builder()
                 .isPromoted(true)
                 .build();
         doReturn(targetAdStubResponseDto).when(adCrudService).findById(adId);

@@ -1,44 +1,28 @@
 package io.github.aglushkovsky.advertisingservice.controller.advice;
 
-import io.github.aglushkovsky.advertisingservice.dto.response.ErrorResponseDto;
 import io.github.aglushkovsky.advertisingservice.exception.NotFoundException;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
+import org.springframework.http.*;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @RestControllerAdvice
-@Slf4j
 public class CommonExceptionHandler {
 
     @ExceptionHandler(NotFoundException.class)
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ErrorResponseDto<String> handleNotFoundException(NotFoundException e) {
-        log.info("Start handling NotFoundException", e);
+    public ResponseEntity<ProblemDetail> handleNotFoundException(NotFoundException e) {
+        ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.NOT_FOUND);
+        problemDetail.setTitle("Resource Not Found");
+        problemDetail.setDetail("Элемент с id=%d не найден".formatted(e.getId()));
 
-        ErrorResponseDto<String> response = new ErrorResponseDto<>(
-                HttpStatus.NOT_FOUND.value(),
-                "Элемент с id=%d не найден".formatted(e.getId())
-        );
-
-        log.info("Finished handling NotFoundException");
-
-        return response;
+        return new ResponseEntity<>(problemDetail, HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(Exception.class)
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public ErrorResponseDto<String> handleException(Exception e) {
-        log.info("Start handling Exception", e);
+    public ResponseEntity<ProblemDetail> handleException() {
+        ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.INTERNAL_SERVER_ERROR);
+        problemDetail.setTitle("Internal Server Error");
+        problemDetail.setDetail("Something went wrong");
 
-        ErrorResponseDto<String> response = new ErrorResponseDto<>(
-                HttpStatus.INTERNAL_SERVER_ERROR.value(),
-                "Что-то пошло не так"
-        );
-
-        log.info("Finished handling Exception");
-
-        return response;
+        return new ResponseEntity<>(problemDetail, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }

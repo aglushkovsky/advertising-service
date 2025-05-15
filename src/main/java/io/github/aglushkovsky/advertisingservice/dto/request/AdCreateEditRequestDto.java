@@ -5,9 +5,8 @@ import io.github.aglushkovsky.advertisingservice.validator.group.CreateGroup;
 import jakarta.validation.constraints.*;
 import lombok.Builder;
 
-// FIXME NotBlank игнорируется при редактировании => можно поставить логин с blank-символами
 @Builder
-public record AdCreateEditResponseDto(
+public record AdCreateEditRequestDto(
         @NotBlank(
                 groups = {CreateGroup.class},
                 message = "Не указано название объявления"
@@ -22,11 +21,6 @@ public record AdCreateEditResponseDto(
                 groups = CreateGroup.class,
                 message = "Не указана цена"
         )
-        @Min(
-                value = 0,
-                message = "Цена не должна быть меньше {value}"
-        )
-
         @Min(
                 value = 0,
                 message = "Цена не должна быть меньше {value}"

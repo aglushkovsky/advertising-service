@@ -1,12 +1,12 @@
 package io.github.aglushkovsky.advertisingservice.controller;
 
-import io.github.aglushkovsky.advertisingservice.dto.request.AdCreateEditResponseDto;
+import io.github.aglushkovsky.advertisingservice.dto.request.AdCreateEditRequestDto;
 import io.github.aglushkovsky.advertisingservice.dto.response.AdResponseDto;
 import io.github.aglushkovsky.advertisingservice.service.AdCrudService;
 import io.github.aglushkovsky.advertisingservice.validator.group.CreateGroup;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.Positive;
+import jakarta.validation.groups.Default;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -24,19 +24,19 @@ public class AdCrudController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public AdResponseDto createAd(@RequestBody @Validated(CreateGroup.class)
-                                  AdCreateEditResponseDto adCreateEditResponseDto) {
-        log.info("Start POST /api/v1/ads; {}", adCreateEditResponseDto);
-        AdResponseDto response = adCrudService.createAd(adCreateEditResponseDto);
+    public AdResponseDto createAd(@RequestBody @Validated({Default.class, CreateGroup.class})
+                                  AdCreateEditRequestDto adCreateEditRequestDto) {
+        log.info("Start POST /api/v1/ads; {}", adCreateEditRequestDto);
+        AdResponseDto response = adCrudService.createAd(adCreateEditRequestDto);
         log.info("Finished POST /api/v1/ads; created ad: {}", response.id());
         return response;
     }
 
     @PatchMapping("/{id}")
     public AdResponseDto editAd(@PathVariable @Min(1) Long id,
-                                @RequestBody @Valid AdCreateEditResponseDto adCreateEditResponseDto) {
-        log.info("Start PATCH /api/v1/ads; id={}, {}", id, adCreateEditResponseDto);
-        AdResponseDto adResponseDto = adCrudService.editAd(id, adCreateEditResponseDto);
+                                @RequestBody @Valid AdCreateEditRequestDto adCreateEditRequestDto) {
+        log.info("Start PATCH /api/v1/ads; id={}, {}", id, adCreateEditRequestDto);
+        AdResponseDto adResponseDto = adCrudService.editAd(id, adCreateEditRequestDto);
         log.info("Finished PATCH /api/v1/ads; updated ad with id={}: {}", id, adResponseDto);
         return adResponseDto;
     }

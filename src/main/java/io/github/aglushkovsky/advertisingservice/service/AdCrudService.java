@@ -1,7 +1,7 @@
 package io.github.aglushkovsky.advertisingservice.service;
 
 import io.github.aglushkovsky.advertisingservice.dao.impl.AdDao;
-import io.github.aglushkovsky.advertisingservice.dto.request.AdCreateEditResponseDto;
+import io.github.aglushkovsky.advertisingservice.dto.request.AdCreateEditRequestDto;
 import io.github.aglushkovsky.advertisingservice.dto.response.AdResponseDto;
 import io.github.aglushkovsky.advertisingservice.entity.Ad;
 import io.github.aglushkovsky.advertisingservice.entity.enumeration.Role;
@@ -26,10 +26,10 @@ public class AdCrudService {
     private final AdMapper adMapper;
 
     @Transactional
-    public AdResponseDto createAd(AdCreateEditResponseDto adCreateEditResponseDto) {
-        log.info("Creating new Ad; adCreateEditResponseDto: {}", adCreateEditResponseDto);
+    public AdResponseDto createAd(AdCreateEditRequestDto adCreateEditRequestDto) {
+        log.info("Creating new Ad; adCreateEditResponseDto: {}", adCreateEditRequestDto);
 
-        Ad ad = adMapper.toEntity(adCreateEditResponseDto);
+        Ad ad = adMapper.toEntity(adCreateEditRequestDto);
         Ad createdAd = adDao.add(ad);
         AdResponseDto adResponseDto = adMapper.toDto(createdAd);
 
@@ -39,7 +39,7 @@ public class AdCrudService {
     }
 
     @Transactional
-    public AdResponseDto editAd(Long adId, AdCreateEditResponseDto adCreateEditResponseDto) {
+    public AdResponseDto editAd(Long adId, AdCreateEditRequestDto adCreateEditRequestDto) {
         log.info("Editing Ad; id={}", adId);
 
         Ad adForUpdate = adDao.findById(adId).orElseThrow(() -> {
@@ -52,7 +52,7 @@ public class AdCrudService {
             throw new AccessDeniedException("User is not authorized to edit ad with id=%d".formatted(adId));
         }
 
-        Ad updatedAd = adMapper.editAd(adForUpdate, adCreateEditResponseDto);
+        Ad updatedAd = adMapper.editAd(adForUpdate, adCreateEditRequestDto);
         adDao.update(updatedAd);
         AdResponseDto adResponseDto = adMapper.toDto(updatedAd);
 

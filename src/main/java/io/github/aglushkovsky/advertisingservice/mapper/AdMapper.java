@@ -1,7 +1,7 @@
 package io.github.aglushkovsky.advertisingservice.mapper;
 
 import io.github.aglushkovsky.advertisingservice.dao.impl.AdDao;
-import io.github.aglushkovsky.advertisingservice.dto.request.AdCreateEditResponseDto;
+import io.github.aglushkovsky.advertisingservice.dto.request.AdCreateEditRequestDto;
 import io.github.aglushkovsky.advertisingservice.dto.response.AdResponseDto;
 import io.github.aglushkovsky.advertisingservice.entity.Ad;
 import io.github.aglushkovsky.advertisingservice.exception.NotFoundException;
@@ -46,18 +46,18 @@ public abstract class AdMapper {
     @Mapping(target = "publisher",
             expression = "java(userMapper.toUserFromUserId(SecurityUtils.getAuthenticatedUserId()))")
     @Mapping(target = "locality",
-            expression = "java(localityMapper.toEntityFromLocalityId(adCreateEditResponseDto.localityId()))")
+            expression = "java(localityMapper.toEntityFromLocalityId(adCreateEditRequestDto.localityId()))")
     @Mapping(target = "isPromoted", constant = "false")
     @Mapping(target = "publishedAt", expression = "java(LocalDateTime.now())")
     @Mapping(target = "status", constant = "ACTIVE")
-    public abstract Ad toEntity(AdCreateEditResponseDto adCreateEditResponseDto);
+    public abstract Ad toEntity(AdCreateEditRequestDto adCreateEditRequestDto);
 
     @Mapping(target = "locality",
             expression = """
-                    java(adCreateEditResponseDto.localityId() == null
+                    java(adCreateEditRequestDto.localityId() == null
                             ? ad.getLocality()
-                            : localityMapper.toEntityFromLocalityId(adCreateEditResponseDto.localityId()))
+                            : localityMapper.toEntityFromLocalityId(adCreateEditRequestDto.localityId()))
                     """)
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    public abstract Ad editAd(@MappingTarget Ad ad, AdCreateEditResponseDto adCreateEditResponseDto);
+    public abstract Ad editAd(@MappingTarget Ad ad, AdCreateEditRequestDto adCreateEditRequestDto);
 }

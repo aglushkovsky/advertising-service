@@ -1,6 +1,6 @@
 package io.github.aglushkovsky.advertisingservice.service;
 
-import io.github.aglushkovsky.advertisingservice.dto.request.AdCreateEditResponseDto;
+import io.github.aglushkovsky.advertisingservice.dto.request.AdCreateEditRequestDto;
 import io.github.aglushkovsky.advertisingservice.dto.response.AdResponseDto;
 import io.github.aglushkovsky.advertisingservice.entity.enumeration.Role;
 import io.github.aglushkovsky.advertisingservice.jwt.JwtAuthentication;
@@ -28,11 +28,11 @@ public class AdPromoteService {
             throw new AccessDeniedException("You do not have permission to promote ad");
         }
 
-        AdCreateEditResponseDto adCreateEditResponseDto = AdCreateEditResponseDto.builder()
+        AdCreateEditRequestDto adCreateEditRequestDto = AdCreateEditRequestDto.builder()
                 .isPromoted(true)
                 .build();
 
-        AdResponseDto adResponseDto = adCrudService.editAd(adId, adCreateEditResponseDto);
+        AdResponseDto adResponseDto = adCrudService.editAd(adId, adCreateEditRequestDto);
 
         log.info("Finished promoteAd successfully: ad with id={} is now promoted", adId);
 

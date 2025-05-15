@@ -1,7 +1,6 @@
 package io.github.aglushkovsky.advertisingservice.controller;
 
 import io.github.aglushkovsky.advertisingservice.dto.request.UserRateCreateRequestDto;
-import io.github.aglushkovsky.advertisingservice.dto.response.ErrorResponseDto;
 import io.github.aglushkovsky.advertisingservice.dto.response.UserRateResponseDto;
 import io.github.aglushkovsky.advertisingservice.exception.AddUserRateToYourselfException;
 import io.github.aglushkovsky.advertisingservice.exception.UserRateAlreadyExistsException;
@@ -9,6 +8,8 @@ import io.github.aglushkovsky.advertisingservice.service.UserRateService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ProblemDetail;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -30,20 +31,20 @@ public class UserRateController {
     }
 
     @ExceptionHandler(UserRateAlreadyExistsException.class)
-    @ResponseStatus(HttpStatus.CONFLICT)
-    public ErrorResponseDto<String> handleUserRateAlreadyExists() {
-        return new ErrorResponseDto<>(
-                HttpStatus.CONFLICT.value(),
-                "Вы уже оставляли оценку этому пользователю"
-        );
+    public ResponseEntity<ProblemDetail> handleUserRateAlreadyExists() {
+        ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.CONFLICT);
+        problemDetail.setTitle("User rate already exists");
+        problemDetail.setDetail("Вы уже оставляли оценку этому пользователю");
+
+        return new ResponseEntity<>(problemDetail, HttpStatus.CONFLICT);
     }
 
     @ExceptionHandler(AddUserRateToYourselfException.class)
-    @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
-    public ErrorResponseDto<String> handleAddUserRateToYourselfException() {
-        return new ErrorResponseDto<>(
-                HttpStatus.UNPROCESSABLE_ENTITY.value(),
-                "Оставлять оценку для самого себя недопустимо"
-        );
+    public ResponseEntity<ProblemDetail> handleAddUserRateToYourselfException() {
+        ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.UNPROCESSABLE_ENTITY);
+        problemDetail.setTitle("Attempt to add user rate to yourself");
+        problemDetail.setDetail("Оставлять оценку для самого себя недопустимо");
+
+        return new ResponseEntity<>(problemDetail, HttpStatus.UNPROCESSABLE_ENTITY);
     }
 }

@@ -1,14 +1,14 @@
 package io.github.aglushkovsky.advertisingservice.controller.advice;
 
-import io.github.aglushkovsky.advertisingservice.dto.response.ErrorResponseDto;
 import lombok.SneakyThrows;
 import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ProblemDetail;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @RestControllerAdvice
@@ -16,13 +16,12 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class DaoExceptionHandler {
 
     @ExceptionHandler(DataIntegrityViolationException.class)
-    @ResponseStatus(HttpStatus.CONFLICT)
-    public ErrorResponseDto<String> handleDataIntegrityViolationException(DataIntegrityViolationException e) {
-        String message = getUserFriendlyMessage(e.getCause());
-        return new ErrorResponseDto<>(
-                HttpStatus.CONFLICT.value(),
-                message
-        );
+    public ResponseEntity<ProblemDetail> handleDataIntegrityViolationException(DataIntegrityViolationException e) {
+        ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.CONFLICT);
+        problemDetail.setTitle("Data Integrity Violation");
+        problemDetail.setDetail(getUserFriendlyMessage(e.getCause()));
+
+        return new ResponseEntity<>(problemDetail, HttpStatus.CONFLICT);
     }
 
     @SneakyThrows

@@ -1,20 +1,17 @@
 package io.github.aglushkovsky.advertisingservice.controller.advice;
 
 import io.github.aglushkovsky.advertisingservice.dto.response.ErrorObjectDto;
-import io.github.aglushkovsky.advertisingservice.dto.response.ErrorResponseDto;
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.MessageSourceResolvable;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
-import org.springframework.http.HttpStatus;
+import org.springframework.http.*;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import org.springframework.web.method.annotation.HandlerMethodValidationException;
-import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import java.util.List;
 import java.util.Optional;
@@ -26,13 +23,10 @@ import static java.util.Collections.emptyList;
 @RestControllerAdvice
 @Slf4j
 @Order(Ordered.LOWEST_PRECEDENCE - 1)
-public class ValidationExceptionHandler {
+public class ValidationExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(ConstraintViolationException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponseDto<List<ErrorObjectDto>> handleConstraintViolationException(ConstraintViolationException e) {
-        log.info("Start handling ConstraintViolationException", e);
-
+    public ResponseEntity<ProblemDetail> handleConstraintViolationException(ConstraintViolationException e) {
         List<ErrorObjectDto> responseErrors = e.getConstraintViolations().stream()
                 .map(constraintViolation -> new ErrorObjectDto(
                         getLastItemFromPath(constraintViolation.getPropertyPath()),
@@ -40,21 +34,16 @@ public class ValidationExceptionHandler {
                 ))
                 .toList();
 
-        ErrorResponseDto<List<ErrorObjectDto>> response = new ErrorResponseDto<>(
-                HttpStatus.BAD_REQUEST.value(),
-                responseErrors
-        );
+        ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST);
+        problemDetail.setTitle("Constraint Violation Error");
+        problemDetail.setProperty("errors", responseErrors);
 
-        log.info("Finished handling ConstraintViolationException");
-
-        return response;
+        return new ResponseEntity<>(problemDetail, HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponseDto<List<ErrorObjectDto>> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
-        log.info("Start handling MethodArgumentNotValidException", e);
-
+    @Override
+    protected ResponseEntity<Object> handleMethodArgumentNotValid(
+            MethodArgumentNotValidException e, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
         BindingResult bindingResult = e.getBindingResult();
 
         List<ErrorObjectDto> responseErrors = Stream.concat(
@@ -77,55 +66,9 @@ public class ValidationExceptionHandler {
                 )
                 .toList();
 
-        ErrorResponseDto<List<ErrorObjectDto>> response = new ErrorResponseDto<>(
-                HttpStatus.BAD_REQUEST.value(),
-                responseErrors
-        );
+        ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST);
+        problemDetail.setProperty("errors", responseErrors);
 
-        log.info("Finished handling MethodArgumentNotValidException");
-
-        return response;
-    }
-
-    @ExceptionHandler(HandlerMethodValidationException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponseDto<List<ErrorObjectDto>> handleMethodValidationException(HandlerMethodValidationException e) {
-        log.info("Start handling MethodValidationException", e);
-
-        List<ErrorObjectDto> responseErrors = e.getParameterValidationResults()
-                .stream()
-                .map(result -> new ErrorObjectDto(
-                        result.getMethodParameter().getParameterName(),
-                        result.getResolvableErrors()
-                                .stream()
-                                .map(MessageSourceResolvable::getDefaultMessage)
-                                .toList()
-                ))
-                .toList();
-
-        log.info("Finished handling MethodValidationException");
-
-        return new ErrorResponseDto<>(
-                HttpStatus.BAD_REQUEST.value(),
-                responseErrors
-        );
-    }
-
-    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponseDto<ErrorObjectDto> handleMethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException e) {
-        log.info("Start handling MethodArgumentTypeMismatchException", e);
-
-        ErrorResponseDto<ErrorObjectDto> response = new ErrorResponseDto<>(
-                HttpStatus.BAD_REQUEST.value(),
-                new ErrorObjectDto(
-                        e.getPropertyName(),
-                        List.of("Некорректный формат параметра")
-                )
-        );
-
-        log.info("Finished handling MethodArgumentTypeMismatchException");
-
-        return response;
+        return new ResponseEntity<>(problemDetail, headers, HttpStatus.BAD_REQUEST);
     }
 }

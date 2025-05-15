@@ -10,12 +10,14 @@ import org.mapstruct.Mapping;
 import org.mapstruct.ReportingPolicy;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.time.LocalDateTime;
+
 import static org.mapstruct.MappingConstants.ComponentModel.*;
 
 @Mapper(
         componentModel = SPRING,
         uses = {UserMapper.class, AdMapper.class},
-        imports = SecurityUtils.class,
+        imports = {SecurityUtils.class, LocalDateTime.class},
         unmappedTargetPolicy = ReportingPolicy.IGNORE
 )
 public abstract class CommentMapper {
