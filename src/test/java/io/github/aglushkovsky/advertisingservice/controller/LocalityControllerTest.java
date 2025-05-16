@@ -12,7 +12,6 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.List;
 
-import static java.util.Collections.emptyList;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.springframework.http.HttpStatus.*;
@@ -49,7 +48,8 @@ class LocalityControllerTest {
 
             mockMvc.perform(get("/api/v1/localities/{id}/descendants", invalidLocalityId))
                     .andExpect(status().isBadRequest())
-                    .andExpect(jsonPath("$.status").value(BAD_REQUEST.value()));
+                    .andExpect(jsonPath("$.status").value(BAD_REQUEST.value()))
+                    .andExpect(jsonPath("$.errors.size()").value(1));
         }
     }
 
