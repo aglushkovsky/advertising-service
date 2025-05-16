@@ -1,8 +1,11 @@
 package io.github.aglushkovsky.advertisingservice.config;
 
 import io.github.aglushkovsky.advertisingservice.jwt.JwtFilter;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.security.servlet.UserDetailsServiceAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -19,6 +22,7 @@ import static org.springframework.security.config.http.SessionCreationPolicy.STA
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
+@EnableAutoConfiguration(exclude = { UserDetailsServiceAutoConfiguration.class })
 public class SecurityConfig {
 
     @Bean
@@ -35,6 +39,15 @@ public class SecurityConfig {
                                         "/swagger-ui.html",
                                         "/swagger-ui/**",
                                         "/v3/api-docs/**"
+                                )
+                                .permitAll()
+                                .requestMatchers(
+                                        HttpMethod.GET,
+                                        "/api/v1/ads/*/comments",
+                                        "/api/v1/ads/*",
+                                        "/api/v1/users/*/ads/history",
+                                        "/api/v1/localities/**",
+                                        "/api/v1/users/*"
                                 )
                                 .permitAll()
                                 .anyRequest().authenticated())

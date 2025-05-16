@@ -45,6 +45,7 @@ public class UserController {
     }
 
     @GetMapping("/users/{id}")
+    @SecurityRequirements
     public UserResponseDto getUserById(@PathVariable @Min(1) Long id) {
         log.info("Start GET /api/v1/user/{}", id);
         UserResponseDto response = userService.findById(id);

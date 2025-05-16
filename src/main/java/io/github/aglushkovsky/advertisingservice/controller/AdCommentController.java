@@ -5,6 +5,7 @@ import io.github.aglushkovsky.advertisingservice.dto.request.CommentCreateReques
 import io.github.aglushkovsky.advertisingservice.dto.request.PageableRequestDto;
 import io.github.aglushkovsky.advertisingservice.dto.response.CommentResponseDto;
 import io.github.aglushkovsky.advertisingservice.service.CommentService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirements;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
@@ -31,6 +32,7 @@ public class AdCommentController {
     }
 
     @GetMapping
+    @SecurityRequirements
     public PageEntity<CommentResponseDto> findAllCommentsByAdId(@PathVariable @Min(1) Long adId,
                                                                 @ModelAttribute("pageable") @Valid
                                                                 PageableRequestDto pageable) {

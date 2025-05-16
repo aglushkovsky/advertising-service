@@ -4,6 +4,7 @@ import io.github.aglushkovsky.advertisingservice.dto.request.AdCreateEditRequest
 import io.github.aglushkovsky.advertisingservice.dto.response.AdResponseDto;
 import io.github.aglushkovsky.advertisingservice.service.AdCrudService;
 import io.github.aglushkovsky.advertisingservice.validator.group.CreateGroup;
+import io.swagger.v3.oas.annotations.security.SecurityRequirements;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.groups.Default;
@@ -50,6 +51,7 @@ public class AdCrudController {
     }
 
     @GetMapping("/{id}")
+    @SecurityRequirements
     public AdResponseDto findById(@PathVariable @Min(1) Long id) {
         log.info("Start GET /api/v1/ads/{}; id={}", id, id);
         AdResponseDto result = adCrudService.findById(id);
