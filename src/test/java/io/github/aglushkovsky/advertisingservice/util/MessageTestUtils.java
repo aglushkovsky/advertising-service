@@ -6,7 +6,7 @@ import io.github.aglushkovsky.advertisingservice.entity.Message;
 import lombok.experimental.UtilityClass;
 
 @UtilityClass
-public class MessageServiceTestUtils {
+public class MessageTestUtils {
 
     public static final String SAMPLE_MESSAGE_TEXT = "Sample message text";
 
