@@ -34,17 +34,10 @@ public class AdCommentController {
     @GetMapping
     @SecurityRequirements
     public PageEntity<CommentResponseDto> findAllCommentsByAdId(@PathVariable @Min(1) Long adId,
-                                                                @ModelAttribute("pageable") @Valid
-                                                                PageableRequestDto pageable) {
+                                                                @Valid PageableRequestDto pageable) {
         log.info("Start GET /api/v1/ads/{}/comments", adId);
         PageEntity<CommentResponseDto> response = commentService.findAllCommentsByAdId(adId, pageable);
         log.info("End GET /api/v1/ads/{}/comments", adId);
         return response;
-    }
-
-    @ModelAttribute("pageable")
-    public PageableRequestDto createPageableAttributes(@RequestParam(defaultValue = "10") Long limit,
-                                                       @RequestParam(defaultValue = "1") Long page) {
-        return new PageableRequestDto(limit, page);
     }
 }

@@ -22,8 +22,8 @@ public class AdsSearchController {
     private final AdsSearchService adsSearchService;
 
     @GetMapping("/ads")
-    public PageEntity<AdResponseDto> searchAds(@ModelAttribute("filter") @Valid FindAllAdsFilterRequestDto filter,
-                                               @ModelAttribute("pageable") @Valid PageableRequestDto pageable) {
+    public PageEntity<AdResponseDto> searchAds(@Valid FindAllAdsFilterRequestDto filter,
+                                               @Valid PageableRequestDto pageable) {
         log.info("Start GET /api/v1/ads; params={}", filter);
         PageEntity<AdResponseDto> result = adsSearchService.findAll(filter, pageable);
         log.info("Finished GET /api/v1/ads; found items on page {}: {}", pageable.page(), result.body().size());
@@ -32,31 +32,11 @@ public class AdsSearchController {
 
     @GetMapping("/users/{userId}/ads/history")
     public PageEntity<AdResponseDto> getAdsHistoryByUserId(@PathVariable @Min(1) Long userId,
-                                                           @ModelAttribute("pageable")
                                                            @Valid PageableRequestDto pageable) {
         log.info("Start GET /api/v1/users/{}/ads; params={}", userId, pageable);
         PageEntity<AdResponseDto> adsHistoryByUserId = adsSearchService.getAdsHistoryByUserId(userId, pageable);
         log.info("Finished GET /api/v1/users/{}/ads; found items on page {}: {}",
                 userId, pageable.page(), adsHistoryByUserId.body().size());
         return adsHistoryByUserId;
-    }
-
-    @ModelAttribute("filter")
-    public FindAllAdsFilterRequestDto createFilterAttributes(FindAllAdsFilterRequestDto filterRequestDto,
-                                                             @RequestParam(defaultValue = "false") Boolean onlyInTerm) {
-        return new FindAllAdsFilterRequestDto(
-                filterRequestDto.term(),
-                onlyInTerm,
-                filterRequestDto.minPrice(),
-                filterRequestDto.maxPrice(),
-                filterRequestDto.publisherId(),
-                filterRequestDto.localityId()
-        );
-    }
-
-    @ModelAttribute("pageable")
-    public PageableRequestDto createPageableAttributes(@RequestParam(defaultValue = "50") Long limit,
-                                                       @RequestParam(defaultValue = "1") Long page) {
-        return new PageableRequestDto(limit, page);
     }
 }
