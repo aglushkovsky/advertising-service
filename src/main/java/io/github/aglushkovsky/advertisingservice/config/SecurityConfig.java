@@ -45,6 +45,7 @@ public class SecurityConfig {
                                         HttpMethod.GET,
                                         "/api/v1/ads/*/comments",
                                         "/api/v1/ads/*",
+                                        "/api/v1/ads",
                                         "/api/v1/users/*/ads/history",
                                         "/api/v1/localities/**",
                                         "/api/v1/users/*"
