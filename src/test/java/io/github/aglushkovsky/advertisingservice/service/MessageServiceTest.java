@@ -9,7 +9,6 @@ import io.github.aglushkovsky.advertisingservice.dto.response.MessageResponseDto
 import io.github.aglushkovsky.advertisingservice.entity.Message;
 import io.github.aglushkovsky.advertisingservice.exception.NotFoundException;
 import io.github.aglushkovsky.advertisingservice.mapper.MessageMapper;
-import io.github.aglushkovsky.advertisingservice.util.MessageServiceTestUtils;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -27,7 +26,7 @@ import java.util.function.Function;
 import java.util.stream.Stream;
 
 import static io.github.aglushkovsky.advertisingservice.entity.QMessage.message;
-import static io.github.aglushkovsky.advertisingservice.util.MessageServiceTestUtils.*;
+import static io.github.aglushkovsky.advertisingservice.util.MessageTestUtils.*;
 import static io.github.aglushkovsky.advertisingservice.util.SecurityTestUtils.*;
 import static io.github.aglushkovsky.advertisingservice.util.SecurityUtils.*;
 import static org.assertj.core.api.Assertions.*;

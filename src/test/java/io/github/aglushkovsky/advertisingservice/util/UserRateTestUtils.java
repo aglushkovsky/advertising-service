@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 import static io.github.aglushkovsky.advertisingservice.util.UserTestUtils.createUserStub;
 
 @UtilityClass
-public class UserRateServiceTestUtils {
+public class UserRateTestUtils {
 
     public static UserRateCreateRequestDto createUserRateCreateRequestDtoStub() {
         return UserRateCreateRequestDto.builder()

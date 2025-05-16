@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static io.github.aglushkovsky.advertisingservice.util.SecurityTestUtils.*;
-import static io.github.aglushkovsky.advertisingservice.util.UserRateServiceTestUtils.*;
+import static io.github.aglushkovsky.advertisingservice.util.UserRateTestUtils.*;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
