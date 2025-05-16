@@ -75,12 +75,14 @@ class AdCrudControllerTest {
                     .description("test")
                     .localityId(0L)
                     .build();
+            int countOfErrors = 4;
 
             mockMvc.perform(post("/api/v1/ads")
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(objectMapper.writeValueAsString(adCreateEditRequestDto)))
                     .andExpect(status().isBadRequest())
-                    .andExpect(jsonPath("$.status").value(BAD_REQUEST.value()));
+                    .andExpect(jsonPath("$.status").value(BAD_REQUEST.value()))
+                    .andExpect(jsonPath("$.errors.size()").value(countOfErrors));
         }
     }
 
@@ -124,12 +126,14 @@ class AdCrudControllerTest {
                     .description("test")
                     .localityId(0L)
                     .build();
+            int countOfErrors = 5;
 
             mockMvc.perform(patch("/api/v1/ads/{0}", targetAdId)
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(objectMapper.writeValueAsString(adCreateEditRequestDto)))
                     .andExpect(status().isBadRequest())
-                    .andExpect(jsonPath("$.status").value(BAD_REQUEST.value()));
+                    .andExpect(jsonPath("$.status").value(BAD_REQUEST.value()))
+                    .andExpect(jsonPath("$.errors.size()").value(countOfErrors));
         }
 
         @Test
@@ -174,9 +178,10 @@ class AdCrudControllerTest {
         void deleteAdShouldReturnBadRequestResponseWhenAllParametersAreInvalid() throws Exception {
             Long targetAdId = 0L;
 
-            mockMvc.perform(patch("/api/v1/ads/{0}", targetAdId))
+            mockMvc.perform(delete("/api/v1/ads/{0}", targetAdId))
                     .andExpect(status().isBadRequest())
-                    .andExpect(jsonPath("$.status").value(BAD_REQUEST.value()));
+                    .andExpect(jsonPath("$.status").value(BAD_REQUEST.value()))
+                    .andExpect(jsonPath("$.errors.size()").value(1));
         }
 
         @Test
@@ -231,7 +236,8 @@ class AdCrudControllerTest {
 
             mockMvc.perform(get("/api/v1/ads/{id}", invalidAdRequestId))
                     .andExpect(status().isBadRequest())
-                    .andExpect(jsonPath("$.status").value(BAD_REQUEST.value()));
+                    .andExpect(jsonPath("$.status").value(BAD_REQUEST.value()))
+                    .andExpect(jsonPath("$.errors.size()").value(1));
         }
     }
 }
