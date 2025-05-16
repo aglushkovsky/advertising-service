@@ -16,7 +16,7 @@ import org.springframework.security.access.AccessDeniedException;
 import java.util.Optional;
 
 import static io.github.aglushkovsky.advertisingservice.util.SecurityTestUtils.*;
-import static io.github.aglushkovsky.advertisingservice.util.UserServiceTestUtils.*;
+import static io.github.aglushkovsky.advertisingservice.util.UserTestUtils.*;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
 

@@ -15,7 +15,7 @@ import java.util.List;
 import static io.github.aglushkovsky.advertisingservice.entity.enumeration.AdStatus.ACTIVE;
 import static io.github.aglushkovsky.advertisingservice.entity.enumeration.LocalityType.CITY;
 import static io.github.aglushkovsky.advertisingservice.util.PageableTestCommonUtils.*;
-import static io.github.aglushkovsky.advertisingservice.util.UserServiceTestUtils.createUserStub;
+import static io.github.aglushkovsky.advertisingservice.util.UserTestUtils.createUserStub;
 
 @UtilityClass
 public class AdTestUtils {

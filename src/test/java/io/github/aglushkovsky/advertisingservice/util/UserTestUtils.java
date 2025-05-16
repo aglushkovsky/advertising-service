@@ -8,7 +8,7 @@ import lombok.experimental.UtilityClass;
 import static io.github.aglushkovsky.advertisingservice.entity.enumeration.Role.USER;
 
 @UtilityClass
-public class UserServiceTestUtils {
+public class UserTestUtils {
 
     private static final Long DEFAULT_ID = 1L;
 

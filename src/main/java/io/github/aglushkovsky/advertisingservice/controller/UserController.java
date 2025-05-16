@@ -9,6 +9,7 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.groups.Default;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -24,6 +25,7 @@ public class UserController {
     @PostMapping("/registration")
     @PreAuthorize("isAnonymous()")
     @SecurityRequirements
+    @ResponseStatus(HttpStatus.CREATED)
     public UserResponseDto createUser(@RequestBody @Validated({Default.class, CreateGroup.class})
                                       UserCreateEditRequestDto userCreateEditRequestDto) {
         log.info("Start POST /api/v1/registration");

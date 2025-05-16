@@ -8,7 +8,7 @@ import lombok.experimental.UtilityClass;
 import java.time.LocalDateTime;
 
 import static io.github.aglushkovsky.advertisingservice.util.AdTestUtils.*;
-import static io.github.aglushkovsky.advertisingservice.util.UserServiceTestUtils.*;
+import static io.github.aglushkovsky.advertisingservice.util.UserTestUtils.*;
 
 @UtilityClass
 public class CommentTestUtils {
