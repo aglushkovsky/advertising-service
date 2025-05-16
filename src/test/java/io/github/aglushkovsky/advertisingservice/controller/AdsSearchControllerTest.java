@@ -20,7 +20,6 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 import static org.springframework.http.HttpStatus.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcUnitTest(AdsSearchController.class)
@@ -67,27 +66,26 @@ class AdsSearchControllerTest {
         }
 
         @Test
-        void searchAdsShouldReturnErrorResponseWhenFilterParametersAreInInvalidFormat() throws Exception {
+        void searchAdsShouldReturnBadRequestResponseWhenFilterParametersAreInInvalidFormat() throws Exception {
             mockMvc.perform(get("/api/v1/ads")
                             .queryParam("publisherId", "-1")
                             .queryParam("localityId", "-1")
                             .queryParam("minPrice", "-10")
                             .queryParam("maxPrice", "-20"))
                     .andExpect(status().isBadRequest())
-                    .andExpect(jsonPath("$.body.size()").value(5))
-                    .andExpect(jsonPath("$.body[*].parameter",
+                    .andExpect(jsonPath("$.errors.size()").value(5))
+                    .andExpect(jsonPath("$.errors[*].parameter",
                             hasItems("publisherId", "localityId", "minPrice", "maxPrice", null)));
         }
 
         @Test
-        void searchAdsShouldReturnErrorResponseWhenPageableParametersAreInInvalidFormat() throws Exception {
+        void searchAdsShouldReturnBadRequestResponseWhenPageableParametersAreInInvalidFormat() throws Exception {
             mockMvc.perform(get("/api/v1/ads")
                             .queryParam("page", "0")
                             .queryParam("limit", "1"))
                     .andExpect(status().isBadRequest())
-                    .andExpect(jsonPath("$.body.size()").value(2))
-                    .andExpect(jsonPath("$.body[?(@.parameter=='page')]", notNullValue()))
-                    .andExpect(jsonPath("$.body[?(@.parameter=='limit')]", notNullValue()));
+                    .andExpect(jsonPath("$.errors.size()").value(2))
+                    .andExpect(jsonPath("$.errors[*].parameter", hasItems("page", "limit")));
         }
     }
 
@@ -101,10 +99,12 @@ class AdsSearchControllerTest {
             PageableRequestDto pageable = createPageableRequestDto();
             doReturn(pageEntityStubWithSingleRecord).when(adsSearchService).getAdsHistoryByUserId(userId, pageable);
 
-            mockMvc.perform(get("/api/v1/users/{0}/ads/history", userId))
+            mockMvc.perform(get("/api/v1/users/{0}/ads/history", userId)
+                            .queryParam("page", pageable.page().toString())
+                            .queryParam("limit", pageable.limit().toString()))
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.body.size()").value(1))
-                    .andExpect(jsonPath("$.metadata.currentPage").value(pageable.page()));
+                    .andExpect(content().json(objectMapper.writeValueAsString(pageEntityStubWithSingleRecord)));
         }
 
         @Test
@@ -125,9 +125,7 @@ class AdsSearchControllerTest {
                             .queryParam("page", "0"))
                     .andExpect(status().isBadRequest())
                     .andExpect(jsonPath("$.status").value(BAD_REQUEST.value()))
-                    .andExpect(jsonPath("$.body.size()").value(1))
-                    .andExpect(jsonPath("$.body[?(@.parameter=='pageable')].messages.size()")
-                            .value(2));
+                    .andExpect(jsonPath("$.errors.size()").value(2));
         }
 
         @Test
@@ -136,7 +134,9 @@ class AdsSearchControllerTest {
             PageableRequestDto pageable = createPageableRequestDto();
             doThrow(NotFoundException.class).when(adsSearchService).getAdsHistoryByUserId(userId, pageable);
 
-            mockMvc.perform(get("/api/v1/users/{0}/ads/history", userId))
+            mockMvc.perform(get("/api/v1/users/{0}/ads/history", userId)
+                            .queryParam("page", pageable.page().toString())
+                            .queryParam("limit", pageable.limit().toString()))
                     .andExpect(status().isNotFound())
                     .andExpect(jsonPath("$.status").value(NOT_FOUND.value()));
         }
