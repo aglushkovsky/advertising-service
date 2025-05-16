@@ -8,7 +8,6 @@ import io.github.aglushkovsky.advertisingservice.dto.request.PageableRequestDto;
 import io.github.aglushkovsky.advertisingservice.dto.response.CommentResponseDto;
 import io.github.aglushkovsky.advertisingservice.exception.NotFoundException;
 import io.github.aglushkovsky.advertisingservice.service.CommentService;
-import io.github.aglushkovsky.advertisingservice.util.PageableTestCommonUtils;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +21,6 @@ import static io.github.aglushkovsky.advertisingservice.util.PageableTestCommonU
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcUnitTest(AdCommentController.class)
@@ -76,7 +74,8 @@ class AdCommentControllerTest {
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(objectMapper.writeValueAsString(commentCreateRequestDto)))
                     .andExpect(status().isBadRequest())
-                    .andExpect(jsonPath("$.status").value(HttpStatus.BAD_REQUEST.value()));
+                    .andExpect(jsonPath("$.status").value(HttpStatus.BAD_REQUEST.value()))
+                    .andExpect(jsonPath("$.errors.size()").value(1));
         }
 
         @Test
@@ -90,11 +89,11 @@ class AdCommentControllerTest {
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(objectMapper.writeValueAsString(commentCreateRequestDto)))
                     .andExpect(status().isBadRequest())
-                    .andExpect(jsonPath("$.status").value(HttpStatus.BAD_REQUEST.value()));
+                    .andExpect(jsonPath("$.status").value(HttpStatus.BAD_REQUEST.value()))
+                    .andExpect(jsonPath("$.errors.size()").value(1));
         }
     }
 
-    // FIXME Накосячил в тестах с передачей pageable. В mockMvc их надо передавать в queryParam (собственно, как и в реальной жизни).
     @Nested
     class FindAllCommentsByAdId {
 
@@ -123,18 +122,26 @@ class AdCommentControllerTest {
         @Test
         void findAllCommentsByAdIdShouldReturnAllAdCommentsWhenPageAndLimitAreValid() throws Exception {
             Long adId = 1L;
-            PageableRequestDto pageableRequestDto = createPageableRequestDto();
             PageEntity<CommentResponseDto> pageCommentResponseDto = createPageEntityStubWithSingleRecord(mock(CommentResponseDto.class));
-            doReturn(pageCommentResponseDto).when(commentService).findAllCommentsByAdId(adId, pageableRequestDto);
+            PageableRequestDto pageable = createPageableRequestDto();
+            doReturn(pageCommentResponseDto).when(commentService).findAllCommentsByAdId(adId, pageable);
 
-            mockMvc.perform(get("/api/v1/ads/{adId}/comments", adId))
+            mockMvc.perform(get("/api/v1/ads/{adId}/comments", adId)
+                            .queryParam("page", pageable.page().toString())
+                            .queryParam("limit", pageable.limit().toString()))
                     .andExpect(status().isOk())
                     .andExpect(content().json(objectMapper.writeValueAsString(pageCommentResponseDto)));
         }
 
         @Test
-        void findAllCommentsByAdIdShouldReturnBadRequestWhenPageAndLimitAreInvalid() {
+        void findAllCommentsByAdIdShouldReturnBadRequestWhenPageAndLimitAreInvalid() throws Exception {
+            Long adId = 1L;
 
+            mockMvc.perform(get("/api/v1/ads/{adId}/comments", adId)
+                            .queryParam("page", "0")
+                            .queryParam("limit", "1"))
+                    .andExpect(status().isBadRequest())
+                    .andExpect(jsonPath("$.errors.size()").value(2));
         }
     }
 }
