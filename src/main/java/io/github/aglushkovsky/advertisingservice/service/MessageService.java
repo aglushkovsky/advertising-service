@@ -5,6 +5,7 @@ import io.github.aglushkovsky.advertisingservice.controller.ScrollDirection;
 import io.github.aglushkovsky.advertisingservice.dao.impl.MessageDao;
 import io.github.aglushkovsky.advertisingservice.dao.impl.UserDao;
 import io.github.aglushkovsky.advertisingservice.dto.request.MessageCreateRequestDto;
+import io.github.aglushkovsky.advertisingservice.dto.request.ScrollableRequestDto;
 import io.github.aglushkovsky.advertisingservice.dto.response.MessageResponseDto;
 import io.github.aglushkovsky.advertisingservice.entity.Message;
 import io.github.aglushkovsky.advertisingservice.mapper.MessageMapper;
@@ -28,18 +29,18 @@ public class MessageService {
     private final UserDao userDao;
     private final MessageMapper messageMapper;
 
-    public List<MessageResponseDto> findMessages(Long receiverId, Long keysetMessageId, Long limit, ScrollDirection scrollDirection) {
-        log.info("Finding messages for receiverId={}; lastMessageId={}", receiverId, keysetMessageId);
+    public List<MessageResponseDto> findMessages(Long receiverId, ScrollableRequestDto scrollable) {
+        log.info("Finding messages for receiverId={}; scrollable={}", receiverId, scrollable);
 
         validateId(receiverId, userDao::isExists, "Not found receiver with id={}", false);
-        validateId(keysetMessageId, messageDao::isExists, "Not found message with id={}", false);
+        validateId(scrollable.startId(), messageDao::isExists, "Not found message with id={}", false);
 
         List<MessageResponseDto> messageResponseDtoList = messageDao
                 .findAll(
                         receiverId,
                         getAuthenticatedUserId(),
-                        limit,
-                        getKeysetFilter(keysetMessageId, scrollDirection))
+                        scrollable.limit(),
+                        getKeysetFilter(scrollable.startId(), scrollable.scrollDirection()))
                 .stream()
                 .map(messageMapper::toDto)
                 .toList();

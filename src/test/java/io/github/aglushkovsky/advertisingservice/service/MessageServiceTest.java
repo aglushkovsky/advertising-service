@@ -5,6 +5,7 @@ import io.github.aglushkovsky.advertisingservice.controller.ScrollDirection;
 import io.github.aglushkovsky.advertisingservice.dao.impl.MessageDao;
 import io.github.aglushkovsky.advertisingservice.dao.impl.UserDao;
 import io.github.aglushkovsky.advertisingservice.dto.request.MessageCreateRequestDto;
+import io.github.aglushkovsky.advertisingservice.dto.request.ScrollableRequestDto;
 import io.github.aglushkovsky.advertisingservice.dto.response.MessageResponseDto;
 import io.github.aglushkovsky.advertisingservice.entity.Message;
 import io.github.aglushkovsky.advertisingservice.exception.NotFoundException;
@@ -58,6 +59,11 @@ class MessageServiceTest {
             Long senderId = 2L;
             Long keysetMessageId = 1L;
             Long limit = 10L;
+            ScrollableRequestDto scrollable = ScrollableRequestDto.builder()
+                    .startId(keysetMessageId)
+                    .scrollDirection(scrollDirection)
+                    .limit(limit)
+                    .build();
 
             setMockUserInSecurityContext(senderId);
             doReturn(true).when(userDao).isExists(receiverId);
@@ -69,7 +75,7 @@ class MessageServiceTest {
             MessageResponseDto mockMessageResponseDto = mock(MessageResponseDto.class);
             doReturn(mockMessageResponseDto).when(messageMapper).toDto(mockMessage);
 
-            List<MessageResponseDto> result = messageService.findMessages(receiverId, keysetMessageId, limit, scrollDirection);
+            List<MessageResponseDto> result = messageService.findMessages(receiverId, scrollable);
 
             assertThat(result)
                     .isNotEmpty()
@@ -97,10 +103,15 @@ class MessageServiceTest {
             Long invalidReceiverId = 1L;
             Long keysetMessageId = 1L;
             Long limit = 10L;
+            ScrollableRequestDto scrollable = ScrollableRequestDto.builder()
+                    .startId(keysetMessageId)
+                    .scrollDirection(scrollDirection)
+                    .limit(limit)
+                    .build();
             doReturn(false).when(userDao).isExists(invalidReceiverId);
 
             assertThatThrownBy(() -> messageService
-                    .findMessages(invalidReceiverId, keysetMessageId, limit, scrollDirection))
+                    .findMessages(invalidReceiverId, scrollable))
                     .isInstanceOf(NotFoundException.class);
             verify(userDao).isExists(invalidReceiverId);
             verifyNoInteractions(messageDao);
@@ -113,11 +124,16 @@ class MessageServiceTest {
             Long receiverId = 1L;
             Long invalidKeysetMessageId = 1L;
             Long limit = 10L;
+            ScrollableRequestDto scrollable = ScrollableRequestDto.builder()
+                    .startId(invalidKeysetMessageId)
+                    .scrollDirection(scrollDirection)
+                    .limit(limit)
+                    .build();
             doReturn(true).when(userDao).isExists(receiverId);
             doReturn(false).when(messageDao).isExists(invalidKeysetMessageId);
 
             assertThatThrownBy(() -> messageService
-                    .findMessages(receiverId, invalidKeysetMessageId, limit, scrollDirection))
+                    .findMessages(receiverId, scrollable))
                     .isInstanceOf(NotFoundException.class);
             verify(userDao).isExists(receiverId);
             verify(messageDao).isExists(invalidKeysetMessageId);
