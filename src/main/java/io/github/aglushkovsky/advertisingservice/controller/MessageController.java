@@ -1,10 +1,10 @@
 package io.github.aglushkovsky.advertisingservice.controller;
 
 import io.github.aglushkovsky.advertisingservice.dto.request.MessageCreateRequestDto;
+import io.github.aglushkovsky.advertisingservice.dto.request.ScrollableRequestDto;
 import io.github.aglushkovsky.advertisingservice.dto.response.MessageResponseDto;
 import io.github.aglushkovsky.advertisingservice.service.MessageService;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -33,12 +33,9 @@ public class MessageController {
 
     @GetMapping
     public List<MessageResponseDto> findMessages(@RequestParam @Min(1) Long receiverId,
-                                                 @RequestParam @Min(1) Long lastMessageId,
-                                                 @RequestParam(defaultValue = "10") @Min(1) @Max(50) Long limit,
-                                                 @RequestParam(defaultValue = "DOWN") ScrollDirection scrollDirection) {
-        log.info("Start GET /api/v1/messages; receiverId={}, lastMessageId={}, limit={}",
-                receiverId, lastMessageId, limit);
-        List<MessageResponseDto> response = messageService.findMessages(receiverId, lastMessageId, limit, scrollDirection);
+                                                 @Valid ScrollableRequestDto scrollableRequestDto) {
+        log.info("Start GET /api/v1/messages; request={}", scrollableRequestDto);
+        List<MessageResponseDto> response = messageService.findMessages(receiverId, scrollableRequestDto);
         log.info("Finished GET /api/v1/messages; found {} messages", response.size());
         return response;
     }
