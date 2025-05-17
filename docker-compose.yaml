@@ -1,0 +1,16 @@
+name: advertising-service
+
+services:
+  db:
+    image: postgres:17.5
+    ports:
+      - "5435:5432"
+    environment:
+      POSTGRES_PASSWORD: postgres
+  web:
+    image: advertising-service-app
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
