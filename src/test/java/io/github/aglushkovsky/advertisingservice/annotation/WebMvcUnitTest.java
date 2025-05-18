@@ -12,7 +12,7 @@ import java.lang.annotation.*;
 @Target(ElementType.TYPE)
 @WebMvcTest
 @Import(SecurityTestConfig.class)
-@WithMockUser(authorities = "USER")
+@WithJwtAuthenticationContext
 @Inherited
 public @interface WebMvcUnitTest {
 

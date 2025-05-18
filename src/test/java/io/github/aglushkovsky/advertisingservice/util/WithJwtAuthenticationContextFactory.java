@@ -18,7 +18,7 @@ public class WithJwtAuthenticationContextFactory implements WithSecurityContextF
                 .authenticated(true)
                 .id(annotation.id())
                 .login(annotation.username())
-                .authorities(List.of(Arrays.stream(annotation.roles()).map(Role::valueOf).toArray(Role[]::new)))
+                .authorities(List.of(Arrays.stream(annotation.authorities()).map(Role::valueOf).toArray(Role[]::new)))
                 .build();
         authentication.setAuthenticated(true);
 
