@@ -34,7 +34,11 @@ docker version
 git clone https://github.com/aglushkovsky/advertising-service.git
 ```
 
-- Перейдите в корневую директорию рабочей директории, выполните команду:
+- Перейдите в корневую директорию рабочей директории, выполните следующие команды:
+
+```shell
+docker compose build
+```
 
 ```shell
 docker compose up

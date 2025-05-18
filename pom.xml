@@ -200,7 +200,17 @@
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <version>3.4.5</version>
+                <configuration>
+                    <layers>
+                        <enabled>true</enabled>
+                    </layers>
+                    <mainClass>io.github.aglushkovsky.advertisingservice.AdvertisingServiceApplication</mainClass>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
-
 </project>
