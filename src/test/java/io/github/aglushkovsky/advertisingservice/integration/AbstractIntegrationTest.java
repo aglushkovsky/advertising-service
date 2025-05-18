@@ -19,7 +19,7 @@ import static io.github.aglushkovsky.advertisingservice.config.property.Hibernat
 @WithMockUser
 abstract public class AbstractIntegrationTest {
 
-    private static final PostgreSQLContainer<?> container = new PostgreSQLContainer<>("postgres:16.8");
+    private static final PostgreSQLContainer<?> container = new PostgreSQLContainer<>("postgres:17.5");
 
     @BeforeAll
     static void runContainer() {
