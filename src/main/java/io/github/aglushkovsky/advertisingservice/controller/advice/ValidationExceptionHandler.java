@@ -8,6 +8,7 @@ import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.*;
 import org.springframework.util.StringUtils;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -41,8 +42,16 @@ public class ValidationExceptionHandler extends ResponseEntityExceptionHandler {
     protected ResponseEntity<Object> handleMethodArgumentNotValid(
             MethodArgumentNotValidException e, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
         List<ErrorObjectDto> errors = e.getBindingResult().getAllErrors().stream()
-                .map(err -> err.unwrap(ConstraintViolation.class))
-                .map(this::convertFromConstraintViolationToErrorObjectDto)
+                .map(err -> {
+                    if (err.contains(ConstraintViolation.class)) {
+                        ConstraintViolation<?> unwrapped = err.unwrap(ConstraintViolation.class);
+                        return convertFromConstraintViolationToErrorObjectDto(unwrapped);
+                    }
+                    if (err instanceof FieldError fieldError) {
+                        return new ErrorObjectDto(fieldError.getField(), "Invalid value");
+                    }
+                    return new ErrorObjectDto(null, err.getDefaultMessage());
+                })
                 .toList();
 
         ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST);
