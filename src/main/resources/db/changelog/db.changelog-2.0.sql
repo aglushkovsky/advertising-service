@@ -264,5 +264,5 @@ VALUES ('телефон xiaomi A3x',
            AND lpr.depth = 0),
         (SELECT id FROM "user" WHERE login = 'test_user'),
         NOW(),
-        'ACTIVE',
+        'SOLD',
         FALSE);
