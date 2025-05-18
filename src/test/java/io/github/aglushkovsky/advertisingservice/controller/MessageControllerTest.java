@@ -3,6 +3,7 @@ package io.github.aglushkovsky.advertisingservice.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.aglushkovsky.advertisingservice.annotation.WebMvcUnitTest;
 import io.github.aglushkovsky.advertisingservice.dto.request.MessageCreateRequestDto;
+import io.github.aglushkovsky.advertisingservice.dto.request.ScrollableRequestDto;
 import io.github.aglushkovsky.advertisingservice.dto.response.MessageResponseDto;
 import io.github.aglushkovsky.advertisingservice.service.MessageService;
 import org.junit.jupiter.api.Nested;
@@ -13,8 +14,11 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.util.List;
+
 import static io.github.aglushkovsky.advertisingservice.util.MessageTestUtils.*;
 import static org.mockito.Mockito.doReturn;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -96,6 +100,72 @@ class MessageControllerTest {
     @Nested
     class FindMessages {
 
-        // TODO дописать
+        @Test
+        void findMessagesShouldReturnMessagesWhenAllParametersAreValid() throws Exception {
+            Long receiverId = 1L;
+            ScrollableRequestDto scrollable = ScrollableRequestDto.builder()
+                    .startId(1L)
+                    .limit(10L)
+                    .scrollDirection(ScrollDirection.DOWN)
+                    .build();
+            List<MessageResponseDto> messageResponseDtoListStub = List.of(createMessageResponseDtoStub(1L));
+            doReturn(messageResponseDtoListStub).when(messageService).findMessages(receiverId, scrollable);
+
+            mockMvc.perform(get("/api/v1/messages")
+                            .queryParam("receiverId", String.valueOf(receiverId))
+                            .queryParam("limit", String.valueOf(scrollable.limit()))
+                            .queryParam("scrollDirection", scrollable.scrollDirection().name())
+                            .queryParam("startId", String.valueOf(scrollable.startId())))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.size()").value(1));
+        }
+
+        @Test
+        void findMessagesShouldReturnBadRequestResponseWhenReceiverIdIsInvalid() throws Exception {
+            Long receiverId = 0L;
+            ScrollableRequestDto scrollable = ScrollableRequestDto.builder()
+                    .startId(1L)
+                    .limit(10L)
+                    .scrollDirection(ScrollDirection.DOWN)
+                    .build();
+
+            mockMvc.perform(get("/api/v1/messages")
+                            .queryParam("receiverId", String.valueOf(receiverId))
+                            .queryParam("limit", String.valueOf(scrollable.limit()))
+                            .queryParam("scrollDirection", scrollable.scrollDirection().name())
+                            .queryParam("startId", String.valueOf(scrollable.startId())))
+                    .andExpect(status().isBadRequest())
+                    .andExpect(jsonPath("$.status").value(HttpStatus.BAD_REQUEST.value()))
+                    .andExpect(jsonPath("$.errors.size()").value(1));
+        }
+
+        @Test
+        void findMessagesShouldReturnBadRequestResponseWhenScrollDirectionIsInvalid() throws Exception {
+            Long receiverId = 1L;
+
+            mockMvc.perform(get("/api/v1/messages")
+                            .queryParam("receiverId", String.valueOf(receiverId))
+                            .queryParam("scrollDirection", "INVALID_DIRECTION"))
+                    .andExpect(status().isBadRequest())
+                    .andExpect(jsonPath("$.status").value(HttpStatus.BAD_REQUEST.value()))
+                    .andExpect(jsonPath("$.errors.size()").value(1));
+        }
+
+        @Test
+        void findMessagesShouldReturnBadRequestResponseWhenScrollableDirectionIsInvalidButOtherParametersAreInvalid() throws Exception {
+            Long receiverId = 1L;
+            ScrollableRequestDto scrollable = ScrollableRequestDto.builder()
+                    .startId(0L)
+                    .limit(0L)
+                    .build();
+
+            mockMvc.perform(get("/api/v1/messages")
+                            .queryParam("receiverId", String.valueOf(receiverId))
+                            .queryParam("startId", String.valueOf(scrollable.startId()))
+                            .queryParam("limit", String.valueOf(scrollable.limit())))
+                    .andExpect(status().isBadRequest())
+                    .andExpect(jsonPath("$.status").value(HttpStatus.BAD_REQUEST.value()))
+                    .andExpect(jsonPath("$.errors.size()").value(2));
+        }
     }
 }
