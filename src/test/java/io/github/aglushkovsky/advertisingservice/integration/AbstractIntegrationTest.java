@@ -1,5 +1,6 @@
 package io.github.aglushkovsky.advertisingservice.integration;
 
+import io.github.aglushkovsky.advertisingservice.annotation.WithJwtAuthenticationContext;
 import org.junit.jupiter.api.BeforeAll;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -16,7 +17,7 @@ import static io.github.aglushkovsky.advertisingservice.config.property.Hibernat
 @Transactional
 @ActiveProfiles("test")
 @AutoConfigureMockMvc
-@WithMockUser
+@WithJwtAuthenticationContext
 abstract public class AbstractIntegrationTest {
 
     private static final PostgreSQLContainer<?> container = new PostgreSQLContainer<>("postgres:17.5");
