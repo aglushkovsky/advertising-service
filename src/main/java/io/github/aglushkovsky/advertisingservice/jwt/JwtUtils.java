@@ -35,25 +35,11 @@ public class JwtUtils {
                 .compact();
     }
 
-    public boolean isValidAccessToken(@NonNull String token) {
-        try {
-            Jwts.parser()
-                    .setSigningKey(secret)
-                    .build()
-                    .parseClaimsJws(token);
-            return true;
-        } catch (ExpiredJwtException expEx) {
-            log.error("Token expired", expEx);
-        } catch (UnsupportedJwtException unsEx) {
-            log.error("Unsupported jwt", unsEx);
-        } catch (MalformedJwtException mjEx) {
-            log.error("Malformed jwt", mjEx);
-        } catch (SignatureException sEx) {
-            log.error("Invalid signature", sEx);
-        } catch (Exception e) {
-            log.error("invalid token", e);
-        }
-        return false;
+    public void validateAccessToken(@NonNull String token) {
+        Jwts.parser()
+                .setSigningKey(secret)
+                .build()
+                .parseClaimsJws(token);
     }
 
     public Claims getClaimsFromToken(String token) {
