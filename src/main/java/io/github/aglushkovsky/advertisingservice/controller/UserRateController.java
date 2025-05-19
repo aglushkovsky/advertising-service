@@ -5,6 +5,7 @@ import io.github.aglushkovsky.advertisingservice.dto.response.UserRateResponseDt
 import io.github.aglushkovsky.advertisingservice.exception.AddUserRateToYourselfException;
 import io.github.aglushkovsky.advertisingservice.exception.UserRateAlreadyExistsException;
 import io.github.aglushkovsky.advertisingservice.service.UserRateService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/v1/users/{id}/rates")
 @RequiredArgsConstructor
 @Slf4j
+@Tag(name = "User Rate", description = "Operations for working with user rates")
 public class UserRateController {
 
     private final UserRateService userRateService;

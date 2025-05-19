@@ -4,6 +4,7 @@ import io.github.aglushkovsky.advertisingservice.dto.response.LocalityResponseDt
 import io.github.aglushkovsky.advertisingservice.entity.enumeration.LocalityType;
 import io.github.aglushkovsky.advertisingservice.service.LocalityService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirements;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,6 +17,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @SecurityRequirements
 @Slf4j
+@Tag(name = "Locality", description = "Operations for getting parts of localities")
 public class LocalityController {
 
     private final LocalityService localityService;

@@ -6,6 +6,7 @@ import io.github.aglushkovsky.advertisingservice.dto.request.PageableRequestDto;
 import io.github.aglushkovsky.advertisingservice.dto.response.AdResponseDto;
 import io.github.aglushkovsky.advertisingservice.service.AdsSearchService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirements;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 @SecurityRequirements
 @RequiredArgsConstructor
 @Slf4j
+@Tag(name = "Ads Search", description = "Operations for ads search")
 public class AdsSearchController {
 
     private final AdsSearchService adsSearchService;

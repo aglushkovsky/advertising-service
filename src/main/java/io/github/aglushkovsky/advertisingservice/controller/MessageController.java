@@ -4,6 +4,7 @@ import io.github.aglushkovsky.advertisingservice.dto.request.MessageCreateReques
 import io.github.aglushkovsky.advertisingservice.dto.request.ScrollableRequestDto;
 import io.github.aglushkovsky.advertisingservice.dto.response.MessageResponseDto;
 import io.github.aglushkovsky.advertisingservice.service.MessageService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +19,7 @@ import java.util.List;
 @RequestMapping("/api/v1/messages")
 @RequiredArgsConstructor
 @Slf4j
+@Tag(name = "Message", description = "Create-read operations for messages")
 public class MessageController {
 
     private final MessageService messageService;

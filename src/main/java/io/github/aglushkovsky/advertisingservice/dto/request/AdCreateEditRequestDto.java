@@ -2,6 +2,7 @@ package io.github.aglushkovsky.advertisingservice.dto.request;
 
 import io.github.aglushkovsky.advertisingservice.entity.enumeration.AdStatus;
 import io.github.aglushkovsky.advertisingservice.validator.group.CreateGroup;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.*;
 import lombok.Builder;
 
@@ -15,6 +16,7 @@ public record AdCreateEditRequestDto(
                 min = 5, max = 128,
                 message = "Название объявления должно быть от {min} до {max} символов"
         )
+        @Schema()
         String title,
 
         @NotNull(

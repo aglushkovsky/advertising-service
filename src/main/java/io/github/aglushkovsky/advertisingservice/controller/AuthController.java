@@ -4,6 +4,7 @@ import io.github.aglushkovsky.advertisingservice.dto.request.JwtAuthRequestDto;
 import io.github.aglushkovsky.advertisingservice.dto.response.JwtAuthResponseDto;
 import io.github.aglushkovsky.advertisingservice.service.AuthService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirements;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/v1")
 @RequiredArgsConstructor
 @Slf4j
+@Tag(name = "Auth")
 public class AuthController {
 
     private final AuthService authService;
