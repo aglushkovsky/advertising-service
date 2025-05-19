@@ -10,6 +10,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -22,8 +23,8 @@ public class AdsSearchController {
     private final AdsSearchService adsSearchService;
 
     @GetMapping("/ads")
-    public PageEntity<AdResponseDto> searchAds(@Valid FindAllAdsFilterRequestDto filter,
-                                               @Valid PageableRequestDto pageable) {
+    public PageEntity<AdResponseDto> searchAds(@ParameterObject @Valid FindAllAdsFilterRequestDto filter,
+                                               @ParameterObject @Valid PageableRequestDto pageable) {
         log.info("Start GET /api/v1/ads; params={}", filter);
         PageEntity<AdResponseDto> result = adsSearchService.findAll(filter, pageable);
         log.info("Finished GET /api/v1/ads; found items on page {}: {}", pageable.page(), result.body().size());
@@ -32,7 +33,7 @@ public class AdsSearchController {
 
     @GetMapping("/users/{userId}/ads/history")
     public PageEntity<AdResponseDto> getAdsHistoryByUserId(@PathVariable @Min(1) Long userId,
-                                                           @Valid PageableRequestDto pageable) {
+                                                           @ParameterObject @Valid PageableRequestDto pageable) {
         log.info("Start GET /api/v1/users/{}/ads; params={}", userId, pageable);
         PageEntity<AdResponseDto> adsHistoryByUserId = adsSearchService.getAdsHistoryByUserId(userId, pageable);
         log.info("Finished GET /api/v1/users/{}/ads; found items on page {}: {}",

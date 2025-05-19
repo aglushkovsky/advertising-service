@@ -8,6 +8,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -33,7 +34,7 @@ public class MessageController {
 
     @GetMapping
     public List<MessageResponseDto> findMessages(@RequestParam @Min(1) Long receiverId,
-                                                 @Valid ScrollableRequestDto scrollableRequestDto) {
+                                                 @ParameterObject @Valid ScrollableRequestDto scrollableRequestDto) {
         log.info("Start GET /api/v1/messages; request={}", scrollableRequestDto);
         List<MessageResponseDto> response = messageService.findMessages(receiverId, scrollableRequestDto);
         log.info("Finished GET /api/v1/messages; found {} messages", response.size());

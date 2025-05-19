@@ -10,6 +10,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -34,7 +35,7 @@ public class AdCommentController {
     @GetMapping
     @SecurityRequirements
     public PageEntity<CommentResponseDto> findAllCommentsByAdId(@PathVariable @Min(1) Long adId,
-                                                                @Valid PageableRequestDto pageable) {
+                                                                @ParameterObject @Valid PageableRequestDto pageable) {
         log.info("Start GET /api/v1/ads/{}/comments", adId);
         PageEntity<CommentResponseDto> response = commentService.findAllCommentsByAdId(adId, pageable);
         log.info("End GET /api/v1/ads/{}/comments", adId);
