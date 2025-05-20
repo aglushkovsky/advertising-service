@@ -1,0 +1,7 @@
+databaseChangeLog:
+  - include:
+      file: db/changelog/features/insert/008-insert_table_user.sql
+  - include:
+      file: db/changelog/features/insert/009-insert_tables_locality_locality_parts_relation.sql
+  - include:
+      file: db/changelog/features/insert/010-insert_table_ad.sql

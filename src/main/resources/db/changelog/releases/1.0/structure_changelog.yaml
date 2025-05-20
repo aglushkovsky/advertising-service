@@ -1,0 +1,15 @@
+databaseChangeLog:
+  - include:
+      file: db/changelog/features/create/001-create_table_user.sql
+  - include:
+      file: db/changelog/features/create/002-create_table_user_rate.sql
+  - include:
+      file: db/changelog/features/create/003-create_table_message.sql
+  - include:
+      file: db/changelog/features/create/004-create_table_locality.sql
+  - include:
+      file: db/changelog/features/create/005-create_table_locality_parts_relation.sql
+  - include:
+      file: db/changelog/features/create/006-create_table_ad.sql
+  - include:
+      file: db/changelog/features/create/007-create_table_comment.sql
