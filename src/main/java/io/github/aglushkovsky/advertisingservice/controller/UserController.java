@@ -4,14 +4,9 @@ import io.github.aglushkovsky.advertisingservice.controller.docs.UserControllerD
 import io.github.aglushkovsky.advertisingservice.dto.request.UserCreateEditRequestDto;
 import io.github.aglushkovsky.advertisingservice.dto.response.UserResponseDto;
 import io.github.aglushkovsky.advertisingservice.service.UserService;
-import io.github.aglushkovsky.advertisingservice.validator.group.CreateGroup;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.groups.Default;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -23,10 +18,8 @@ public class UserController implements UserControllerDocs {
     private final UserService userService;
 
     @PostMapping("/registration")
-    @PreAuthorize("isAnonymous()")
     @ResponseStatus(HttpStatus.CREATED)
-    public UserResponseDto createUser(@RequestBody @Validated({Default.class, CreateGroup.class})
-                                      UserCreateEditRequestDto userCreateEditRequestDto) {
+    public UserResponseDto createUser(@RequestBody UserCreateEditRequestDto userCreateEditRequestDto) {
         log.info("Start POST /api/v1/registration");
         UserResponseDto response = userService.createUser(userCreateEditRequestDto);
         log.info("Finished POST /api/v1/registration; created user with id={}", response.id());
@@ -34,9 +27,8 @@ public class UserController implements UserControllerDocs {
     }
 
     @PatchMapping("/users/{id}")
-    public UserResponseDto editUser(@PathVariable @Min(1) Long id,
-                                    @RequestBody @Validated(Default.class)
-                                    UserCreateEditRequestDto userCreateEditRequestDto) {
+    public UserResponseDto editUser(@PathVariable Long id,
+                                    @RequestBody UserCreateEditRequestDto userCreateEditRequestDto) {
         log.info("Start PATCH /api/v1/user/{}/edit", id);
         UserResponseDto response = userService.editUser(id, userCreateEditRequestDto);
         log.info("Finished PATCH /api/v1/user/{}/edit", id);
@@ -44,7 +36,7 @@ public class UserController implements UserControllerDocs {
     }
 
     @GetMapping("/users/{id}")
-    public UserResponseDto getUserById(@PathVariable @Min(1) Long id) {
+    public UserResponseDto getUserById(@PathVariable Long id) {
         log.info("Start GET /api/v1/user/{}", id);
         UserResponseDto response = userService.findById(id);
         log.info("Finished GET /api/v1/user/{}", id);

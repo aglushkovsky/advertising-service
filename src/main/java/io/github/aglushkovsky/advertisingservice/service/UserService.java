@@ -11,6 +11,7 @@ import io.github.aglushkovsky.advertisingservice.mapper.UserMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -24,6 +25,7 @@ public class UserService {
     private final UserDao userDao;
     private final UserMapper userMapper;
 
+    @PreAuthorize("isAnonymous()")
     public UserResponseDto createUser(UserCreateEditRequestDto userCreateEditRequestDto) {
         log.info("Start createUser");
 

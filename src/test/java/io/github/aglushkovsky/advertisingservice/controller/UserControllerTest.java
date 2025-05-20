@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithAnonymousUser;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -35,30 +34,6 @@ class UserControllerTest {
     @Nested
     @WithAnonymousUser
     class CreateUser {
-
-        @Test
-        void createUserShouldCreateUserWhenAllParametersAreValidAndUserIsNotAuthorized() throws Exception {
-            UserCreateEditRequestDto userCreateEditRequestDtoStub = createUserCreateEditRequestDtoStub();
-            UserResponseDto userResponseDtoStub = createUserResponseDtoStub();
-            doReturn(userResponseDtoStub).when(userService).createUser(userCreateEditRequestDtoStub);
-
-            mockMvc.perform(post("/api/v1/registration")
-                            .contentType(MediaType.APPLICATION_JSON)
-                            .content(objectMapper.writeValueAsString(userCreateEditRequestDtoStub)))
-                    .andExpect(status().isCreated());
-        }
-
-        @Test
-        @WithMockUser(authorities = "USER")
-        void createUserShouldReturnForbiddenResponseWhenAllParametersAreValidAndUserIsAuthorized() throws Exception {
-            UserCreateEditRequestDto userCreateEditRequestDtoStub = createUserCreateEditRequestDtoStub();
-
-            mockMvc.perform(post("/api/v1/registration")
-                            .contentType(MediaType.APPLICATION_JSON)
-                            .content(objectMapper.writeValueAsString(userCreateEditRequestDtoStub)))
-                    .andExpect(status().isForbidden())
-                    .andExpect(jsonPath("$.status").value(HttpStatus.FORBIDDEN.value()));
-        }
 
         @Test
         void createUserShouldReturnBadRequestResponseWhenAllParametersAreFilledButInvalid() throws Exception {

@@ -6,8 +6,6 @@ import io.github.aglushkovsky.advertisingservice.dto.response.UserRateResponseDt
 import io.github.aglushkovsky.advertisingservice.exception.AddUserRateToYourselfException;
 import io.github.aglushkovsky.advertisingservice.exception.UserRateAlreadyExistsException;
 import io.github.aglushkovsky.advertisingservice.service.UserRateService;
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -25,8 +23,8 @@ public class UserRateController implements UserRateControllerDocs {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public UserRateResponseDto createUserRate(@PathVariable(name = "id") @Min(1) Long recipientId,
-                                              @RequestBody @Valid UserRateCreateRequestDto userRateCreateRequestDto) {
+    public UserRateResponseDto createUserRate(@PathVariable(name = "id") Long recipientId,
+                                              @RequestBody UserRateCreateRequestDto userRateCreateRequestDto) {
         log.info("Start POST /api/v1/users/{}/rates; {}", recipientId, userRateCreateRequestDto);
         UserRateResponseDto response = userRateService.createUserRate(recipientId, userRateCreateRequestDto);
         log.info("Finished POST /api/v1/users/{}/rates; created rated with id", recipientId);

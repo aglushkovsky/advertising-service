@@ -5,8 +5,6 @@ import io.github.aglushkovsky.advertisingservice.dto.request.MessageCreateReques
 import io.github.aglushkovsky.advertisingservice.dto.request.ScrollableRequestDto;
 import io.github.aglushkovsky.advertisingservice.dto.response.MessageResponseDto;
 import io.github.aglushkovsky.advertisingservice.service.MessageService;
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -24,8 +22,8 @@ public class MessageController implements MessageControllerDocs {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public MessageResponseDto sendMessage(@RequestParam @Min(1) Long receiverId,
-                                          @RequestBody @Valid MessageCreateRequestDto messageCreateRequestDto) {
+    public MessageResponseDto sendMessage(@RequestParam Long receiverId,
+                                          @RequestBody MessageCreateRequestDto messageCreateRequestDto) {
         log.info("Start POST /api/v1/messages");
         MessageResponseDto response = messageService.sendMessage(receiverId, messageCreateRequestDto);
         log.info("End POST /api/v1/messages");
@@ -33,8 +31,8 @@ public class MessageController implements MessageControllerDocs {
     }
 
     @GetMapping
-    public List<MessageResponseDto> findMessages(@RequestParam @Min(1) Long receiverId,
-                                                 @Valid ScrollableRequestDto scrollableRequestDto) {
+    public List<MessageResponseDto> findMessages(@RequestParam Long receiverId,
+                                                 ScrollableRequestDto scrollableRequestDto) {
         log.info("Start GET /api/v1/messages; request={}", scrollableRequestDto);
         List<MessageResponseDto> response = messageService.findMessages(receiverId, scrollableRequestDto);
         log.info("Finished GET /api/v1/messages; found {} messages", response.size());

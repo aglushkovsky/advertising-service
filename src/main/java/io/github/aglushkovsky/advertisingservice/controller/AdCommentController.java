@@ -6,8 +6,6 @@ import io.github.aglushkovsky.advertisingservice.dto.request.CommentCreateReques
 import io.github.aglushkovsky.advertisingservice.dto.request.PageableRequestDto;
 import io.github.aglushkovsky.advertisingservice.dto.response.CommentResponseDto;
 import io.github.aglushkovsky.advertisingservice.service.CommentService;
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -23,8 +21,8 @@ public class AdCommentController implements AdCommentControllerDocs {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public CommentResponseDto createCommentForAd(@PathVariable @Min(1) Long adId,
-                                                 @RequestBody @Valid CommentCreateRequestDto commentCreateRequestDto) {
+    public CommentResponseDto createCommentForAd(@PathVariable Long adId,
+                                                 @RequestBody CommentCreateRequestDto commentCreateRequestDto) {
         log.info("Start POST /api/v1/ads/{}/comments", adId);
         CommentResponseDto response = commentService.createComment(adId, commentCreateRequestDto);
         log.info("End POST /api/v1/ads/{}/comments", adId);
@@ -32,8 +30,8 @@ public class AdCommentController implements AdCommentControllerDocs {
     }
 
     @GetMapping
-    public PageEntity<CommentResponseDto> findAllCommentsByAdId(@PathVariable @Min(1) Long adId,
-                                                                @Valid PageableRequestDto pageable) {
+    public PageEntity<CommentResponseDto> findAllCommentsByAdId(@PathVariable Long adId,
+                                                                PageableRequestDto pageable) {
         log.info("Start GET /api/v1/ads/{}/comments", adId);
         PageEntity<CommentResponseDto> response = commentService.findAllCommentsByAdId(adId, pageable);
         log.info("End GET /api/v1/ads/{}/comments", adId);

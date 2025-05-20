@@ -12,6 +12,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirements;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Min;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.http.MediaType;
 
@@ -60,10 +62,33 @@ public interface AdCommentControllerDocs {
                                     )
                             }
                     )
+            ),
+            @ApiResponse(
+                    responseCode = "400",
+                    description = "Returns when found constraint violation",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            examples = @ExampleObject(
+                                    value = """
+                                            {
+                                              "type": "about:blank",
+                                              "title": "Bad Request",
+                                              "status": 400,
+                                              "instance": "/api/v1/ads/1",
+                                              "errors": [
+                                                {
+                                                  "parameter": "text",
+                                                  "message": "Текст комментария не может быть меньше 5 символов"
+                                                }
+                                              ]
+                                            }
+                                            """
+                            )
+                    )
             )
     })
     @SecurityRequirements
-    CommentResponseDto createCommentForAd(Long adId, CommentCreateRequestDto commentCreateRequestDto);
+    CommentResponseDto createCommentForAd(@Min(1) Long adId, @Valid CommentCreateRequestDto commentCreateRequestDto);
 
     @Operation(
             summary = "Find all comments by ad id",
@@ -111,5 +136,6 @@ public interface AdCommentControllerDocs {
             )
     })
     @SecurityRequirements
-    PageEntity<CommentResponseDto> findAllCommentsByAdId(Long adId, @ParameterObject PageableRequestDto pageable);
+    PageEntity<CommentResponseDto> findAllCommentsByAdId(@Min(1) Long adId,
+                                                         @ParameterObject @Valid PageableRequestDto pageable);
 }
