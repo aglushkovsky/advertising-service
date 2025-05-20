@@ -4,8 +4,8 @@
 INSERT INTO "user" (login, password_hash, email, phone_number, role, total_rating)
 VALUES ('test_user',
         '$2a$12$sGu145CigoPn4HWjLOndX.QenSaUBRZreuex2fdo3wtUriQ9dBwie', -- qwerty12345
-        NULL,
-        NULL,
+        'example@example.com',
+        '+79531234567',
         'USER',
         0.0),
        ('test_admin',
