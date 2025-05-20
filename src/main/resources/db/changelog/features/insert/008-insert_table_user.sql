@@ -10,7 +10,7 @@ VALUES ('test_user',
         0.0),
        ('test_admin',
         '$2a$12$pAMuVi4R48STh59Sh6OXP.d95htFMnq6XH.f5zDyepepB/REO.MsC', -- password
-        NULL,
-        NULL,
+        'admin_example@example.com',
+        '+79202345678',
         'ADMIN',
         0.0);
