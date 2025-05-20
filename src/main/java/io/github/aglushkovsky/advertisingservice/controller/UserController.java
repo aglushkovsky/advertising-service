@@ -1,11 +1,10 @@
 package io.github.aglushkovsky.advertisingservice.controller;
 
+import io.github.aglushkovsky.advertisingservice.controller.docs.UserControllerDocs;
 import io.github.aglushkovsky.advertisingservice.dto.request.UserCreateEditRequestDto;
 import io.github.aglushkovsky.advertisingservice.dto.response.UserResponseDto;
 import io.github.aglushkovsky.advertisingservice.service.UserService;
 import io.github.aglushkovsky.advertisingservice.validator.group.CreateGroup;
-import io.swagger.v3.oas.annotations.security.SecurityRequirements;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.groups.Default;
 import lombok.RequiredArgsConstructor;
@@ -19,14 +18,12 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/v1")
 @RequiredArgsConstructor
 @Slf4j
-@Tag(name = "User", description = "CRUD operations for users")
-public class UserController {
+public class UserController implements UserControllerDocs {
 
     private final UserService userService;
 
     @PostMapping("/registration")
     @PreAuthorize("isAnonymous()")
-    @SecurityRequirements
     @ResponseStatus(HttpStatus.CREATED)
     public UserResponseDto createUser(@RequestBody @Validated({Default.class, CreateGroup.class})
                                       UserCreateEditRequestDto userCreateEditRequestDto) {
@@ -47,7 +44,6 @@ public class UserController {
     }
 
     @GetMapping("/users/{id}")
-    @SecurityRequirements
     public UserResponseDto getUserById(@PathVariable @Min(1) Long id) {
         log.info("Start GET /api/v1/user/{}", id);
         UserResponseDto response = userService.findById(id);

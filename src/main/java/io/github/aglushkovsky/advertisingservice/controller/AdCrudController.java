@@ -1,11 +1,10 @@
 package io.github.aglushkovsky.advertisingservice.controller;
 
+import io.github.aglushkovsky.advertisingservice.controller.docs.AdCrudControllerDocs;
 import io.github.aglushkovsky.advertisingservice.dto.request.AdCreateEditRequestDto;
 import io.github.aglushkovsky.advertisingservice.dto.response.AdResponseDto;
 import io.github.aglushkovsky.advertisingservice.service.AdCrudService;
 import io.github.aglushkovsky.advertisingservice.validator.group.CreateGroup;
-import io.swagger.v3.oas.annotations.security.SecurityRequirements;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.groups.Default;
@@ -20,8 +19,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/v1/ads")
 @RequiredArgsConstructor
 @Slf4j
-@Tag(name = "Ad crud", description = "CRUD operations with ads")
-public class AdCrudController {
+public class AdCrudController implements AdCrudControllerDocs {
 
     private final AdCrudService adCrudService;
 
@@ -53,7 +51,6 @@ public class AdCrudController {
     }
 
     @GetMapping("/{id}")
-    @SecurityRequirements
     public AdResponseDto findById(@PathVariable @Min(1) Long id) {
         log.info("Start GET /api/v1/ads/{}; id={}", id, id);
         AdResponseDto result = adCrudService.findById(id);

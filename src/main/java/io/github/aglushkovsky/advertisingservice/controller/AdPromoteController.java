@@ -1,8 +1,8 @@
 package io.github.aglushkovsky.advertisingservice.controller;
 
+import io.github.aglushkovsky.advertisingservice.controller.docs.AdPromoteControllerDocs;
 import io.github.aglushkovsky.advertisingservice.dto.response.AdResponseDto;
 import io.github.aglushkovsky.advertisingservice.service.AdPromoteService;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -15,8 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/v1/ads/{id}/promote")
 @RequiredArgsConstructor
 @Slf4j
-@Tag(name = "Ad promoting")
-public class AdPromoteController {
+public class AdPromoteController implements AdPromoteControllerDocs {
 
     private final AdPromoteService adPromoteService;
 
