@@ -7,6 +7,7 @@ import jakarta.validation.constraints.*;
 import lombok.Builder;
 
 @Builder
+@Schema(name = "Ad create or edit request")
 public record AdCreateEditRequestDto(
         @NotBlank(
                 groups = {CreateGroup.class},
@@ -16,7 +17,7 @@ public record AdCreateEditRequestDto(
                 min = 5, max = 128,
                 message = "Название объявления должно быть от {min} до {max} символов"
         )
-        @Schema()
+        @Schema(example = "Macbook Pro M4 16/512 новый запечатанный из ОАЭ с быстрой доставкой")
         String title,
 
         @NotNull(
@@ -27,12 +28,14 @@ public record AdCreateEditRequestDto(
                 value = 0,
                 message = "Цена не должна быть меньше {value}"
         )
+        @Schema(example = "17000000")
         Long price,
 
         @Size(
                 min = 5,
                 message = "Текст описания не может быть меньше {min} символов"
         )
+        @Schema(example = "Зaпaкованныe и пoлнocтью нoвыe. Очень мощные и производительные, подxoдят под любые зaдачи.")
         String description,
 
         @NotNull(

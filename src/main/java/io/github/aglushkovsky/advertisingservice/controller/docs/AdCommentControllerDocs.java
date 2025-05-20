@@ -20,7 +20,6 @@ public interface AdCommentControllerDocs {
 
     @Operation(
             summary = "Find all comments by ad id",
-            description = "Returns all ad comments on specified page with page metadata",
             parameters = @Parameter(
                     name = "adId",
                     description = "Target Ad ID"
@@ -29,7 +28,7 @@ public interface AdCommentControllerDocs {
     @ApiResponses({
             @ApiResponse(
                     responseCode = "200",
-                    description = "Page with ad comments on specified page",
+                    description = "Returns page with ad comments on specified page number",
                     content = @Content(
                             mediaType = MediaType.APPLICATION_JSON_VALUE,
                             examples = {
