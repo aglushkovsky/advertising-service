@@ -1,5 +1,4 @@
-ARG BUILD_IMAGE=alpine:3.21.3
-FROM ${BUILD_IMAGE} AS build
+FROM alpine:3.21.3 AS build
 
 RUN apk add openjdk17
 
@@ -10,8 +9,7 @@ RUN ./mvnw dependency:go-offline
 COPY src src
 RUN ./mvnw package -DskipTests
 
-ARG EXTRACTOR_IMAGE=alpine:3.21.3
-FROM ${EXTRACTOR_IMAGE} AS extractor
+FROM alpine:3.21.3 AS extractor
 
 RUN apk add openjdk17
 
@@ -19,8 +17,7 @@ WORKDIR /app
 COPY --from=build /app/target/advertising-service-*.jar advertising-service-app.jar
 RUN java -Djarmode=layertools -jar advertising-service-app.jar extract
 
-ARG RESULT_IMAGE=alpine:3.21.3
-FROM ${RESULT_IMAGE} AS result
+FROM alpine:3.21.3 AS result
 
 RUN apk add openjdk17
 
