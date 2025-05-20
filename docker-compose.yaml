@@ -1,0 +1,29 @@
+name: advertising-service
+
+services:
+  db:
+    image: postgres:17.5
+    ports:
+      - "5435:5432"
+    environment:
+      POSTGRES_DB: advertising_service
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - db-data:/var/lib/postgresql/data
+  web:
+    image: advertising-service-app
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      POSTGRES_DB_NAME: advertising_service
+      POSTGRES_HOST: db:5432
+      POSTGRES_USERNAME: postgres
+      POSTGRES_PASSWORD: postgres
+    depends_on:
+      - db
+
+volumes:
+  db-data:

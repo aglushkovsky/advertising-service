@@ -1,0 +1,26 @@
+spring:
+  application.name: advertising-service
+  jpa:
+    open-in-view: false
+
+logging:
+  level:
+    org.hibernate:
+      SQL: DEBUG
+      type.descriptor.sql.BasicBinder: TRACE
+
+hibernate:
+  username: ${POSTGRES_USERNAME:postgres}
+  password: ${POSTGRES_PASSWORD:postgres}
+  url: jdbc:postgresql://${POSTGRES_HOST:localhost:5432}/${POSTGRES_DB_NAME:advertising_service}
+  driver: org.postgresql.Driver
+  entity-package: io.github.aglushkovsky.advertisingservice.entity
+  naming-physical-strategy: org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy
+  dialect: org.hibernate.dialect.PostgreSQLDialect
+  sql:
+    show: true
+    format: true
+
+jwt:
+  secret: bW3JzRFeKqdEOcGlZxaCwAn3m6EB1qUZxtIAOd1O2za4kYwFesJA6YEio5upaaTmEM1LtTltKvuqcvIiHohzmQ==
+  expiration: 604800000
