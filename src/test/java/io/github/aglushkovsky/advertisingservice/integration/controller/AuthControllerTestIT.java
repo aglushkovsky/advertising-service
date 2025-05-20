@@ -6,6 +6,7 @@ import io.github.aglushkovsky.advertisingservice.jwt.JwtUtils;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.hamcrest.Matchers.is;
@@ -31,16 +32,17 @@ public class AuthControllerTestIT extends AbstractIntegrationTest {
                 }
                 """;
 
-        mockMvc.perform(post("/api/v1/login")
+        MvcResult result = mockMvc.perform(post("/api/v1/login")
                         .contentType(APPLICATION_JSON)
                         .content(authRequest))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.type", is("Bearer")))
-                .andExpect(result -> {
-                    String jsonResponse = result.getResponse().getContentAsString();
-                    String token = JsonPath.read(jsonResponse, "$.accessToken");
-                    assertThat(jwtUtils.isValidAccessToken(token)).isTrue();
-                });
+                .andReturn();
+
+        String contentAsString = result.getResponse().getContentAsString();
+        String accessToken = JsonPath.parse(contentAsString).read("$.accessToken");
+
+        assertThatCode(() -> jwtUtils.validateAccessToken(accessToken)).doesNotThrowAnyException();
     }
 
     @Test
